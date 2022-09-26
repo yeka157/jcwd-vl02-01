@@ -75,6 +75,16 @@ app.get("*", (req, res) => {
 
 //#endregion
 
+// DB Connection
+const { dbConf } = require('./config/db');
+dbConf.getConnection((err, connection) => {
+  if (err) {
+    console.log('Error mysql connection', err.sqlMessage);
+  }
+
+  console.log('Connected to MySql:' , connection.threadId);
+})
+
 app.listen(PORT, (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
