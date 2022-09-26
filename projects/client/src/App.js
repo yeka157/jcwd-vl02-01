@@ -1,18 +1,16 @@
-import axios from "axios";
-import "./App.css";
-import { useEffect, useState } from "react";
-import { Button } from "@chakra-ui/react"
-
+import react from 'react';
+import { Button } from '@chakra-ui/react';
+import { Route, Routes } from 'react-router-dom';
 
 function App() {
-
+  
   return (
-    <div className="App bg-yellow-500">
-      <h1 className="text-green-">Halo</h1>
-      <Button colorScheme='teal' size='xs'>
-        Button
-      </Button>
+    <div>
+      <Routes>
+      </Routes>
     </div>
+
+
   );
 }
 

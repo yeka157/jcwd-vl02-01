@@ -7,8 +7,8 @@
 0 silly argv   pkg: 'nodmailer-express-handlebars'
 0 silly argv }
 1 notice cli v5.4.0
-2 verbose rootPath D:\Purwadhika JCWD-02\Final Project\jcwd-vl02-01
+2 verbose rootPath D:\Final project\jcwd-vl02-01
 3 error HttpErrorGeneral: 404 Not Found - GET https://registry.npmjs.org/nodmailer-express-handlebars - Not found
-3 error     at D:\Purwadhika JCWD-02\Final Project\jcwd-vl02-01\node_modules\npm-registry-fetch\lib\check-response.js:93:15
+3 error     at D:\Final project\jcwd-vl02-01\node_modules\npm-registry-fetch\lib\check-response.js:93:15
 3 error     at processTicksAndRejections (node:internal/process/task_queues:96:5)
-3 error     at async RegistryFetcher.packument (D:\Purwadhika JCWD-02\Final Project\jcwd-vl02-01\node_modules\pacote\lib\registry.js:92:19)
+3 error     at async RegistryFetcher.packument (D:\Final project\jcwd-vl02-01\node_modules\pacote\lib\registry.js:92:19)
