@@ -7,10 +7,10 @@ const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(
   cors({
-    origin: [
-      process.env.WHITELISTED_DOMAIN &&
-      process.env.WHITELISTED_DOMAIN.split(","),
-    ],
+    // origin: [
+    //   process.env.WHITELISTED_DOMAIN &&
+    //   process.env.WHITELISTED_DOMAIN.split(","),
+    // ],
   })
 );
 
@@ -30,6 +30,9 @@ app.get("/api/greetings", (req, res, next) => {
     message: "Hello, Student !",
   });
 });
+
+const { authRouter } = require('./routers');
+app.use('/api/auth', authRouter);
 
 // ===========================
 
@@ -72,7 +75,7 @@ dbConf.getConnection((err, connection) => {
     console.log('Error mysql connection', err.sqlMessage);
   }
 
-  console.log('Connected to MySql:' , connection.threadId);
+  console.log('Connected to MySql:', connection.threadId);
 })
 
 app.listen(PORT, (err) => {
