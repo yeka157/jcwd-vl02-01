@@ -3,6 +3,7 @@ import { Input, InputGroup, InputRightElement, useToast, Spinner } from '@chakra
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { API_URL } from '../helper/index';
 import axios from 'axios';
+import Cookies from 'js-cookie'
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -26,6 +27,7 @@ const RegisterPage = () => {
     const [confirmPasswordType, setConfirmPasswordType] = useState('password');
     const [usersData, setUsersData] = useState([]);
     const [spinner, setSpinner] = useState(false);
+
 
     const toast = useToast();
 
@@ -183,7 +185,6 @@ const RegisterPage = () => {
                     password
                 });
 
-                console.log(register.data.success);
 
                 if (register.data.success) {
                     setUsername('');
@@ -191,7 +192,8 @@ const RegisterPage = () => {
                     setPhoneNumber('');
                     setPassword('');
                     setConfirmPassword('');
-                    setSpinner(false)
+                    setSpinner(false);
+                    Cookies.set('verifToken', register.data.token, {expires: 2})
                     toast({
                         title: 'Account created.',
                         description: "Please check email to verify your account.",
