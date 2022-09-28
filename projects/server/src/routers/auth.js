@@ -9,5 +9,8 @@ route.patch('/verify_account', readToken, authController.verify);
 route.get('/send_email_verify', readToken, authController.verificationRequest);
 route.post('/login', authController.login);
 route.get('/keep_login', readToken, authController.keepLogin);
+route.post('/send_reset_password', authController.sendResetPassword);
+route.patch('/reset_password', readToken, authController.resetPassword);
+
 
 module.exports = route;
