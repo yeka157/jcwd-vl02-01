@@ -112,10 +112,7 @@ module.exports = {
 
         let resGet = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`);
 
-        console.log( 'ini reget', resGet[0].email);
-
         let token = createToken({ ...resGet[0] });
-
         let link = `http://localhost:3000/verification/${token}`;
         let name = resGet[0].name;
 
@@ -135,5 +132,63 @@ module.exports = {
             message: 'Verification sent',
             token
         });
+    },
+    login: async (req, res) => {
+        try {
+            const { credential, password } = req.body;
+
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users 
+            WHERE ${credential.includes('@' && '.co') ? `email = ${dbConf.escape(credential)}` : `username = ${dbConf.escape(credential)}`}
+            AND password = ${dbConf.escape((hashPassword(password)))};`);
+
+            if (resUser.length > 0) {
+                let token = createToken({ ...resUser[0] });
+
+                res.status(200).send({
+                    success: true,
+                    massage: 'Login success',
+                    dataUser: resUser[0],
+                    token,
+                });
+
+            } else {
+                res.status(404).send({
+                    success: false,
+                    message: 'Login failed'
+
+                });
+            }
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                succes: false,
+                massage: "Login failed"
+            })
+        }
+    },
+    keepLogin: async (req, res) => {
+        try {
+
+            let resUser = await (`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
+
+            if (resUser.length > 0) {
+                let token = createToken({...resUser[0]});
+
+                res.status(200).send({
+                    success: true,
+                    massage: 'Keep login success',
+                    dataUser: resUser[0],
+                    token,
+                });
+            } 
+            
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                succes: false,
+                massage: "Login failed"
+            })
+        }
     }
 }
