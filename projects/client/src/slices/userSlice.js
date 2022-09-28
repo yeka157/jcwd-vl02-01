@@ -7,6 +7,8 @@ export const userSlice = createSlice({
     initialState,
     reducers : {
         userLogin : (state, action) => {
+            // console.log('login success');
+            // console.log(action.payload);
             return action.payload
         },
         userLogOut : (state, action) => {
