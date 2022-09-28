@@ -2,19 +2,15 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
+const bearerToken = require('express-bearer-token');
+
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-app.use(
-  cors({
-    // origin: [
-    //   process.env.WHITELISTED_DOMAIN &&
-    //   process.env.WHITELISTED_DOMAIN.split(","),
-    // ],
-  })
-);
 
+app.use(cors());
 app.use(express.json());
+app.use(bearerToken());
 
 //#region API ROUTES
 
@@ -31,8 +27,8 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-const { authRouter } = require('./routers');
-app.use('/api/auth', authRouter);
+const configRouter = require('./routers');
+app.use('/api', configRouter);
 
 // ===========================
 

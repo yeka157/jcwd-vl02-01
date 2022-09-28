@@ -27,6 +27,7 @@ const RegisterPage = () => {
     const [confirmPasswordType, setConfirmPasswordType] = useState('password');
     const [usersData, setUsersData] = useState([]);
     const [spinner, setSpinner] = useState(false);
+    const [disableBtn, setDisableBtn] = useState(false);
 
 
     const toast = useToast();
@@ -193,7 +194,9 @@ const RegisterPage = () => {
                     setPassword('');
                     setConfirmPassword('');
                     setSpinner(false);
-                    Cookies.set('verifToken', register.data.token, {expires: 2})
+                    setDisableBtn(false);
+                    // additional APKG1-4
+                    Cookies.set('verifToken', register.data.token, {expires: 2});
                     toast({
                         title: 'Account created.',
                         description: "Please check email to verify your account.",
@@ -343,7 +346,8 @@ const RegisterPage = () => {
                             </div>
 
                             <div className="pt-[16px]">
-                                <button onClick={() => {setSpinner(true); setTimeout(btnRegister, 2000)}}  class="w-[312px] text-[16px]  bg-[#87E4D8] text-center hover:bg-[#97E4D8] text-white font-bold py-2 px-4 rounded-full text-black">
+                            {/* Additional APKG1-4 */}
+                                <button onClick={() => {setSpinner(true); setTimeout(btnRegister, 2000); setDisableBtn(true)}} disabled={disableBtn}  class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]' }  text-white font-bold py-2 px-4 rounded-full`}>
                                     {spinner ? <Spinner size='sm' color="grey"/> : 'Create Account' }
                                 </button>
 
