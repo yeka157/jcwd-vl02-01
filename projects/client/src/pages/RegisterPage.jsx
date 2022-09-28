@@ -227,7 +227,7 @@ const RegisterPage = () => {
     return (
         <div>
             <div className='h-screen w-screen flex items-center '>
-                <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl ' >
+                <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl' >
                     <div className='hidden lg:block lg:w-[552px] border bg-cover bg-center rounded-l-lg' style={{ backgroundImage: `url("https://images.unsplash.com/photo-1555633514-abcee6ab92e1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8cGhhcm1hY3l8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60")` }}>
                         <div className='bg-gradient-to-t  h-[100%] from-[black] rounded-l-lg'>
                             <div id="register-tagline">

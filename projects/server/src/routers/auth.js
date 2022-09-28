@@ -7,6 +7,7 @@ route.post('/register', authController.register);
 route.get('/get_all_users', authController.getUsers);
 route.patch('/verify_account', readToken, authController.verify);
 route.get('/send_email_verify', readToken, authController.verificationRequest);
-
+route.post('/login', authController.login);
+route.get('/keep_login', readToken, authController.keepLogin);
 
 module.exports = route;
