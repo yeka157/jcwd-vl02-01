@@ -133,6 +133,28 @@ const LoginPage = () => {
         }
     };
 
+    const sendRequest = async () => {
+
+        let cookie = Cookies.get('sehatToken')
+
+        console.log(cookie);
+
+        try {
+            let res = await axios.get(API_URL + '/auth/change_password_request', {
+                headers : {
+                    'Authorization' : `Bearer ${cookie}`
+                }
+            })
+
+            if (res.data.success) {
+                Cookies.set('resetToken', res.data.token, {expires : COOKIE_EXP});
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <div>
             <div className='h-screen w-screen flex items-center '>
@@ -202,6 +224,12 @@ const LoginPage = () => {
                                 <p className="text-[12px] pl-3 pt-2">
                                     Don't have account yet? <a className="text-blue-500 font-bold" href="/register">Register</a>
                                 </p>
+                                
+                                {/* Change Password Request */}
+                                <button onClick={sendRequest} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center text-white font-bold py-2 px-4 `}>
+                                    Send Request
+                                </button>
+                                
                             </div>
                         </div>
                     </div>

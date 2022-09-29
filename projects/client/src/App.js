@@ -1,7 +1,7 @@
 import axios from 'axios';
 import react, { useEffect } from 'react';
 import { Route, Routes } from "react-router-dom"
-import { API_URL } from './helper';
+import { API_URL, COOKIE_EXP } from './helper';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
@@ -23,7 +23,7 @@ function App() {
     try {
 
       let token = Cookies.get('sehatToken');
-      console.log(token);
+      console.log('ini token dari login',token);
 
       let resUser = await axios.get(API_URL + '/auth/keep_login', {
         headers: {
@@ -32,7 +32,7 @@ function App() {
       })
 
       if (resUser.data.success) {
-        Cookies.set('sehatToken', resUser.data.token, { expires: 2 });
+        Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
         delete resUser.data.token
         dispatch(userLogin(resUser.data.dataUser));
         console.log('Keep login success');

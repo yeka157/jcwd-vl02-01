@@ -11,6 +11,7 @@ route.post('/login', authController.login);
 route.get('/keep_login', readToken, authController.keepLogin);
 route.post('/send_reset_password', authController.sendResetPassword);
 route.patch('/reset_password', readToken, authController.resetPassword);
+route.get('/change_password_request', readToken, authController.changePasswordRequest);
 
 
 module.exports = route;
