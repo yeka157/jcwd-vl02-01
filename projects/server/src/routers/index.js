@@ -8,4 +8,8 @@ const router = require('express').Router();
 const authRouter = require('./auth');
 router.use('/auth', authRouter);
 
+// APKG1-20
+const categoryRouter = require('./category');
+router.use("/category", categoryRouter);
+
 module.exports = router;
