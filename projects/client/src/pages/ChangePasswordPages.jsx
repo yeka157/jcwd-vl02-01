@@ -6,19 +6,26 @@ import PasswordForm from '../components/PasswordFormComponent';
 import { FaUserSlash } from "react-icons/fa";
 import { useParams } from 'react-router-dom';
 import { AiOutlineKey } from "react-icons/ai";
-import { Spinner, useToast } from '@chakra-ui/react'
+import { Spinner, useToast, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 
-const ResetPassword = () => {
+const ChangePassword = () => {
+    const [oldPassword, setOldPassword] = useState('');
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [oldPasswordType, setOldPasswordType] = useState('password');
+
     const [password, setPassword] = useState();
     const [showPassword, setShowPassword] = useState(false);
     const [passwordType, setPasswordType] = useState('password')
     const [passwordStrength, setPasswordStrength] = useState('');
     const [passwordValid, setPasswordValid] = useState(false);
+
     const [confirmPasswordType, setConfirmPasswordType] = useState('password');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [confirmPassIndicator, setConfirmPassIndicator] = useState('indicator');
     const [confirPassValid, setConfirmPassValid] = useState(false);
+
     const [disableBtn, setDisableBtn] = useState(false);
     const [spinner, setSpinner] = useState(false);
 
@@ -57,7 +64,8 @@ const ResetPassword = () => {
         }
 
 
-    }, [password])
+    }, [password]);
+
 
     useEffect(() => {
         if (confirmPassword) {
@@ -78,7 +86,7 @@ const ResetPassword = () => {
     const btnSubmit = async () => {
         try {
             if (passwordValid && confirPassValid) {
-                let res = await axios.patch(API_URL + '/auth/reset_password', { password }, {
+                let res = await axios.patch(API_URL + '/auth/change_password', { password, oldPassword }, {
                     headers: {
                         'Authorization': `Bearer ${params.token}`
                     }
@@ -97,8 +105,18 @@ const ResetPassword = () => {
                         duration: 4000,
                         isClosable: true,
                     });
+                } else {
+                    setSpinner(false);
+                    setDisableBtn(false)
+                    toast({
+                        title: 'Error found',
+                        description: "Please check your form and make sure your current password is correct",
+                        status: 'error',
+                        position: 'top',
+                        duration: 4000,
+                        isClosable: true,
+                    });
                 }
-
 
             } else {
                 setSpinner(false);
@@ -118,19 +136,47 @@ const ResetPassword = () => {
         }
     }
 
+    const onShowOldPassword = () => {
+        if (oldPasswordType === 'password') {
+            setOldPasswordType('text')
+        } else {
+            setOldPasswordType('password')
+        }
+    };
+
     return (
         <div>
             {
                 params.token === resetCookie ?
                     <div className='h-screen w-screen flex items-center'>
-                        <div className='mx-auto lg:h-[520px] lg:border lg:w-[420px] lg:p-[46px] lg:rounded-lg lg:shadow'>
+                        <div className='mx-auto lg:h-[650px] lg:border lg:w-[420px] lg:p-[46px] lg:rounded-lg lg:shadow'>
                             <div>
 
-                                <h1 className=" font-poppins font-bold mb-[24px] text-center text-[32px]">Reset Password</h1>
+                                <h1 className=" font-poppins font-bold mb-[24px] text-center text-[32px]">Change Password</h1>
                                 <AiOutlineKey className='text-[100px] mx-auto text-[#015D67]' />
 
-                                <PasswordForm 
-                                    label={'Password'}
+                                <p className="pb=[4px] text-[16px]  font-semibold pt-3">Current Password</p>
+                                <InputGroup className='pb-2'>
+                                    <Input
+                                        size="sm"
+                                        backgroundColor="white"
+                                        pr="4.5rem"
+                                        type={oldPasswordType}
+                                        _focusVisible={{ outline: `2px solid #87E4D8` }}
+                                        placeholder="Insert current password"
+                                        _placeholder={{ color: "grey" }}
+                                        onChange={(e) => setOldPassword(e.target.value)}
+                                        value={oldPassword}
+                                    />
+                                    <InputRightElement width="3rem" onClick={() => { setShowOldPassword(!showOldPassword); onShowOldPassword() }}>
+                                        {
+                                            showOldPassword ? <AiFillEyeInvisible className="cursor-pointer mb-[10px]" size={25} color="grey" /> : <AiFillEye className="cursor-pointer mb-[10px]" size={25} color="grey" />
+                                        }
+                                    </InputRightElement>
+                                </InputGroup>
+
+                                <PasswordForm
+                                    label={'New password'}
                                     password={password}
                                     setPass={setPassword}
                                     passType={passwordType}
@@ -161,7 +207,7 @@ const ResetPassword = () => {
                     :
                     <div className='h-screen w-screen flex items-center'>
                         <div className='mx-auto'>
-                            <p className='text-center text-[32px] text-poppins'>Oops password recovery failed</p>
+                            <p className='text-center text-[32px] text-poppins'>Oops change password request failed</p>
                             <FaUserSlash className='text-[130px] text-[#015D67] mx-auto my-[45px]' />
                             <p className='text-center  text-poppins'>This email  is invalid, try to request another email to recover your password </p>
                         </div>
@@ -172,4 +218,4 @@ const ResetPassword = () => {
 
 }
 
-export default ResetPassword;
+export default ChangePassword;

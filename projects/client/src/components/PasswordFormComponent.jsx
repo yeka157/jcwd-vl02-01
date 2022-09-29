@@ -23,12 +23,11 @@ const PasswordForm = (props) => {
     return (
         <div>
             <div className="pt-2 ">
-                <p className="pb=[4px] text-[16px]  font-semibold">Password</p>
+                <p className="pb=[4px] text-[16px]  font-semibold">{props.label}</p>
                 <InputGroup>
                     <Input
                         size="sm"
                         backgroundColor="white"
-                        className="input-form"
                         pr="4.5rem"
                         type={props.passType}
                         placeholder="6+ Characters"
@@ -57,7 +56,6 @@ const PasswordForm = (props) => {
                     <Input
                         size="sm"
                         backgroundColor="white"
-                        className="input-form rounded"
                         pr="4.5rem"
                         type={props.confirmType}
                         placeholder="Re-type password"

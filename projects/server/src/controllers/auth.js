@@ -323,5 +323,39 @@ module.exports = {
                 massage: 'Request failed'
             })
         }
+    },
+    changePassword: async (req, res) => {
+        try {
+
+            console.log(req.dataToken);
+            console.log(req.body.password);
+
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users 
+            WHERE email = ${dbConf.escape(req.dataToken.email)} AND password = ${dbConf.escape(hashPassword(req.body.oldPassword))};`);
+
+            console.log('ini data changePass', resUser);
+
+            if (resUser.length > 0 ) {
+
+                await dbQuery(`UPDATE users SET password = ${dbConf.escape(hashPassword(req.body.password))} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`)
+
+                res.status(200).send({
+                    success: true,
+                    message: 'Change password success',
+                });
+
+            } else {
+                res.status(200).send({
+                    success: false,
+                    message: 'Change password fail',
+                });
+            }
+            
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                massage: 'Request failed'
+            })
+        }
     }
 }

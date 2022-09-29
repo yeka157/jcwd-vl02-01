@@ -27,6 +27,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineMail } from "react-icons/hi";
 import ImageCover from "../components/AuthImageCoverComponent";
+import Navbar from "../components/NavbarComponent";
 
 const LoginPage = () => {
 
@@ -80,7 +81,12 @@ const LoginPage = () => {
                 dispatch(userLogin(resUser.data.dataUser));
                 setDisableBtn(false);
                 setSpinner(false);
-                navigate('/');
+
+                if (resUser.data.dataUser.role === 'CUSTOMER') {
+                    navigate('/');
+                } else {
+                    navigate('/admin');
+                }
             };
 
         } catch (error) {
@@ -133,31 +139,10 @@ const LoginPage = () => {
         }
     };
 
-    const sendRequest = async () => {
-
-        let cookie = Cookies.get('sehatToken')
-
-        console.log(cookie);
-
-        try {
-            let res = await axios.get(API_URL + '/auth/change_password_request', {
-                headers : {
-                    'Authorization' : `Bearer ${cookie}`
-                }
-            })
-
-            if (res.data.success) {
-                Cookies.set('resetToken', res.data.token, {expires : COOKIE_EXP});
-            }
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
     return (
         <div>
-            <div className='h-screen w-screen flex items-center '>
+            <Navbar/>
+            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl' >
 
                     <ImageCover
@@ -176,9 +161,8 @@ const LoginPage = () => {
                                     size="sm"
                                     _focusVisible={{ outline: '2px solid  #87E4D8' }}
                                     backgroundColor="white"
-                                    className="input-form"
                                     pr="4.5rem"
-                                    type={'email'}
+                                    type={'text'}
                                     placeholder="Username"
                                     _placeholder={{ color: "grey" }}
                                     onChange={(e) => setCredential(e.target.value)}
@@ -193,7 +177,6 @@ const LoginPage = () => {
                                     <Input
                                         size="sm"
                                         backgroundColor="white"
-                                        className="input-form"
                                         pr="4.5rem"
                                         type={passwordType}
                                         placeholder="6+ Characters"
@@ -225,11 +208,6 @@ const LoginPage = () => {
                                     Don't have account yet? <a className="text-blue-500 font-bold" href="/register">Register</a>
                                 </p>
                                 
-                                {/* Change Password Request */}
-                                <button onClick={sendRequest} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center text-white font-bold py-2 px-4 `}>
-                                    Send Request
-                                </button>
-                                
                             </div>
                         </div>
                     </div>
@@ -255,7 +233,6 @@ const LoginPage = () => {
                             <Input
                                 placeholder='Email'
                                 backgroundColor="white"
-                                className="input-form"
                                 pr="4.5rem"
                                 type='text'
                                 _placeholder={{ color: "grey" }}
