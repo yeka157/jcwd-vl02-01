@@ -1,16 +1,32 @@
-require("dotenv/config");
+// require("dotenv/config");
+const { join } = require("path");
+require('dotenv').config({ path: join(__dirname, '../.env') });
 const express = require("express");
 const cors = require("cors");
-const { join } = require("path");
 const bearerToken = require('express-bearer-token');
-
 
 const PORT = process.env.PORT || 8000;
 const app = express();
+app.use(cors());
+// app.use(
+//   cors({
+//     origin: [
+//       process.env.WHITELISTED_DOMAIN &&
+//         process.env.WHITELISTED_DOMAIN.split(","),
+//     ],
+//   })
+// );
+
 
 app.use(cors());
 app.use(express.json());
 app.use(bearerToken());
+
+// #destination file storage(image/pdf/document)
+app.use("/", express.static(__dirname + "/public"));
+
+// DB Check Connection
+
 
 //#region API ROUTES
 
@@ -27,10 +43,9 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
+
 const configRouter = require('./routers');
 app.use('/api', configRouter);
-
-// ===========================
 
 // not found
 app.use((req, res, next) => {

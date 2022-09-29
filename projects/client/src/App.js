@@ -2,6 +2,7 @@ import axios from 'axios';
 import react, { useEffect } from 'react';
 import { Route, Routes } from "react-router-dom"
 import { API_URL } from './helper';
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
@@ -47,10 +48,12 @@ function App() {
   return (
     <div>
       <Routes>
-        <Route path='/reset_password/:token' element={<ResetPassword/>}/>
+        {/* Kevin - APKG1-2 - Landing Page */}
+        <Route path='/' element={<LandingPage/>}/>
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />
+        <Route path='/reset_password/:token' element={<ResetPassword/>}/>
       </Routes>
     </div>
   );
