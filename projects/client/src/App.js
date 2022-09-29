@@ -9,6 +9,7 @@ import VerificationPage from './pages/VerificationPage';
 import Cookies from 'js-cookie';
 import { userLogin } from './slices/userSlice';
 import { useDispatch } from 'react-redux';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
 
@@ -52,6 +53,7 @@ function App() {
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />
+        <Route path='/reset_password/:token' element={<ResetPassword/>}/>
       </Routes>
     </div>
   );
