@@ -12,7 +12,11 @@ module.exports = {
         bgHijau : '#87e4d6',
         muted : '#99BDC1',
         bgHover : '#EBECF0'
-    }},
+    },
+    fontFamily: {
+        poppins : ['Poppins','sans-serif']
+      }
+    }
   },
   plugins: [],
 }
