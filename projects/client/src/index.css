@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .hoverIcons {
+        @apply cursor-pointer hover:bg-bgHover rounded-full w-[20px] md:w-auto h-[52px] md:h-auto md:p-2
+    }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Chewy&family=Comfortaa:wght@700&family=Newsreader:opsz@6..72&family=Open+Sans:wght@300&family=Oswald:wght@500&family=Roboto:ital,wght@0,100;1,100&display=swap');
 
 
@@ -90,4 +96,5 @@ code {
   position: absolute;
   width: 100vw;
 }
+
 
