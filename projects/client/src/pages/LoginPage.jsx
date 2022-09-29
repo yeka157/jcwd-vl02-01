@@ -19,13 +19,14 @@ import {
 } from '@chakra-ui/react'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { useState } from "react";
-import { API_URL } from '../helper/index';
+import { API_URL, COOKIE_EXP } from '../helper/index';
 import axios from 'axios';
 import Cookies from "js-cookie";
 import { userLogin } from '../slices/userSlice';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineMail } from "react-icons/hi";
+import ImageCover from "../components/AuthImageCoverComponent";
 
 const LoginPage = () => {
 
@@ -74,7 +75,7 @@ const LoginPage = () => {
             });
 
             if (resUser.data.success) {
-                Cookies.set('sehatToken', resUser.data.token, { expires: 2 });
+                Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
                 delete resUser.data.token
                 dispatch(userLogin(resUser.data.dataUser));
                 setDisableBtn(false);
@@ -112,7 +113,7 @@ const LoginPage = () => {
                     onClose();
                     setEmailRecoveryStatus(true);
                     setEmailRecovery('');
-                    Cookies.set('resetToken', res.data.token, { expires: 1 });
+                    Cookies.set('resetToken', res.data.token, { expires: COOKIE_EXP });
                     toast({
                         title: 'Email has been sent',
                         description: "Please check your email box",
@@ -136,14 +137,12 @@ const LoginPage = () => {
         <div>
             <div className='h-screen w-screen flex items-center '>
                 <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl' >
-                    <div className='hidden lg:block lg:w-[552px] border bg-cover bg-center rounded-l-lg' style={{ backgroundImage: `url("https://images.unsplash.com/photo-1563213126-a4273aed2016?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80")` }}>
-                        <div className='bg-gradient-to-t  h-[100%] from-[black] rounded-l-lg'>
-                            <div id="register-tagline">
-                                <h1 className='font-sans text-[24px] text-[#87E4D8] pl-[42px] pt-[44px]'>We handle it profesionally</h1>
-                                <h1 className='font-sans text-[32px] text-[#87E4D8] pl-[42px]'>it is much beyond prescriptions</h1>
-                            </div>
-                        </div>
-                    </div>
+
+                    <ImageCover
+                        imageCover={"https://images.unsplash.com/photo-1563213126-a4273aed2016?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"}
+                        tagLine1={"We handle it profesionally"}
+                        tagLine2={"it is much beyond prescriptions"}
+                    />
 
                     <div className="mx-auto p-[32px] w-screen h-screen lg:h-[660px] lg:w-[460px]">
                         <div className="mx-auto lg:px-[42px] lg:pt-[18px]">
@@ -196,7 +195,7 @@ const LoginPage = () => {
 
                             <div className="pt-[16px]">
                                 {/* Additional APKG1-4 */}
-                                <button onClick={() => { setTimeout(btnLogin, 2000); setDisableBtn(true); setSpinner(true) }} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]'}  text-white font-bold py-2 px-4 rounded-full`}>
+                                <button onClick={() => { setTimeout(btnLogin, 2000); setDisableBtn(true); setSpinner(true) }} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Login'}
                                 </button>
 

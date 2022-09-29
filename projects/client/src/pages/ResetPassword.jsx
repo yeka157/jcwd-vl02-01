@@ -2,14 +2,11 @@ import react, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { API_URL } from '../helper';
-import PasswordForm from '../components/PasswordForm';
+import PasswordForm from '../components/PasswordFormComponent';
 import { FaUserSlash } from "react-icons/fa";
 import { useParams } from 'react-router-dom';
 import { AiOutlineKey } from "react-icons/ai";
-import {
-    Spinner,
-    useToast
-} from '@chakra-ui/react'
+import { Spinner, useToast } from '@chakra-ui/react'
 
 const ResetPassword = () => {
     const [password, setPassword] = useState();
@@ -149,7 +146,7 @@ const ResetPassword = () => {
                                     setShowConfirm={setShowConfirmPassword}
                                 />
 
-                                <button onClick={() => { setSpinner(true); setDisableBtn(true); setTimeout(btnSubmit, 2000) }} disabled={disableBtn} class={`w-[312px] text-[16px] mt-[24px] bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]'}  text-white font-bold py-2 px-4 rounded-full`}>
+                                <button onClick={() => { setSpinner(true); setDisableBtn(true); setTimeout(btnSubmit, 2000) }} disabled={disableBtn} class={`w-[312px] text-[16px] mt-[24px] bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Submit'}
                                 </button>
 

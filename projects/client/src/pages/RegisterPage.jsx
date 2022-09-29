@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Input, useToast, Spinner } from '@chakra-ui/react'
-import { API_URL } from '../helper/index';
-import PasswordForm from '../components/PasswordForm';
+import { API_URL, COOKIE_EXP } from '../helper/index';
+import PasswordForm from '../components/PasswordFormComponent';
+import ImageCover from '../components/AuthImageCoverComponent';
 import axios from 'axios';
 import Cookies from 'js-cookie'
 
@@ -170,9 +171,9 @@ const RegisterPage = () => {
                 });
 
                 getData();
-                
+
                 if (register.data.success) {
-                    
+
                     setUsername('');
                     setEmail('');
                     setPhoneNumber('');
@@ -181,7 +182,7 @@ const RegisterPage = () => {
                     setSpinner(false);
                     setDisableBtn(false);
                     // additional APKG1-4
-                    Cookies.set('verifToken', register.data.token, {expires: 2});
+                    Cookies.set('verifToken', register.data.token, { expires: COOKIE_EXP });
                     toast({
                         title: 'Account created.',
                         description: "Please check email to verify your account.",
@@ -193,6 +194,7 @@ const RegisterPage = () => {
                 }
 
             } else {
+                setDisableBtn(false);
                 setSpinner(false)
                 toast({
                     title: 'Register fail',
@@ -213,15 +215,12 @@ const RegisterPage = () => {
         <div>
             <div className='h-screen w-screen flex items-center '>
                 <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl' >
-                    <div className='hidden lg:block lg:w-[552px] border bg-cover bg-center rounded-l-lg' style={{ backgroundImage: `url("https://images.unsplash.com/photo-1555633514-abcee6ab92e1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8cGhhcm1hY3l8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60")` }}>
-                        <div className='bg-gradient-to-t  h-[100%] from-[black] rounded-l-lg'>
-                            <div id="register-tagline">
-                                <h1 className='font-sans text-[24px] text-[#87E4D8] pl-[42px] pt-[44px]'>Let us help you to</h1>
-                                <h1 className='font-sans text-[32px] text-[#87E4D8] pl-[42px]'>meet your medicine needs.</h1>
-                            </div>
-                        </div>
-                    </div>
 
+                    <ImageCover
+                        imageCover={"https://images.unsplash.com/photo-1555633514-abcee6ab92e1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8cGhhcm1hY3l8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"}
+                        tagLine1={"Let us help you to"}
+                        tagLine2={"meet your medicine needs"}
+                    />
                     <div className="mx-auto p-[32px] w-screen h-screen lg:h-[660px] lg:w-[460px]">
                         <div className="mx-auto lg:px-[42px] lg:pt-[18px]">
                             <h1 className="font-poppins font-bold font-poppins text-[32px]">Register</h1>
@@ -230,7 +229,7 @@ const RegisterPage = () => {
                                 <p className="pb=[4px] text-[16px] font-semibold">Username</p>
                                 <Input
                                     size="sm"
-                                    _focusVisible={{ outline: `2px solid ${usernameIndicator != 'indicator' ? 'red' : '#87E4D8' } `}}
+                                    _focusVisible={{ outline: `2px solid ${usernameIndicator != 'indicator' ? 'red' : '#87E4D8'} ` }}
                                     backgroundColor="white"
                                     className="input-form"
                                     pr="4.5rem"
@@ -240,14 +239,14 @@ const RegisterPage = () => {
                                     onChange={(e) => setUsername(e.target.value)}
                                     value={username}
                                 />
-                                <p className={`text-[12px] pl-[2px] ${usernameIndicator != 'Username already exist' ? 'text-white' : 'text-red-500' }`}>{usernameIndicator}</p>
+                                <p className={`text-[12px] pl-[2px] ${usernameIndicator != 'Username already exist' ? 'text-white' : 'text-red-500'}`}>{usernameIndicator}</p>
                             </div>
 
                             <div className="pt-2 ">
                                 <p className="pb=[4px] text-[16px]  font-semibold">Email</p>
                                 <Input
                                     size="sm"
-                                    _focusVisible={{ outline: `2px solid ${emailIndicator != 'indicator' ? 'red' : '#87E4D8' }`}}
+                                    _focusVisible={{ outline: `2px solid ${emailIndicator != 'indicator' ? 'red' : '#87E4D8'}` }}
                                     backgroundColor="white"
                                     className="input-form"
                                     pr="4.5rem"
@@ -257,14 +256,14 @@ const RegisterPage = () => {
                                     onChange={(e) => setEmail(e.target.value)}
                                     value={email}
                                 />
-                                <p className={`text-[12px] pl-[2px] ${emailIndicator != 'Email already exist' ? 'text-white' : 'text-red-500' }`}>{emailIndicator}</p>
+                                <p className={`text-[12px] pl-[2px] ${emailIndicator != 'Email already exist' ? 'text-white' : 'text-red-500'}`}>{emailIndicator}</p>
                             </div>
 
                             <div className="pt-2">
                                 <p className="pb=[4px] text-[16px]  font-semibold">Phone Number</p>
                                 <Input
                                     size="sm"
-                                    _focusVisible={{ outline: `2px solid  ${phoneIndicator != 'indicator' ? 'red' : '#87E4D8' }` }}
+                                    _focusVisible={{ outline: `2px solid  ${phoneIndicator != 'indicator' ? 'red' : '#87E4D8'}` }}
                                     backgroundColor="white"
                                     className="input-form"
                                     pr="4.5rem"
@@ -274,30 +273,30 @@ const RegisterPage = () => {
                                     onChange={(e) => setPhoneNumber(e.target.value)}
                                     value={phoneNumber}
                                 />
-                                <p className={`text-[12px] pl-[2px] ${phoneIndicator != 'Phone number already exist' ? 'text-white' : 'text-red-500' }`}>{phoneIndicator}</p>
+                                <p className={`text-[12px] pl-[2px] ${phoneIndicator != 'Phone number already exist' ? 'text-white' : 'text-red-500'}`}>{phoneIndicator}</p>
                             </div>
 
-                            <PasswordForm 
-                                    password={password}
-                                    setPass={setPassword}
-                                    passType={passwordType}
-                                    setPassType={setPasswordType}
-                                    setShowPassword={setShowPassword}
-                                    passStrength={passwordStrength}
-                                    showPass={showPassword}
-                                    confirm={confirmPassword}
-                                    setConfirm={setConfirmPassword}
-                                    confirmType={confirmPasswordType}
-                                    setConfirmType={setConfirmPasswordType}
-                                    confirmIndicator={confirmPassIndicator}
-                                    showConfirm={showConfirmPassword}
-                                    setShowConfirm={setShowConfirmPassword}
-                                />
+                            <PasswordForm
+                                password={password}
+                                setPass={setPassword}
+                                passType={passwordType}
+                                setPassType={setPasswordType}
+                                setShowPassword={setShowPassword}
+                                passStrength={passwordStrength}
+                                showPass={showPassword}
+                                confirm={confirmPassword}
+                                setConfirm={setConfirmPassword}
+                                confirmType={confirmPasswordType}
+                                setConfirmType={setConfirmPasswordType}
+                                confirmIndicator={confirmPassIndicator}
+                                showConfirm={showConfirmPassword}
+                                setShowConfirm={setShowConfirmPassword}
+                            />
 
                             <div className="pt-[24px]">
-                            {/* Additional APKG1-4 */}
-                                <button onClick={() => {setSpinner(true); setTimeout(btnRegister, 2000); setDisableBtn(true)}} disabled={disableBtn}  class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]' }  text-white font-bold py-2 px-4 rounded-full`}>
-                                    {spinner ? <Spinner size='sm' color="grey"/> : 'Create Account' }
+                                {/* Additional APKG1-4 */}
+                                <button onClick={() => { setSpinner(true); setTimeout(btnRegister, 2000); setDisableBtn(true) }} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
+                                    {spinner ? <Spinner size='sm' color="grey" /> : 'Create Account'}
                                 </button>
 
                                 <p className="text-[12px] pl-3 pt-2">
