@@ -82,7 +82,7 @@ const LoginPage = () => {
                 setDisableBtn(false);
                 setSpinner(false);
 
-                if (resUser.data.dataUser.role === 'CUSTOMER') {
+                if (resUser.data.dataUser.role == 'CUSTOMER') {
                     navigate('/');
                 } else {
                     navigate('/admin');

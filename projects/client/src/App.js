@@ -76,7 +76,7 @@ function App() {
         }
 
         {
-          userData.role === 'ADMIN' ?
+          userData.role != 'CUSTOMER' ?
             <>
               {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
               {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
