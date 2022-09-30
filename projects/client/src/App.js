@@ -6,6 +6,8 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminCategoryPage from './pages/AdminCategoryPage';
 import Cookies from 'js-cookie';
 import { userLogin } from './slices/userSlice';
 import { useDispatch } from 'react-redux';
@@ -52,6 +54,11 @@ function App() {
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />
+
+        {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
+        {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
+        <Route path='/admin' element={<AdminDashboardPage />} />
+        <Route path='/admin/category' element={<AdminCategoryPage />} />
       </Routes>
     </div>
   );
