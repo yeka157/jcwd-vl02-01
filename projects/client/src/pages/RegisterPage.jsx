@@ -222,7 +222,7 @@ const RegisterPage = () => {
         <div>
             <Navbar />
             <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
-                <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl' >
+                <div className='flex bg-white lg:border mx-auto drop-shadow-xl' >
 
                     <ImageCover
                         imageCover={"https://images.unsplash.com/photo-1555633514-abcee6ab92e1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8cGhhcm1hY3l8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"}
