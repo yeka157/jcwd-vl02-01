@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import ResetPassword from './pages/ResetPassword';
 import { useState } from 'react';
 import ChangePassword from './pages/ChangePasswordPages';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
 
@@ -57,16 +58,35 @@ function App() {
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
-        {/* Vikri  */}
-        <Route path='/verification/:token' element={<VerificationPage />} />
-        <Route path='/register' element={<RegisterPage />} />
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/reset_password/:token' element={<ResetPassword />} />
-        <Route path='/change_password/:token' element={<ChangePassword />} />
-        {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
-        {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
-        <Route path='/admin' element={<AdminDashboardPage />} />
-        <Route path='/admin/category' element={<AdminCategoryPage />} />        
+
+        {/* Vikri APKG1- 3 s/d APKG1-13 */}
+        {
+          !userData.user_id ?
+            <>
+              <Route path='/verification/:token' element={<VerificationPage />} />
+              <Route path='/register' element={<RegisterPage />} />
+              <Route path='/login' element={<LoginPage />} />
+              <Route path='/reset_password/:token' element={<ResetPassword />} />
+              <Route path='/change_password/:token' element={<ChangePassword />} />
+            </>
+            :
+            <>
+              <Route path='/*' element={<NotFoundPage />} />
+            </>
+        }
+
+        {
+          userData.role === 'ADMIN' ?
+            <>
+              {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
+              {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
+              <Route path='/admin' element={<AdminDashboardPage />} />
+              <Route path='/admin/category' element={<AdminCategoryPage />} />
+            </>
+            :
+            <Route path='/*' element={<NotFoundPage />} />
+        }
+
       </Routes>
     </div>
   );
