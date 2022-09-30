@@ -5,6 +5,7 @@ import PasswordForm from '../components/PasswordFormComponent';
 import ImageCover from '../components/AuthImageCoverComponent';
 import axios from 'axios';
 import Cookies from 'js-cookie'
+import Navbar from "../components/NavbarComponent";
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -75,13 +76,19 @@ const RegisterPage = () => {
         let findPhoneNumber = usersData.findIndex(val => val.phone_number === phoneNumber);
 
         if (phoneNumber) {
-            if (findPhoneNumber < 0) {
-                setPhoneIndicator('indicator')
-                setPhoneValid(true)
+            if (phoneNumber.length > 9) {
+                if (findPhoneNumber < 0) {
+                    setPhoneIndicator('indicator')
+                    setPhoneValid(true)
+                } else {
+                    setPhoneIndicator('Phone number already exist');
+                    setPhoneValid(false);
+                }
             } else {
-                setPhoneIndicator('Phone number already exist');
+                setPhoneIndicator('Wrong format');
                 setPhoneValid(false);
             }
+
         } else {
             setPhoneValid(false)
         }
@@ -213,7 +220,8 @@ const RegisterPage = () => {
 
     return (
         <div>
-            <div className='h-screen w-screen flex items-center '>
+            <Navbar />
+            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl' >
 
                     <ImageCover
@@ -231,9 +239,9 @@ const RegisterPage = () => {
                                     size="sm"
                                     _focusVisible={{ outline: `2px solid ${usernameIndicator != 'indicator' ? 'red' : '#87E4D8'} ` }}
                                     backgroundColor="white"
-                                    className="input-form"
+                                    color='#24292f'
                                     pr="4.5rem"
-                                    type={'email'}
+                                    type='text'
                                     placeholder="5+ Characters"
                                     _placeholder={{ color: "grey" }}
                                     onChange={(e) => setUsername(e.target.value)}
@@ -248,7 +256,6 @@ const RegisterPage = () => {
                                     size="sm"
                                     _focusVisible={{ outline: `2px solid ${emailIndicator != 'indicator' ? 'red' : '#87E4D8'}` }}
                                     backgroundColor="white"
-                                    className="input-form"
                                     pr="4.5rem"
                                     type={'email'}
                                     placeholder="sehat@mail.com"
@@ -265,7 +272,6 @@ const RegisterPage = () => {
                                     size="sm"
                                     _focusVisible={{ outline: `2px solid  ${phoneIndicator != 'indicator' ? 'red' : '#87E4D8'}` }}
                                     backgroundColor="white"
-                                    className="input-form"
                                     pr="4.5rem"
                                     type={'number'}
                                     placeholder="+62 xxx xxx xxx"
@@ -277,6 +283,7 @@ const RegisterPage = () => {
                             </div>
 
                             <PasswordForm
+                                label={'Password'}
                                 password={password}
                                 setPass={setPassword}
                                 passType={passwordType}
@@ -295,7 +302,7 @@ const RegisterPage = () => {
 
                             <div className="pt-[24px]">
                                 {/* Additional APKG1-4 */}
-                                <button onClick={() => { setSpinner(true); setTimeout(btnRegister, 2000); setDisableBtn(true) }} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
+                                <button onClick={() => { setSpinner(true); setTimeout(btnRegister, 2000); setDisableBtn(true) }} disabled={disableBtn} class={`w-[312px] text-[16px] bg-[#015D67] hover:bg-brightness-90 text-center ${disableBtn ? '' : 'bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Create Account'}
                                 </button>
 

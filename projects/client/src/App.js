@@ -1,7 +1,7 @@
 import axios from 'axios';
 import react, { useEffect } from 'react';
 import { Route, Routes } from "react-router-dom"
-import { API_URL } from './helper';
+import { API_URL, COOKIE_EXP } from './helper';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -10,8 +10,12 @@ import Cookies from 'js-cookie';
 import { userLogin } from './slices/userSlice';
 import { useDispatch } from 'react-redux';
 import ResetPassword from './pages/ResetPassword';
+import { useState } from 'react';
+import ChangePassword from './pages/ChangePasswordPages';
 
 function App() {
+
+  const [userData, setUserData] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -24,7 +28,7 @@ function App() {
     try {
 
       let token = Cookies.get('sehatToken');
-      console.log(token);
+      console.log('ini token dari login', token);
 
       let resUser = await axios.get(API_URL + '/auth/keep_login', {
         headers: {
@@ -33,10 +37,10 @@ function App() {
       })
 
       if (resUser.data.success) {
-        Cookies.set('sehatToken', resUser.data.token, { expires: 2 });
+        Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
         delete resUser.data.token
         dispatch(userLogin(resUser.data.dataUser));
-        console.log('Keep login success');
+        setUserData(resUser.data.dataUser);
       }
 
     } catch (error) {
@@ -49,11 +53,13 @@ function App() {
     <div>
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
-        <Route path='/' element={<LandingPage/>}/>
+        <Route path='/' element={<LandingPage />} />
+        {/* Vikri  */}
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />
-        <Route path='/reset_password/:token' element={<ResetPassword/>}/>
+        <Route path='/reset_password/:token' element={<ResetPassword />} />
+        <Route path='/change_password/:token' element={<ChangePassword />} />
       </Routes>
     </div>
   );
