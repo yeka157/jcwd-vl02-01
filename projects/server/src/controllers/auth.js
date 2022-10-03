@@ -152,7 +152,7 @@ module.exports = {
         try {
             const { credential, password } = req.body;
 
-            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users 
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender from users 
             WHERE ${credential.includes('@' && '.co') ? `email = ${dbConf.escape(credential)}` : `username = ${dbConf.escape(credential)}`}
             AND password = ${dbConf.escape((hashPassword(password)))};`);
 
@@ -185,12 +185,10 @@ module.exports = {
     keepLogin: async (req, res) => {
         try {
 
-            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
             console.log('ini data keeplogin', resUser);
             if (resUser.length > 0) {
                 let token = createToken({...resUser[0]});
-
-                console.log('ini token keeplogin', token);
 
                 res.status(200).send({
                     success: true,
@@ -201,7 +199,6 @@ module.exports = {
             }
 
         } catch (error) {
-            console.log(error);
             res.status(500).send({
                 succes: false,
                 massage: "Login failed"

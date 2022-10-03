@@ -8,11 +8,14 @@ import Cookies from 'js-cookie';
 import Axios from 'axios';
 import { API_URL } from '../helper';
 import ButtonComponent from "./ButtonComponent";
+import { useNavigate } from 'react-router-dom'
 
 
 export default function Navbar() {
 
   const [data, setData] = React.useState([]);
+
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     let token = Cookies.get('sehatToken');
@@ -45,7 +48,7 @@ export default function Navbar() {
           {data.user_id ?
             <>
               <HiOutlineUser className="cursor-pointer hoverIcons" />
-              <HiOutlineShoppingBag className="cursor-pointer hoverIcons" />
+              <HiOutlineShoppingBag className="cursor-pointer hoverIcons" onClick={()=> navigate('/cart')} />
             </>
             :
             <div className="flex items-center">
