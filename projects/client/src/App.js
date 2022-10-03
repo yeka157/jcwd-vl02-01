@@ -9,6 +9,7 @@ import VerificationPage from './pages/VerificationPage';
 import Cookies from 'js-cookie';
 import { userLogin } from './slices/userSlice';
 import { useDispatch } from 'react-redux';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
 
@@ -49,6 +50,8 @@ function App() {
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage/>}/>
+        {/* Kevin - APKG1-13 - Profile Page */}
+        <Route path='/profile' element={<ProfilePage/>}/>
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/login' element={<LoginPage />} />

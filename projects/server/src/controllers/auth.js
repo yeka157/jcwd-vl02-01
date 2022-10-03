@@ -170,7 +170,7 @@ module.exports = {
     keepLogin: async (req, res) => {
         try {
 
-            let resUser = await (`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
 
             if (resUser.length > 0) {
                 let token = createToken({...resUser[0]});
