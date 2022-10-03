@@ -15,7 +15,6 @@ import ResetPassword from './pages/ResetPassword';
 import { useState } from 'react';
 import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
-import CartPage from './pages/CartPage';
 
 function App() {
 
@@ -61,7 +60,6 @@ function App() {
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
-        <Route path='/cart' element={<CartPage />} />
 
         {/* Vikri APKG1- 3 s/d APKG1-13 */}
         {
