@@ -2,39 +2,50 @@ const { dbConf, dbQuery } = require("../config/db");
 const fs = require('fs');
 
 module.exports = {
-    updateProfile : async (req,res) => {
+    updateProfile: async (req, res) => {
         try {
-            let data = [];
-            let dataQuery = [];
-            if (fullName) {
-                data.push(`name = ${dbConf.escape(req.body.fullName)}`);
+            let data = {};
+            if (req.body.fullName) {
+                data = {...data,'name' : req.body.name};
+                // await dbQuery(`UPDATE users SET name = ${dbConf.escape(req.body.fullName)} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`);
             }
-            if (email) {
-                data.push(`email = ${dbConf.escape(req.body.email)}`);
+            if (req.body.email) {
+                data = {...data, 'email' : req.body.email};
             }
-            if (birthDate) {
-                data.push(`birthdate = ${dbConf.escape(req.body.birthDate)}`);
+            if (req.body.birthdate) {
+                data = {...data, 'birthdate' : req.body.birthdate};
             }
-            if (gender) {
-                data.push(`gender = ${dbConf.escape(req.body.gender)}`);
+            if (req.body.gender) {
+                data = {...data, 'gender' : req.body.gender};
             }
-            let update = await dbQuery(`UPDATE users set ${data.join(', ')}`);
-            res.status(200).send({success : true})
+            let prop = Object.keys(data);
+            console.log(prop);
+            let value = Object.values(data);
+            console.log(value);
+            let dataQuery = prop.map((val,idx) => {
+                return `${prop[idx]} = ${dbConf.escape(value[idx])}`
+            }).join(', ');
+            console.log(dataQuery);
+            let update = await dbQuery(`UPDATE users set ${dataQuery} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`);
+            console.log(update);
+            if (update.affectedRows) {
+                res.status(200).send({ success: true });
+            }
         } catch (error) {
             res.status(500).send(error);
             console.log(error);
         }
     },
-    updatePicture : async(req,res) => {
+    updatePicture: async (req, res) => {
 
     },
-    addAddress : async (req,res) => {
+    addAddress: async (req, res) => {
 
     },
-    editAddress : async(req,res) => {
+    editAddress: async (req, res) => {
 
     },
-    deleteAddress : async(req,res) => {
+    deleteAddress: async (req, res) => {
 
     }
 }
