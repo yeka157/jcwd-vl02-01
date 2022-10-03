@@ -186,7 +186,6 @@ module.exports = {
         try {
 
             let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
-            console.log('ini data keeplogin', resUser);
 
             if (resUser.length > 0) {
                 let token = createToken({...resUser[0]});

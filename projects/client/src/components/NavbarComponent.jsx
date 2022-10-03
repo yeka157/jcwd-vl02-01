@@ -43,7 +43,7 @@ export default function Navbar() {
             <HiOutlineMenuAlt4 className="cursor-pointer hoverIcons md:hidden"/>
         </div>
         <div className="flex justify-center">
-          <h1 className="text-2xl cursor-pointer font-bold" onClick={() => {navigate('/')}}>SEHATBOS.COM</h1>
+          <h1 className="text-2xl cursor-pointer font-bold tracking-widest" onClick={() => {navigate('/')}}>SEHATBOS.COM</h1>
         </div>
         <div className="flex items-center space-x-4 justify-end md:w-[200px]">
           {data.user_id ?
@@ -53,8 +53,8 @@ export default function Navbar() {
             </>
             :
             <div className="flex items-center">
-              <ButtonComponent text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='1.5' brightness='95' />
-              <ButtonComponent text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='1.5' brightness='95' />
+              <ButtonComponent text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
+              <ButtonComponent text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
 
             </div>
           }

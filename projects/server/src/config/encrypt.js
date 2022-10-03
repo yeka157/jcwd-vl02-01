@@ -14,7 +14,7 @@ module.exports = {
         console.log('token', req.token);
         jwt.verify(req.token, 'posting', (err, decode) => {
             if (err) {
-                console.log(err);
+                console.log('ini errornya', err);
                 return res.status(401).send({
                     message: 'Authenticate error ❌'
                 })
