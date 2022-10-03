@@ -1,6 +1,6 @@
 import React from 'react';
 import ButtonComponent from './ButtonComponent';
-import { Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Table, TableContainer, Tbody, Th, Thead, Tr, useDisclosure } from '@chakra-ui/react';
+import { Button, FormControl, FormLabel, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from '@chakra-ui/react';
 import AddressTableComponent from './AddressTableComponent';
 
 export default function AddressComponent() {
