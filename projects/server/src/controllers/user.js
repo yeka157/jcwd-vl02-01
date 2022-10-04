@@ -26,7 +26,7 @@ module.exports = {
                 return `${prop[idx]} = ${dbConf.escape(value[idx])}`
             }).join(', ');
             console.log(dataQuery);
-            let update = await dbQuery(`UPDATE users set ${dataQuery} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`);
+            let update = await dbQuery(`UPDATE users set ${dataQuery} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
             console.log(update);
             if (update.affectedRows) {
                 res.status(200).send({ success: true });
@@ -37,7 +37,19 @@ module.exports = {
         }
     },
     updatePicture: async (req, res) => {
-
+        try {
+            console.log(req.files);
+            let update = await dbQuery(`UPDATE users set profile_picture = ${dbConf.escape(`/imgProfile/${req.files[0].filename}`)};`);
+            if (update.affectedRows) {
+                res.status(200).send({success : true});
+            } else {
+                res.status(400).send({success : false});
+            }
+        } catch (error) {
+            fs.unlinkSync(`../public/imgProfile/${req.files[0].filename}`)
+            console.log(error);
+            res.status(500).send(error);
+        }
     },
     addAddress: async (req, res) => {
 

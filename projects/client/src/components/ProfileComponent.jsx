@@ -39,14 +39,35 @@ export default function ProfileComponent(props) {
   const [date, setDate] = React.useState('');
 
   const addImage = (e) => {
-    setImages(e.target.files[0]);
-    const reader = new FileReader();
-    if (e.target.files[0]) {
-      reader.readAsDataURL(e.target.files[0]);
+    console.log(e.target.files);
+    if (e.target.files[0].type ==='image/png' || e.target.files[0].type === "image/jpeg" || e.target.files[0].type === "image/jpg" || e.target.files[0].type === 'image/gif') {
+      if (e.target.files[0].size > 1048576) {
+        toast({
+          title : 'File uploaded is too big',
+          description : 'Max size is 1 MB',
+          status : 'error',
+          duration : 3000,
+          isClosable : true
+        })
+      } else {
+        setImages(e.target.files[0]);
+        const reader = new FileReader();
+        if (e.target.files[0]) {
+          reader.readAsDataURL(e.target.files[0]);
+        }
+        reader.onload = (readerEvent) => {
+          setSelectedImg(readerEvent.target.result);
+        };
+      }
+    } else {
+      toast({
+        title : 'Wrong file format',
+        description : 'Your file format is not supported',
+        status : 'error',
+        duration : 3000,
+        isClosable : true
+      })
     }
-    reader.onload = (readerEvent) => {
-      setSelectedImg(readerEvent.target.result);
-    };
   };
 
   const btnSave = async () => {
@@ -153,13 +174,38 @@ export default function ProfileComponent(props) {
       console.log(error);
     }
   }
+
+  const btnSaveImage = async () => {
+    try {
+      let token = Cookies.get('sehatToken');
+      let formData = new FormData();
+      formData.append('images', images);
+      let res = await Axios.patch(API_URL + '/user/update_picture', formData, {
+        headers : {
+          'Authorization' : `Bearer ${token}`
+        }
+      });
+      if (res.data.success) {
+        toast({
+          title : 'Profile Picture Updated',
+          status : 'success',
+          duration : 3000,
+          isClosable : true
+        })
+        setOpen(false);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <div className="mx-32 my-16 w-full">
       <div className="flex justify-between space-x-10">
         <div className="flex space-x-10 grow">
           <div className="rounded-full border w-32 h-32 flex items-center justify-center border-black">
             <img
-              src="./default.jpg"
+              src={props.picture ? 'http://localhost:8000' + props.picture : './default.jpg'}
               alt=""
               className="p-1 cursor-pointer hover:brightness-90 rounded-full"
               onClick={() => {
@@ -192,7 +238,7 @@ export default function ProfileComponent(props) {
                       {selectedImg && (
                         <div className="relative">
                           <HiXCircle
-                            className="h-10 border m-1 border-white text-black absolute cursor-pointer font-bold rounded-full"
+                            className="h-6 w-auto border m-1 p-1 border-white text-black absolute cursor-pointer font-bold rounded-full"
                             onClick={() => {
                               setSelectedImg(null);
                               setImages("");
@@ -209,7 +255,7 @@ export default function ProfileComponent(props) {
                   </FormControl>
                 </ModalBody>
                 <ModalFooter className="space-x-3">
-                  <Button colorScheme="teal">Save</Button>
+                  <Button colorScheme="teal" onClick={btnSaveImage}>Save</Button>
                   <Button
                     onClick={() => {
                       setOpen(false);

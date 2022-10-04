@@ -7,7 +7,7 @@ export default function LandingPage() {
   return (
     <div>
         <div className='bg-bgWhite'>
-            <NavbarComponent/>
+            {/* <NavbarComponent/> */}
             <LandingComponent/>
         </div>
         <MenuComponent/>

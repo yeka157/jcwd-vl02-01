@@ -3,16 +3,22 @@ import {
   HiOutlineMenuAlt4,
   HiOutlineUser,
   HiOutlineShoppingBag,
+  HiOutlineShoppingCart,
 } from "react-icons/hi";
+import { RiLogoutBoxLine } from 'react-icons/ri';
+import { CgProfile } from 'react-icons/cg';
 import Cookies from 'js-cookie';
 import Axios from 'axios';
 import { API_URL } from '../helper';
 import ButtonComponent from "./ButtonComponent";
 import { useNavigate } from 'react-router-dom';
-export default function NavbarComponent() {
+import { Menu, MenuButton, MenuItem, MenuList, Button, IconButton } from '@chakra-ui/react';
+
+export default function NavbarComponent(props) {
 
   const [data, setData] = React.useState([]);
   const navigate = useNavigate();
+  const  pathName = window.location.pathname;
 
   React.useEffect(() => {
     let token = Cookies.get('sehatToken');
@@ -32,7 +38,7 @@ export default function NavbarComponent() {
   }, [])
 
   return (
-    <div className="border-b border-slate-400">
+    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart' ? '' : 'hidden'}`}>
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
             {/* dropdown menu untuk ukuran hp */}
@@ -44,8 +50,17 @@ export default function NavbarComponent() {
         <div className="flex items-center space-x-4 justify-end md:w-[200px]">
           {data.user_id ?
             <>
-              <HiOutlineUser className="cursor-pointer hoverIcons" />
-              <HiOutlineShoppingBag className="cursor-pointer hoverIcons" />
+            <Menu>
+              <MenuButton as={IconButton} icon={<HiOutlineUser className="cursor-pointer hoverIcons text-black" />} variant='link' px={0} py={0} borderRadius='full'>
+                
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={()=> {navigate('/profile')}} icon={<CgProfile/>}>Profile</MenuItem>
+                <MenuItem icon={<HiOutlineShoppingCart/>}>Cart</MenuItem>
+                <MenuItem icon={<RiLogoutBoxLine/>}>Logout</MenuItem>
+              </MenuList>
+            </Menu>
+              <HiOutlineShoppingBag className="cursor-pointer hoverIcons text-black" />
             </>
             :
             <div className="flex items-center">
