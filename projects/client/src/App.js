@@ -15,6 +15,7 @@ import ProfilePage from './pages/ProfilePage';
 import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
+import NavbarComponent from './components/NavbarComponent';
 import CartPage from './pages/CartPage';
 
 function App() {
@@ -58,6 +59,7 @@ function App() {
 
   return (
     <div>
+      <NavbarComponent class='bg-bgWhite'/>
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
