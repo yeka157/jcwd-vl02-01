@@ -16,6 +16,7 @@ import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
 import NavbarComponent from './components/NavbarComponent';
+import CartPage from './pages/CartPage';
 
 function App() {
 
@@ -25,34 +26,36 @@ function App() {
 
   useEffect(() => {
     KeepLogin();
-
   }, [])
 
   const KeepLogin = async () => {
     try {
 
       let token = Cookies.get('sehatToken');
-      console.log('ini token dari login', token);
 
-      let resUser = await axios.get(API_URL + '/auth/keep_login', {
-        headers: {
-          'Authorization': `Bearer ${token}`
+      if (token) {
+        let resUser = await axios.get(API_URL + '/auth/keep_login', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        if (resUser.data.success) {
+          Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
+          delete resUser.data.token
+          dispatch(userLogin(resUser.data.dataUser));
+          setUserData(resUser.data.dataUser);
+          console.log(resUser.data.dataUser);
         }
-      })
-
-      if (resUser.data.success) {
-        Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
-        delete resUser.data.token
-        dispatch(userLogin(resUser.data.dataUser));
-        setUserData(resUser.data.dataUser);
       }
 
+
+
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
 
   }
-
 
   return (
     <div>
@@ -60,6 +63,7 @@ function App() {
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
+        <Route path='/cart' element={<CartPage />} />
 
         {/* Vikri APKG1- 3 s/d APKG1-13 */}
         {

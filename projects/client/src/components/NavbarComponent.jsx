@@ -16,9 +16,12 @@ import { Menu, MenuButton, MenuItem, MenuList, Button, IconButton } from '@chakr
 
 export default function NavbarComponent(props) {
 
+
   const [data, setData] = React.useState([]);
   const navigate = useNavigate();
   const  pathName = window.location.pathname;
+
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     let token = Cookies.get('sehatToken');
@@ -61,6 +64,9 @@ export default function NavbarComponent(props) {
               </MenuList>
             </Menu>
               <HiOutlineShoppingBag className="cursor-pointer hoverIcons text-black" />
+              <HiOutlineUser className="cursor-pointer hoverIcons" />
+              <HiOutlineShoppingBag className="cursor-pointer hoverIcons" onClick={()=> navigate('/cart')} />
+
             </>
             :
             <div className="flex items-center">
