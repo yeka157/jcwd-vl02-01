@@ -1,5 +1,5 @@
 import axios from 'axios';
-import react, { useEffect } from 'react';
+import react, { useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom"
 import { API_URL, COOKIE_EXP } from './helper';
 import LandingPage from './pages/LandingPage';
@@ -11,8 +11,8 @@ import AdminCategoryPage from './pages/AdminCategoryPage';
 import Cookies from 'js-cookie';
 import { userLogin } from './slices/userSlice';
 import { useDispatch } from 'react-redux';
+import ProfilePage from './pages/ProfilePage';
 import ResetPassword from './pages/ResetPassword';
-import { useState } from 'react';
 import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
 import CartPage from './pages/CartPage';
@@ -61,21 +61,23 @@ function App() {
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
-        <Route path='/cart' element={<CartPage />} />
-
         {/* Vikri APKG1- 3 s/d APKG1-13 */}
+        <Route path='/verification/:token' element={<VerificationPage />} />
+        <Route path='/reset_password/:token' element={<ResetPassword />} />
+        <Route path='/change_password/:token' element={<ChangePassword />} />
+
         {
-          !userData.user_id ?
+          userData.user_id ?
             <>
-              <Route path='/verification/:token' element={<VerificationPage />} />
-              <Route path='/register' element={<RegisterPage />} />
-              <Route path='/login' element={<LoginPage />} />
-              <Route path='/reset_password/:token' element={<ResetPassword />} />
-              <Route path='/change_password/:token' element={<ChangePassword />} />
+              <Route path='/cart' element={<CartPage />} />
+              <Route path='/*' element={<NotFoundPage />} />
+              {/* Kevin - APKG1-13 - Profile Page */}
+              <Route path='/profile' element={<ProfilePage />} />
             </>
             :
             <>
-              <Route path='/*' element={<NotFoundPage />} />
+              <Route path='/register' element={<RegisterPage />} />
+              <Route path='/login' element={<LoginPage />} />
             </>
         }
 
@@ -90,7 +92,6 @@ function App() {
             :
             <Route path='/*' element={<NotFoundPage />} />
         }
-
       </Routes>
     </div>
   );

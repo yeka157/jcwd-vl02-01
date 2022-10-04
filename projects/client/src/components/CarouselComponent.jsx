@@ -1,13 +1,9 @@
 import React from "react";
 import ButtonComponent from "./ButtonComponent";
 
-export default function Carousel(props) {
+export default function CarouselComponent(props) {
 
-  const [data, setData] = React.useState([]);
 
-  React.useEffect(() => {
-
-  })
 
 
   return (
@@ -20,14 +16,8 @@ export default function Carousel(props) {
         <h6 className="text-sm text-muted font-light">{props.category}</h6>
       </div>
       <div className="pt-2 w-full flex items-center">
-        {/* <button className="grow border-y border-l py-1.5 border-black px-1 hover:brightness-95 bg-white font-medium h-[45px] sm:h-auto text-xs lg:text-base lg:px-4 lg:py-2.5 md:py-3.5 sm:py-3.5">
-          ADD TO CART
-        </button> */}
-        <ButtonComponent text='ADD TO CART' class='grow border-y border-l border-black bg-white font-medium h-[45px] sm:h-auto text-xs lg:text-base lg:px-4 lg:py-2.5 md:py-3.5 sm:py-3.5' brightness='95' py='1.5' px='1'/>
-        {/* <button className="border py-3 sm:text-sm border-black px-2.5 bg-white cursor-default h-[45px] sm:h-auto text-xs">
-          {props.price}
-        </button> */}
-        <ButtonComponent text={props.price} class='border sm:text-sm border-black bg-white cursor-default h-[45px] sm:h-auto text-xs' px='2.5' py='3'/>
+        <ButtonComponent text='ADD TO CART' class='grow border-y border-l border-black bg-white font-medium h-[45px] sm:h-auto text-xs lg:text-base lg:px-4 lg:py-2.5 md:py-3.5 sm:py-3.5' brightness='90' py='1.5' px='1'/>
+        <ButtonComponent text={props.price} class='border sm:text-sm border-black bg-white cursor-default h-[45px] sm:h-auto text-xs' px='4' py='3'/>
       </div>
     </div>
   );
