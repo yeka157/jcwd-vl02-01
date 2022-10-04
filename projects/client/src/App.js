@@ -15,6 +15,7 @@ import ProfilePage from './pages/ProfilePage';
 import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
+import NavbarComponent from './components/NavbarComponent';
 import CartPage from './pages/CartPage';
 
 function App() {
@@ -44,20 +45,20 @@ function App() {
           delete resUser.data.token
           dispatch(userLogin(resUser.data.dataUser));
           setUserData(resUser.data.dataUser);
-          console.log(resUser.data.dataUser);
+          console.log('data login');
         }
       }
 
-
-
     } catch (error) {
-      // console.log(error);
+      console.log(error);
     }
 
-  }
+  };
+
 
   return (
     <div>
+      <NavbarComponent class='bg-bgWhite' function={KeepLogin} />
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
@@ -65,14 +66,14 @@ function App() {
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/reset_password/:token' element={<ResetPassword />} />
         <Route path='/change_password/:token' element={<ChangePassword />} />
+        {/* Kevin - APKG1-13 - Profile Page */}
+        <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/cart' element={<CartPage />} />
 
         {
-          userData.user_id ?
+          Cookies.get('sehatToken') ?
             <>
-              <Route path='/cart' element={<CartPage />} />
               <Route path='/*' element={<NotFoundPage />} />
-              {/* Kevin - APKG1-13 - Profile Page */}
-              <Route path='/profile' element={<ProfilePage />} />
             </>
             :
             <>

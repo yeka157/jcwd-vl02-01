@@ -25,7 +25,6 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineMail } from "react-icons/hi";
 import ImageCover from "../components/AuthImageCoverComponent";
-import Navbar from "../components/NavbarComponent";
 
 const LoginPage = () => {
 
@@ -80,10 +79,11 @@ const LoginPage = () => {
                 setDisableBtn(false);
                 setSpinner(false);
 
+
                 if (resUser.data.dataUser.role == 'CUSTOMER') {
-                    navigate('/');
+                    navigate('/', { replace: true });
                 } else {
-                    navigate('/admin');
+                    navigate('/admin', { replace: true });
                 }
             } else {
                 setDisableBtn(false);
@@ -150,8 +150,7 @@ const LoginPage = () => {
 
     return (
         <div>
-            <Navbar />
-            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
+            <div className='h-screen w-screen lg:w-3/4 lg:h-[640px] mx-auto lg:mt-[64px] flex items-center'>
                 <div className='flex bg-white lg:border mx-auto drop-shadow-xl' >
 
                     <ImageCover

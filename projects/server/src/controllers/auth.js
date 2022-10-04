@@ -184,11 +184,10 @@ module.exports = {
     },
     keepLogin: async (req, res) => {
         try {
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender, profile_picture from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
 
-            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, profile_picture, birthdate, gender from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
-            console.log('ini data keeplogin', resUser);
             if (resUser.length > 0) {
-                let token = createToken({...resUser[0]});
+                let token = createToken({ ...resUser[0] });
 
                 res.status(200).send({
                     success: true,
@@ -332,7 +331,7 @@ module.exports = {
 
             console.log('ini data changePass', resUser);
 
-            if (resUser.length > 0 ) {
+            if (resUser.length > 0) {
 
                 await dbQuery(`UPDATE users SET password = ${dbConf.escape(hashPassword(req.body.password))} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`)
 
@@ -347,12 +346,33 @@ module.exports = {
                     message: 'Change password fail',
                 });
             }
-            
+
         } catch (error) {
             res.status(500).send({
                 success: false,
                 massage: 'Request failed'
             })
+        }
+    },
+    logout: async (req, res) => {
+        try {  
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender, profile_picture from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
+
+            console.log('ini resUser', resUser);
+
+            if (resUser.length > 0 ) {
+                res.status(200).send({
+                    success: true,
+                    message: 'Logout success'
+                });
+            }
+            
+        } catch (error) {
+            console.log(eorr);
+            res.status(500).send({
+                success: false,
+                message: 'Logout fail',
+            });
         }
     }
 };
