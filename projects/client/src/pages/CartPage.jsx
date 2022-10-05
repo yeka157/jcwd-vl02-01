@@ -8,7 +8,6 @@ const CartPage = (props) => {
 
     return (
         <div className='bg-bgWhite'>
-            <Navbar />
             <div className='h-screen py-5 px-5 bg-white'>
                 <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
                     <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>

@@ -220,7 +220,6 @@ const RegisterPage = () => {
 
     return (
         <div>
-            <Navbar />
             <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
                 <div className='flex bg-white lg:border mx-auto drop-shadow-xl' >
 

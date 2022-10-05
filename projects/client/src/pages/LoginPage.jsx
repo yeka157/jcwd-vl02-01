@@ -8,12 +8,10 @@ import {
     Modal,
     ModalOverlay,
     ModalContent,
-    ModalHeader,
     ModalFooter,
     ModalBody,
     ModalCloseButton,
     FormControl,
-    FormLabel,
     useDisclosure,
     useToast
 } from '@chakra-ui/react'
@@ -27,7 +25,6 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineMail } from "react-icons/hi";
 import ImageCover from "../components/AuthImageCoverComponent";
-import Navbar from "../components/NavbarComponent";
 
 const LoginPage = () => {
 
@@ -82,12 +79,24 @@ const LoginPage = () => {
                 setDisableBtn(false);
                 setSpinner(false);
 
+
                 if (resUser.data.dataUser.role == 'CUSTOMER') {
-                    navigate('/');
+                    navigate('/', { replace: true });
                 } else {
-                    navigate('/admin');
+                    navigate('/admin', { replace: true });
                 }
-            };
+            } else {
+                setDisableBtn(false);
+                setSpinner(false);
+                toast({
+                    title: 'Login failed',
+                    description: "Please check your email or username and password ",
+                    status: 'error',
+                    position: 'top',
+                    duration: 4000,
+                    isClosable: true,
+                })
+            }
 
         } catch (error) {
             setDisableBtn(false);
@@ -141,7 +150,7 @@ const LoginPage = () => {
 
     return (
         <div>
-            <Navbar/>
+            
             <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
                 <div className='flex bg-white lg:border mx-auto drop-shadow-xl' >
 
@@ -207,7 +216,7 @@ const LoginPage = () => {
                                 <p className="text-[12px] pt-2">
                                     Don't have account yet? <a className="text-blue-500 font-bold" href="/register">Register</a>
                                 </p>
-                                
+
                             </div>
                         </div>
                     </div>

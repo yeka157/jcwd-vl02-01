@@ -18,9 +18,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { HiXCircle } from "react-icons/hi";
-import {API_URL} from "../helper";
+import { API_URL, COOKIE_EXP } from "../helper";
 import Axios from "axios";
 import Cookies from "js-cookie";
+import axios from "axios";
 
 export default function ProfileComponent(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -40,14 +41,14 @@ export default function ProfileComponent(props) {
 
   const addImage = (e) => {
     console.log(e.target.files);
-    if (e.target.files[0].type ==='image/png' || e.target.files[0].type === "image/jpeg" || e.target.files[0].type === "image/jpg" || e.target.files[0].type === 'image/gif') {
+    if (e.target.files[0].type === 'image/png' || e.target.files[0].type === "image/jpeg" || e.target.files[0].type === "image/jpg" || e.target.files[0].type === 'image/gif') {
       if (e.target.files[0].size > 1048576) {
         toast({
-          title : 'File uploaded is too big',
-          description : 'Max size is 1 MB',
-          status : 'error',
-          duration : 3000,
-          isClosable : true
+          title: 'File uploaded is too big',
+          description: 'Max size is 1 MB',
+          status: 'error',
+          duration: 3000,
+          isClosable: true
         })
       } else {
         setImages(e.target.files[0]);
@@ -61,11 +62,11 @@ export default function ProfileComponent(props) {
       }
     } else {
       toast({
-        title : 'Wrong file format',
-        description : 'Your file format is not supported',
-        status : 'error',
-        duration : 3000,
-        isClosable : true
+        title: 'Wrong file format',
+        description: 'Your file format is not supported',
+        status: 'error',
+        duration: 3000,
+        isClosable: true
       })
     }
   };
@@ -81,8 +82,8 @@ export default function ProfileComponent(props) {
             birthDate,
             gender,
           }, {
-            headers : {
-              'Authorization' : `Bearer ${token}`
+            headers: {
+              'Authorization': `Bearer ${token}`
             }
           });
           if (res.data.success) {
@@ -104,13 +105,13 @@ export default function ProfileComponent(props) {
         }
       } else {
         let res = await Axios.patch(API_URL + "/user/update_profile", {
-          'name' : fullName,
+          'name': fullName,
           email,
-          'birthdate' : birthDate,
+          'birthdate': birthDate,
           gender,
         }, {
-          headers : {
-            'Authorization' : `Bearer ${token}`
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
         });
         if (res.data.success) {
@@ -158,10 +159,10 @@ export default function ProfileComponent(props) {
     if (props.birth) {
       const date = new Date(props.birth);
       setDate(date.toLocaleDateString("en-GB", {
-        weekday : 'long',
-        day : 'numeric',
-        month : 'long',
-        year : 'numeric'
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
       }))
     }
   }, []);
@@ -175,22 +176,80 @@ export default function ProfileComponent(props) {
     }
   }
 
+  // Vikri - APKG1-11: Adding veriification and change password request
+
+  const btnVerifyRequest = async () => {
+    try {
+      let cookie = Cookies.get('sehatToken')
+
+      let res = await axios.get(API_URL + '/auth//send_email_verify', {
+        headers: {
+          'Authorization': `Bearer ${cookie}`
+        }
+      })
+
+      if (res.data.success) {
+        Cookies.set('verifToken', res.data.token, { expires: COOKIE_EXP });
+        toast({
+          title: 'Account verification has been sent',
+          description: "Please check your email",
+          position: 'top',
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const btnChangePasswordRequest = async () => {
+    try {
+      let cookie = Cookies.get('sehatToken')
+
+      let res = await axios.get(API_URL + '/auth//change_password_request', {
+        headers: {
+          'Authorization': `Bearer ${cookie}`
+        }
+      })
+
+      if (res.data.success) {
+        Cookies.set('resetToken', res.data.token, { expires: COOKIE_EXP });
+        toast({
+          title: 'Change password request has been sent',
+          description: "Please check your email",
+          position: 'top',
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+
   const btnSaveImage = async () => {
     try {
       let token = Cookies.get('sehatToken');
       let formData = new FormData();
       formData.append('images', images);
       let res = await Axios.patch(API_URL + '/user/update_picture', formData, {
-        headers : {
-          'Authorization' : `Bearer ${token}`
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
       });
       if (res.data.success) {
         toast({
-          title : 'Profile Picture Updated',
-          status : 'success',
-          duration : 3000,
-          isClosable : true
+          title: 'Profile Picture Updated',
+          status: 'success',
+          duration: 3000,
+          isClosable: true
         })
         setOpen(false);
       }
@@ -297,6 +356,7 @@ export default function ProfileComponent(props) {
                 px="8"
                 brightness="90"
                 class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium"
+                onclick={btnVerifyRequest}
               />
             )}
             <ButtonComponent
@@ -367,6 +427,7 @@ export default function ProfileComponent(props) {
               px="8"
               brightness="90"
               class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium"
+              onclick={btnChangePasswordRequest}
             />
           </div>
           <div className="py-4 space-y-7">
@@ -389,7 +450,7 @@ export default function ProfileComponent(props) {
           </div>
         </div>
       </div>
-      <AddressComponent user={props.iduser}/>
+      <AddressComponent user={props.iduser} />
     </div>
   );
 }
