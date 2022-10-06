@@ -233,7 +233,6 @@ export default function ProfileComponent(props) {
   };
 
 
-
   const btnSaveImage = async () => {
     try {
       let token = Cookies.get('sehatToken');

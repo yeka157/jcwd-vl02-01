@@ -48,7 +48,7 @@ export default function NavbarComponent(props) {
   }
 
   return (
-    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart' || pathName === '/login' || pathName === '/register' ? '' : 'hidden'}`}>
+    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart'  || pathName === '/checkout'|| pathName === '/login' || pathName === '/register' ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
           {/* dropdown menu untuk ukuran hp */}
@@ -77,7 +77,6 @@ export default function NavbarComponent(props) {
             <div className="flex items-center">
               <ButtonComponent text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/register')} />
               <ButtonComponent text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/login')} />
-
             </div>
           }
         </div>
