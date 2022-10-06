@@ -64,7 +64,7 @@ const PrescriptionPage = (props) => {
                 toast({
                     title: 'File uploaded is too big',
                     description: 'Max size is 1 MB',
-                    position:'top',
+                    position: 'top',
                     status: 'error',
                     duration: 3000,
                     isClosable: true
@@ -84,7 +84,7 @@ const PrescriptionPage = (props) => {
             toast({
                 title: 'Wrong file format',
                 description: 'Your file format is not supported',
-                position:'top',
+                position: 'top',
                 status: 'error',
                 duration: 3000,
                 isClosable: true
@@ -125,7 +125,7 @@ const PrescriptionPage = (props) => {
                         {/* Prescription */}
 
                         <div className='lg:border lg:ronded mt-5 lg:flex lg:justify-between' >
-                            <div className='p-5 w-1/2'>
+                            <div className='p-5 w-screen lg:w-1/2'>
                                 <div className='mx-auto border h-screen lg:h-[400px] lg:flex items-center'>
                                     {
                                         prescriptionImage ?
@@ -155,14 +155,19 @@ const PrescriptionPage = (props) => {
 
                             </div>
 
-                            <div className='p-5 w-1/2'>
+                            <div className='p-5 w-1/2 hidden lg:block'>
                                 <p className='text-poppins text-[24px] text-hijauBtn mb-1 font-bold'>Customer guide:</p>
-                                <p className='text-poppins py-1'>1. Upload prescription image</p>
-                                <p className='text-poppins py-1'>2. Wait for admin approval</p>
-                                <p className='text-poppins py-1'>3. Upload your payment proof</p>
-                                <p className='text-poppins py-1'>4. Wait for admin approval for your payment proof</p>
-                                <p className='text-poppins py-1'>5. Wait for your order to be delivered</p>
-                                <p className='text-poppins py-1'>6. Confirm your delivery when order is delivered</p>
+                                <ul className='list-disc'>
+                                    <li className='text-poppins py-1'>Choose your address</li>
+                                    <li className='text-poppins py-1'>Choose delivery option</li>
+                                    <li className='text-poppins py-1'>Upload prescription image</li>
+                                    <li className='text-poppins py-1'>Wait for admin approval</li>
+                                    <li className='text-poppins py-1'>Upload your payment proof</li>
+                                    <li className='text-poppins py-1'>Wait for admin approval for your payment proof</li>
+                                    <li className='text-poppins py-1'>Wait for your order to be delivered</li>
+                                    <li className='text-poppins py-1'>Confirm your delivery when order is delivered</li>
+                                </ul>
+
                             </div>
                         </div>
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { MdLocationOn } from "react-icons/md";
-import { Select } from '@chakra-ui/react';
+import { Select, useToast } from '@chakra-ui/react';
 import CheckoutComponent from '../components/CheckoutComponent';
 import { useState } from 'react';
 import { API_URL } from '../helper';
@@ -17,6 +17,7 @@ const CheckoutPage = (props) => {
     const [selectedDelivery, setSelectedDelivery] = useState('default-0');
 
     const user = useSelector(getUser);
+    const toast = useToast();
 
     let getData = async () => {
         try {
@@ -47,26 +48,26 @@ const CheckoutPage = (props) => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resDelivery = await axios.get(API_URL + '/rajaongkir/get_delivery_option' , {
+            let resDelivery = await axios.get(API_URL + '/rajaongkir/get_delivery_option', {
                 headers: {
-                    'Authorization' : `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`
                 }
             })
 
             if (resDelivery.data.success) {
                 setDeliveryOption(resDelivery.data.option)
             }
-            
+
         } catch (error) {
             console.log(error);
         }
     };
 
     const printOption = () => {
-        
-        let print =  deliveryOption.map((val, idx) => {
+
+        let print = deliveryOption.map((val, idx) => {
             return (
-                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}` }>{`${val.name} ${val.service} - Rp. ${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
+                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}`}>{`${val.name} ${val.service} - Rp. ${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
             )
         })
 
@@ -90,10 +91,10 @@ const CheckoutPage = (props) => {
     const btnOrder = () => {
         if (selectedDelivery != 'default-0') {
 
-            let date = new Date ()
-            
+            let date = new Date()
+
             let data = {
-                user_id : user.user_id,
+                user_id: user.user_id,
                 transaction_status: 'Unpaid',
                 invoice: `INV/${date.getTime()}`,
                 total_purchase: printTotalPurchase(),
@@ -106,11 +107,18 @@ const CheckoutPage = (props) => {
 
 
         } else {
-            console.log('gagal');
+            toast({
+                title: `Order can't be processed`,
+                description: 'You have not choose the delivery option',
+                position: 'top',
+                status: 'error',
+                duration: 3000,
+                isClosable: true
+            })
         }
     }
 
-    
+
     return (
         <div className='bg-bgWhite'>
             <div className='h-screen py-5 px-5 bg-white'>
@@ -159,7 +167,7 @@ const CheckoutPage = (props) => {
                         <div className='pt-5'>
                             <div className='py-1'>
                                 <p className='text-hijauBtn'>Delivery option</p>
-                                <Select onChange={(e) => setSelectedDelivery(e.target.value) } >
+                                <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
                                     <option value="default-0" selected>Select option</option>
                                     {printOption()}
                                 </Select>

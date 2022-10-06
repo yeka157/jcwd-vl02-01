@@ -61,7 +61,7 @@ const CartComponent = (props) => {
             toast({
                 title: `We are sorry`,
                 description: 'You just reach our stock limit for this product',
-                status: 'info',
+                status: 'error',
                 isClosable: true,
                 position: 'top'
             })
@@ -111,7 +111,7 @@ const CartComponent = (props) => {
                     <input type="checkbox" className='w-[20px] h-[20px] accent-hijauBtn' onClick={() => onCheckBox(props.data.cart_id, props.data.is_selected)} defaultChecked={props.data.is_selected == 1 ? true : false} />
                 </div>
 
-                <div className='lg:w-[180px] w-[75px] mx-4 lg:mx-[32px]'>
+                <div className='lg:w-[180px] w-[75px] mx-4'>
                     <img src={props.data.product_image} alt="" />
                 </div>
 
@@ -150,13 +150,13 @@ const CartComponent = (props) => {
                         </div>
                     </div>
 
-                    <div className='hidden lg:flex items-center w-[200px] lg:w-[220px] mx-[32px]'>
+                    <div className='hidden lg:flex items-center w-[200px] lg:w-[400px] mx-[12px]'>
                         <div>
                             <p className='font-bold text-hijauBtn'>RP. {(props.data.product_price * props.data.quantity).toLocaleString('id')},-</p>
                         </div>
                     </div>
 
-                    <div className='flex items-center lg:mr-[32px]'>
+                    <div className='flex items-center lg:w-[300px] lg:mr-[32px]'>
                         <button onClick={() => { onDec(props.data.cart_id) }} className={`border px-2  ${props.data.quantity == 1 ? 'hover:text-grey hover:bg-grey text-grey' : 'hover:text-white hover:bg-hijauBtn'}`} disabled={props.data.quantity == 1 ? true : false}>-</button>
                         <span className='px-2 border'>{props.data.quantity}</span>
                         <button onClick={() => { onInc(props.data.cart_id) }} className='border px-1 hover:text-white hover:bg-hijauBtn'>+</button>
