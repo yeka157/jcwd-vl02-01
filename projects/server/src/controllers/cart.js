@@ -4,9 +4,9 @@ module.exports = {
     getCart: async (req, res) => {
         try {
             let resCart = await dbQuery(`SELECT c.cart_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, c.is_selected, c.quantity from carts c
-            JOIN products p ON c.product_id = p.product_id
-            JOIN stock s ON c.product_id = s.product_id
-            WHERE user_id = ${req.dataToken.user_id};`)
+            JOIN products p ON p.product_id = c.product_id
+            JOIN stock s ON s.product_id = c.product_id
+            WHERE c.user_id = ${req.dataToken.user_id};`);
 
             res.status(200).send({
                 succes: true,

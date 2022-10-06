@@ -13,8 +13,8 @@ module.exports = {
             let getAll = [];
 
             let getJNE = await axios.post('/cost', {
-                origin: '501',
-                destination: '114',
+                origin: 501,
+                destination: 114,
                 weight: 1000,
                 courier: 'jne'
             });
@@ -24,8 +24,8 @@ module.exports = {
             })
 
             let getTIKI = await axios.post('/cost', {
-                origin: '501',
-                destination: '114',
+                origin: 501,
+                destination: 114,
                 weight: 1000,
                 courier: 'tiki'
             });

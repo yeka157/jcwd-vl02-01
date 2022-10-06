@@ -8,10 +8,13 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@chakra-ui/react'
 
 const CartPage = (props) => {
+
+    // APKG1-27
     
     const [cartData, setCartData] = useState([]);
     const navigate = useNavigate();
     const toast = useToast();
+
 
     const getCartData = async () => {
         try {
@@ -26,6 +29,7 @@ const CartPage = (props) => {
 
             if (resCart.data.succes) {
                 setCartData(resCart.data.cartData);
+                console.log('ini data', resCart.data.cartData);
             }
 
 
@@ -59,7 +63,7 @@ const CartPage = (props) => {
     const btnCheckout = () => {
         if (printTotalPurchase() == 0 ) {
             toast({
-                title: `We are sorry`,
+                title: `Checkout can't be proccessed`,
                 description: 'Please choose item first',
                 status: 'error',
                 isClosable: true,

@@ -18,6 +18,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import NavbarComponent from './components/NavbarComponent';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import PrescriptionPage from './pages/PrescriptionPage';
 
 function App() {
 
@@ -75,6 +76,7 @@ function App() {
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/cart' element={<CartPage />} />
                 <Route path='/checkout' element={<CheckoutPage />} />
+                <Route path='/prescription' element={<PrescriptionPage />} />
               </>
               :
               <>

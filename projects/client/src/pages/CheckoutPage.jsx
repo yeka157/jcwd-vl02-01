@@ -110,6 +110,7 @@ const CheckoutPage = (props) => {
         }
     }
 
+    
     return (
         <div className='bg-bgWhite'>
             <div className='h-screen py-5 px-5 bg-white'>
@@ -151,7 +152,7 @@ const CheckoutPage = (props) => {
 
                     </div>
 
-                    {/* Checkout Component */}
+                    {/* APKG1-29 Checkout Component */}
                     <div className='lg:border lg:rounded lg:w-[350px] lg:h-[450px] px-5'>
                         <p className='hidden lg:block text-poppins text-hijauBtn font-bold pt-5 text-[24px] border-b pb-[16px]'>Payment details</p>
 

@@ -70,7 +70,7 @@ const CartComponent = (props) => {
 
     const btnDelete = async () => {
         try {
-            
+
             let resDelete = await axios.delete(API_URL + `/cart/delete_item/${props.data.cart_id}`);
 
             if (resDelete.data.succes) {
@@ -129,21 +129,21 @@ const CartComponent = (props) => {
 
                     <div className='flex items-center mx-5'>
                         <div>
-                            <RiDeleteBin6Line onClick={()=> onOpen()} className='text-[24px] cursor-pointer hover:text-red-500' />
+                            <RiDeleteBin6Line onClick={() => onOpen()} className='text-[24px] cursor-pointer hover:text-red-500' />
 
                             <Modal onClose={onClose} size='xs' isOpen={isOpen}>
                                 <ModalOverlay />
                                 <ModalContent>
-                                    <ModalHeader>Delete confirmation</ModalHeader>
+                                    <ModalHeader >Delete confirmation</ModalHeader>
                                     <ModalCloseButton />
                                     <ModalBody>
                                         <div>
-                                            Are you sure want to delete this item?
+                                            <p >Are you sure want to delete this item?</p>
                                         </div>
                                     </ModalBody>
                                     <ModalFooter>
                                         <Button className='mx-2' colorScheme={'red'} onClick={btnDelete}>Delete</Button>
-                                        <Button onClick={() => { setSelected(props.data)}}>Close</Button>
+                                        <Button onClick={() => { setSelected(props.data) }}>Close</Button>
                                     </ModalFooter>
                                 </ModalContent>
                             </Modal>
