@@ -5,10 +5,9 @@ const initialState = {};
 export const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {
-        userLogin: (state, action) => {
-            return action.payload
-            
+    reducers : {
+        userLogin : (state, action) => {
+            return action.payload        
         },
         userLogOut: (state, action) => {
             state = initialState

@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminCategoryPage from './pages/AdminCategoryPage';
+import AdminProductPage from './pages/AdminProductPage';
 import Cookies from 'js-cookie';
 import { userLogin, getUser } from './slices/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +20,7 @@ import NavbarComponent from './components/NavbarComponent';
 import CartPage from './pages/CartPage';
 
 function App() {
+	const [userData, setUserData] = useState([]);
 
   const dispatch = useDispatch();
   const user = useSelector(getUser);
@@ -92,6 +94,7 @@ function App() {
               {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
               <Route path='/admin' element={<AdminDashboardPage />} />
               <Route path='/admin/category' element={<AdminCategoryPage />} />
+              <Route path="/admin/product" element={<AdminProductPage />} />
             </>
             :
             <Route path='/*' element={<NotFoundPage />} />

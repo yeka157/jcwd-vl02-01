@@ -18,8 +18,7 @@ import axios from "axios";
 import { getUser, userLogOut } from "../slices/userSlice";
 import { useSelector } from "react-redux";
 
-export default function NavbarComponent(props) {
-
+export default function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const pathName = window.location.pathname;
@@ -77,7 +76,6 @@ export default function NavbarComponent(props) {
             <div className="flex items-center">
               <ButtonComponent text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/register')} />
               <ButtonComponent text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/login')} />
-
             </div>
           }
         </div>

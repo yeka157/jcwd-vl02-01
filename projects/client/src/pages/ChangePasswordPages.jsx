@@ -196,8 +196,10 @@ const ChangePassword = () => {
                                 <button onClick={() => { setSpinner(true); setDisableBtn(true); setTimeout(btnSubmit, 2000) }} disabled={disableBtn} class={`w-[312px] text-[16px] mt-[24px] bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Submit'}
                                 </button>
+                                <p className="text-[12px] pt-2">
+                                    <a className="text-blue-500 font-bold" href="/login">Login</a>
+                                </p>
                             </div>
-
                         </div>
                     </div>
                     :
