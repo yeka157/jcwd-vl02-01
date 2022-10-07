@@ -124,62 +124,41 @@ const PrescriptionPage = (props) => {
 
                         {/* Prescription */}
 
-                        <div className='lg:border lg:ronded mt-5 lg:flex lg:justify-between' >
-                            <div className='p-5 w-screen lg:w-1/2'>
-                                <div className='mx-auto border h-screen lg:h-[400px] lg:flex items-center'>
+                        <div className=' my-4' >
+                            <div>
+                                <p className='text-hijauBtn text-[24px] font-bold mb-3'>Upload prescription</p>
+                                <div className='mx-auto border h-screen h-[300px] lg:h-[450px] lg:flex items-center'>
                                     {
                                         prescriptionImage ?
                                             <div className='mx-auto relative'>
                                                 <p onClick={() => { setPrescription(''); setSelectedImage(null) }} className='p-2 absolute cursor-pointer'><HiXCircle /></p>
-                                                <img src={selectedImage} className='object-contain h-[400px]' alt="" />
+                                                <img src={selectedImage} className='object-contain h-[400px] p-6' alt="" />
                                             </div>
                                             :
                                             <div className='mx-auto'>
                                                 <AiOutlineUpload className='mx-auto text-hijauBtn text-[120px]' />
-                                                <p className='text-center text-muted'>No prescription been uploaded</p>
+                                                <p className='text-center text-muted text-[24px]'>Upload your prescription here</p>
+                                                <div className='flex justify-center lg:mt-6'>
+                                                    <input onChange={addImage} className='text-white lg:w-[125px] p-2 rounded file:border-none file:bg-btnHijau file:rounded file:text-black file:p-1 file:px-2 file:cursor-pointer' type="file" />
+                                                </div>
                                             </div>
                                     }
 
                                 </div>
-
-                                <div className='mx-auto mt-6'>
-                                    {
-                                        prescriptionImage ?
-                                            <button className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[404px] h-[42px] lg:h-[40px] font-bold'>
-                                                Upload prescription
-                                            </button>
-                                            :
-                                            <input onChange={addImage} className='mx-auto border lg:w-[400px] p-2 rounded file:border-none file:bg-btnHijau file:rounded file:text-black file:p-1 file:px-2 file:cursor-pointer' type="file" />
-                                    }
-                                </div>
-
                             </div>
 
-                            <div className='p-5 w-1/2 hidden lg:block'>
-                                <p className='text-poppins text-[24px] text-hijauBtn mb-1 font-bold'>Customer guide:</p>
-                                <ul className='list-disc'>
-                                    <li className='text-poppins py-1'>Choose your address</li>
-                                    <li className='text-poppins py-1'>Choose delivery option</li>
-                                    <li className='text-poppins py-1'>Upload prescription image</li>
-                                    <li className='text-poppins py-1'>Wait for admin approval</li>
-                                    <li className='text-poppins py-1'>Upload your payment proof</li>
-                                    <li className='text-poppins py-1'>Wait for admin approval for your payment proof</li>
-                                    <li className='text-poppins py-1'>Wait for your order to be delivered</li>
-                                    <li className='text-poppins py-1'>Confirm your delivery when order is delivered</li>
-                                </ul>
-
-                            </div>
                         </div>
 
 
                     </div>
 
                     {/* Checkout Component */}
-                    <div className='lg:border lg:rounded lg:w-[350px] lg:h-[300px] px-5'>
-                        <p className='hidden lg:block text-poppins text-hijauBtn font-bold pt-5 text-[24px] border-b pb-[16px]'>Delivery option</p>
+                    <div className='lg:border lg:rounded lg:w-[350px] lg:h-[400px] px-5'>
+                        <p className='hidden lg:block text-poppins text-hijauBtn font-bold pt-5 text-[24px] border-b pb-[16px]'>Order detail</p>
 
                         <div className='pt-5'>
                             <div className='py-1'>
+                                <p className='py-2 text-hijauBtn'>Delivery option</p>
                                 <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
                                     <option value="default-0" selected>Select option</option>
                                     {printOption()}
@@ -189,6 +168,11 @@ const PrescriptionPage = (props) => {
                             <div className='py-1 pt-3 flex justify-between'>
                                 <p className='text-hijauBtn'>Delivery charge</p>
                                 <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP. {parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                            </div>
+
+                            <div className='py-1 pt-3 flex justify-between'>
+                                <p className='text-hijauBtn'>Sub total</p>
+                                <p className='text-hijauBtn  lg:pb-[8px]'>Wait for admin confirmation</p>
                             </div>
 
                         </div>
