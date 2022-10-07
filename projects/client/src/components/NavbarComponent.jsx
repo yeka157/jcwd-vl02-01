@@ -13,11 +13,15 @@ import { API_URL } from '../helper';
 import ButtonComponent from "./ButtonComponent";
 import { useNavigate } from 'react-router-dom';
 import { Menu, MenuButton, MenuItem, MenuList, Button, IconButton } from '@chakra-ui/react';
+import { useDispatch } from "react-redux";
+import { userLogOut } from "../slices/userSlice";
 
 export default function NavbarComponent(props) {
 
   const [data, setData] = React.useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const  pathName = window.location.pathname;
 
   React.useEffect(() => {
@@ -37,8 +41,16 @@ export default function NavbarComponent(props) {
     }
   }, [])
 
+  const btnLogout = () => {
+    dispatch(userLogOut);
+    Cookies.remove('sehatToken');
+    if (pathName !== '/') {
+      navigate('/');
+    } 
+  }
+
   return (
-    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart' ? '' : 'hidden'}`}>
+    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart' || pathName === '/login' || pathName === '/register' ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ''}`}>
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
             {/* dropdown menu untuk ukuran hp */}
@@ -57,16 +69,15 @@ export default function NavbarComponent(props) {
               <MenuList>
                 <MenuItem onClick={()=> {navigate('/profile')}} icon={<CgProfile/>}>Profile</MenuItem>
                 <MenuItem icon={<HiOutlineShoppingCart/>}>Cart</MenuItem>
-                <MenuItem icon={<RiLogoutBoxLine/>}>Logout</MenuItem>
+                <MenuItem icon={<RiLogoutBoxLine/>} onClick={btnLogout}>Logout</MenuItem>
               </MenuList>
             </Menu>
               <HiOutlineShoppingBag className="cursor-pointer hoverIcons text-black" />
             </>
             :
             <div className="flex items-center">
-              <ButtonComponent text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
-              <ButtonComponent text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
-
+              <ButtonComponent onclick={() => {navigate('/register')}} text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
+              <ButtonComponent onclick={() => {navigate('/login')}} text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
             </div>
           }
         </div>

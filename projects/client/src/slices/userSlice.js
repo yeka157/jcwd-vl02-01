@@ -11,7 +11,7 @@ export const userSlice = createSlice({
         },
         userLogOut : (state, action) => {
              state = initialState
-        } 
+        }
     }
 })
 

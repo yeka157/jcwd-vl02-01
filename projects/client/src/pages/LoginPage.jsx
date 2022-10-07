@@ -140,9 +140,9 @@ const LoginPage = () => {
     };
 
     return (
-        <div>
-            <Navbar/>
-            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
+        <div className="">
+            {/* <Navbar/> */}
+            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:pt-[300px] flex items-center lg:pb-[80px]'>
                 <div className='flex bg-white lg:border mx-auto drop-shadow-xl' >
 
                     <ImageCover
@@ -153,7 +153,7 @@ const LoginPage = () => {
 
                     <div className="mx-auto p-[32px] w-screen h-screen lg:h-[660px] lg:w-[460px]">
                         <div className="mx-auto lg:px-[42px] lg:pt-[18px]">
-                            <h1 className="font-poppins font-bold font-poppins text-[32px]">Login</h1>
+                            <h1 className="font-poppins font-bold text-[32px]">Login</h1>
 
                             <div className="pt-2">
                                 <p className="pb=[4px] text-[16px] font-semibold">Username or email</p>

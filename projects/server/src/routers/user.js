@@ -8,8 +8,11 @@ const uploadFile = uploader('/imgProfile', 'IMGPRFL').array('images', 1);
 
 route.patch('/update_profile', readToken, userController.updateProfile);
 route.patch('/update_picture', readToken, uploadFile, userController.updatePicture);
-route.post('/add_address/:id',  userController.addAddress);
-route.patch('/edit_address/:id', userController.editAddress);
-route.delete('/delete_address/:id', userController.deleteAddress);
+route.post('/add_address', readToken,  userController.addAddress);
+route.patch('/edit_address/:id', readToken, userController.editAddress);
+route.patch('/edit_main_address/:id', readToken, userController.changeMainAddress);
+route.delete('/delete_address/:id', readToken, userController.deleteAddress);
+route.get('/get_address', readToken, userController.getAddress);
+
 
 module.exports = route;

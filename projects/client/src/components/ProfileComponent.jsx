@@ -21,10 +21,13 @@ import { HiXCircle } from "react-icons/hi";
 import {API_URL} from "../helper";
 import Axios from "axios";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { userLogin } from "../slices/userSlice";
 
 export default function ProfileComponent(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const dispatch = useDispatch();
   const filePickerRef = React.useRef(null);
   const [images, setImages] = React.useState("");
   const [selectedImg, setSelectedImg] = React.useState(null);
@@ -36,7 +39,6 @@ export default function ProfileComponent(props) {
   const [emailMsg, setEmailMsg] = React.useState("");
   const [emailClass, setEmailClass] = React.useState("");
   const [usersData, setUsersData] = React.useState([]);
-  const [date, setDate] = React.useState('');
 
   const addImage = (e) => {
     console.log(e.target.files);
@@ -76,9 +78,9 @@ export default function ProfileComponent(props) {
       if (email) {
         if (emailMsg === "Email available") {
           let res = await Axios.patch(API_URL + "/user/update_profile", {
-            fullName,
+            'name' : fullName,
             email,
-            birthDate,
+            'birthdate' : birthDate,
             gender,
           }, {
             headers : {
@@ -92,7 +94,16 @@ export default function ProfileComponent(props) {
               duration: 3000,
               isClosable: true,
             });
-            onClose();
+            let getData = await Axios.get(API_URL + '/auth/keep_login', {
+              headers : {
+                'Authorization' : `Bearer ${token}`
+              }
+            })
+            if (getData.data.success) {
+              delete getData.data.token;
+              dispatch(userLogin(getData.data.dataUser));
+              onClose();
+            }
           }
         } else if (emailMsg === "Email already used") {
           toast({
@@ -120,7 +131,17 @@ export default function ProfileComponent(props) {
             duration: 3000,
             isClosable: true,
           });
-          onClose();
+          let getData = await Axios.get(API_URL + '/auth/keep_login', {
+            headers : {
+              'Authorization' : `Bearer ${token}`
+            }
+          })
+          if (getData.data.success) {
+            delete getData.data.token;
+            console.log(getData.data.dataUser);
+            dispatch(userLogin(getData.data.dataUser));
+            onClose();
+          }
         }
       }
     } catch (error) {
@@ -155,15 +176,6 @@ export default function ProfileComponent(props) {
 
   React.useEffect(() => {
     getData();
-    if (props.birth) {
-      const date = new Date(props.birth);
-      setDate(date.toLocaleDateString("en-GB", {
-        weekday : 'long',
-        day : 'numeric',
-        month : 'long',
-        year : 'numeric'
-      }))
-    }
   }, []);
 
   const getData = async () => {
@@ -192,7 +204,16 @@ export default function ProfileComponent(props) {
           duration : 3000,
           isClosable : true
         })
-        setOpen(false);
+        let getData = await Axios.get(API_URL + '/auth/keep_login', {
+          headers : {
+            'Authorization' : `Bearer ${token}`
+          }
+        })
+        if (getData.data.success) {
+          delete getData.data.token;
+          dispatch(userLogin(getData.data.dataUser));
+          setOpen(false);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -200,7 +221,7 @@ export default function ProfileComponent(props) {
   }
 
   return (
-    <div className="mx-32 my-16 w-full">
+    <div className="mx-28 my-16 w-full">
       <div className="flex justify-between space-x-10">
         <div className="flex space-x-10 grow">
           <div className="rounded-full border w-32 h-32 flex items-center justify-center border-black">
@@ -281,7 +302,13 @@ export default function ProfileComponent(props) {
               </div>
               <div>
                 <h1 className="text-sm">Birth date</h1>
-                <h1 className="text-gray-500">{props.birth ? date : '-'}</h1>
+                <h1 className="text-gray-500">{props.birth ? new Date(props.birth).toLocaleDateString("en-GB", {
+                  weekday : 'long',
+                  day : 'numeric',
+                  month : 'long',
+                  year : 'numeric'
+                  }) : '-'}
+                </h1>
               </div>
             </div>
           </div>
@@ -319,6 +346,7 @@ export default function ProfileComponent(props) {
                       placeholder="Full Name"
                       type="text"
                       onChange={(e) => setFullName(e.target.value)}
+                      defaultValue={props.name}
                     />
                   </FormControl>
                   <FormControl>
@@ -327,6 +355,7 @@ export default function ProfileComponent(props) {
                       placeholder="Email"
                       type="email"
                       onChange={(e) => setEmail(e.target.value)}
+                      defaultValue={props.email}
                     />
                     <h1 className={`text-sm mb-2 mx-2 ${emailClass}`}>
                       {emailMsg}
@@ -339,6 +368,7 @@ export default function ProfileComponent(props) {
                       min="1922-01-01"
                       max="2022-09-29"
                       onChange={(e) => setBirthDate(e.target.value)}
+                      defaultValue={props.birth}
                     />
                   </FormControl>
                   <FormControl>
@@ -346,6 +376,7 @@ export default function ProfileComponent(props) {
                     <Select
                       placeholder="Select Gender"
                       onChange={(e) => setGender(e.target.value)}
+                      defaultValue={props.gender}
                     >
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>

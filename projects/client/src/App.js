@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { Axios } from 'axios';
 import react, { useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom"
 import { API_URL, COOKIE_EXP } from './helper';
@@ -16,6 +16,7 @@ import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
 import NavbarComponent from './components/NavbarComponent';
+import { userAddress } from './slices/addressSlice';
 
 function App() {
 
@@ -25,34 +26,46 @@ function App() {
 
   useEffect(() => {
     KeepLogin();
-
+    KeepAddress();
   }, [])
 
   const KeepLogin = async () => {
     try {
-
       let token = Cookies.get('sehatToken');
-      console.log('ini token dari login', token);
+      // console.log('ini token dari login', token);
 
       let resUser = await axios.get(API_URL + '/auth/keep_login', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       })
-
       if (resUser.data.success) {
         Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
         delete resUser.data.token
         dispatch(userLogin(resUser.data.dataUser));
         setUserData(resUser.data.dataUser);
       }
-
     } catch (error) {
       console.log(error);
     }
 
   }
 
+  const KeepAddress = async () => {
+    try {
+      let token = Cookies.get('sehatToken');
+      let response = await axios.get(API_URL + '/user/get_address', {
+        headers : {
+          'Authorization' : `Bearer ${token}`
+        }
+      })
+      if (response.data) {
+        dispatch(userAddress(response.data));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div>

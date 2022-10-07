@@ -1,5 +1,4 @@
 import React from "react";
-import NavbarComponent from "../components/NavbarComponent";
 import ProfileComponent from "../components/ProfileComponent";
 import { getUser } from "../slices/userSlice";
 import { useSelector } from "react-redux";
@@ -9,7 +8,7 @@ export default function ProfilePage() {
   return (
     <div className="bg-bgWhite">
       {/* <NavbarComponent /> */}
-      <div className="flex max-w-7xl mx-auto border-black border-x min-h-screen">
+      <div className="flex max-w-[1400px] mx-auto border-borderHijau border-x min-h-screen">
         <ProfileComponent
           iduser={user.user_id}
           name={user.name}
