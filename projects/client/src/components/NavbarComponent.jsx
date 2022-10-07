@@ -13,10 +13,9 @@ import { API_URL } from '../helper';
 import ButtonComponent from "./ButtonComponent";
 import { useNavigate } from 'react-router-dom';
 import { Menu, MenuButton, MenuItem, MenuList, Button, IconButton } from '@chakra-ui/react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getUser, userLogOut } from "../slices/userSlice";
-import { useSelector } from "react-redux";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -46,8 +45,16 @@ export default function Navbar() {
     }
   }
 
+  const btnLogout = () => {
+    dispatch(userLogOut);
+    Cookies.remove('sehatToken');
+    if (pathName !== '/') {
+      navigate('/');
+    } 
+  }
+
   return (
-    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart' || pathName === '/login' || pathName === '/register' ? '' : 'hidden'}`}>
+    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart' || pathName === '/login' || pathName === '/register' ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ''}`}>
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
           {/* dropdown menu untuk ukuran hp */}
@@ -59,23 +66,22 @@ export default function Navbar() {
         <div className="flex items-center space-x-4 justify-end md:w-[200px]">
           {user.user_id ?
             <>
-              <Menu>
-                <MenuButton as={IconButton} icon={<HiOutlineUser className="cursor-pointer hoverIcons text-black" />} variant='link' px={0} py={0} borderRadius='full'>
-
-                </MenuButton>
-                <MenuList>
-                  <MenuItem onClick={() => { navigate('/profile') }} icon={<CgProfile />}>Profile</MenuItem>
-                  <MenuItem icon={<HiOutlineShoppingCart />} onClick={() => navigate('/cart')}>Cart</MenuItem>
-                  <MenuItem icon={<RiLogoutBoxLine />} onClick={btnLogOut}>Logout</MenuItem>
-                </MenuList>
-              </Menu>
-              <HiOutlineShoppingBag className="cursor-pointer hoverIcons" onClick={() => navigate('/cart')} />
-
+            <Menu>
+              <MenuButton as={IconButton} icon={<HiOutlineUser className="cursor-pointer hoverIcons text-black" />} variant='link' px={0} py={0} borderRadius='full'>
+                
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={()=> {navigate('/profile')}} icon={<CgProfile/>}>Profile</MenuItem>
+                <MenuItem icon={<HiOutlineShoppingCart/>}>Cart</MenuItem>
+                <MenuItem icon={<RiLogoutBoxLine/>} onClick={btnLogout}>Logout</MenuItem>
+              </MenuList>
+            </Menu>
+              <HiOutlineShoppingBag className="cursor-pointer hoverIcons text-black" />
             </>
             :
             <div className="flex items-center">
-              <ButtonComponent text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/register')} />
-              <ButtonComponent text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/login')} />
+              <ButtonComponent onclick={() => {navigate('/register')}} text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
+              <ButtonComponent onclick={() => {navigate('/login')}} text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
             </div>
           }
         </div>

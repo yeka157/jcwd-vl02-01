@@ -136,10 +136,10 @@ const LoginPage = () => {
     };
 
     return (
-        <div>
-            <Navbar/>
-            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:mt-[64px] flex items-center'>
-                <div className='flex bg-white lg:border mx-auto lg:rounded-lg drop-shadow-xl' >
+        <div className="">
+            {/* <Navbar/> */}
+            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:pt-[300px] flex items-center lg:pb-[80px]'>
+                <div className='flex bg-white lg:border mx-auto drop-shadow-xl' >
                     <ImageCover
                         imageCover={"https://images.unsplash.com/photo-1563213126-a4273aed2016?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"}
                         tagLine1={"We handle it profesionally"}
@@ -148,7 +148,7 @@ const LoginPage = () => {
 
                     <div className="mx-auto p-[32px] w-screen h-screen lg:h-[660px] lg:w-[460px]">
                         <div className="mx-auto lg:px-[42px] lg:pt-[18px]">
-                            <h1 className="font-poppins font-bold font-poppins text-[32px]">Login</h1>
+                            <h1 className="font-poppins font-bold text-[32px]">Login</h1>
 
                             <div className="pt-2">
                                 <p className="pb=[4px] text-[16px] font-semibold">Username or email</p>
