@@ -1,4 +1,4 @@
-import axios, { Axios } from 'axios';
+import axios from 'axios';
 import react, { useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom"
 import { API_URL, COOKIE_EXP } from './helper';
@@ -32,7 +32,7 @@ function App() {
   const KeepLogin = async () => {
     try {
       let token = Cookies.get('sehatToken');
-      // console.log('ini token dari login', token);
+      console.log('ini token dari login', token);
 
       let resUser = await axios.get(API_URL + '/auth/keep_login', {
         headers: {
