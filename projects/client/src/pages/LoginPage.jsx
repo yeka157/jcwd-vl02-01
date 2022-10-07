@@ -8,12 +8,10 @@ import {
     Modal,
     ModalOverlay,
     ModalContent,
-    ModalHeader,
     ModalFooter,
     ModalBody,
     ModalCloseButton,
     FormControl,
-    FormLabel,
     useDisclosure,
     useToast
 } from '@chakra-ui/react'
@@ -81,14 +79,12 @@ const LoginPage = () => {
                 dispatch(userLogin(resUser.data.dataUser));
                 setDisableBtn(false);
                 setSpinner(false);
-
-                if (resUser.data.dataUser.role == 'CUSTOMER') {
+                if (resUser.data.dataUser.role === 'CUSTOMER') {
                     navigate('/');
                 } else {
                     navigate('/admin');
                 }
             };
-
         } catch (error) {
             setDisableBtn(false);
             setSpinner(false);
@@ -144,7 +140,6 @@ const LoginPage = () => {
             {/* <Navbar/> */}
             <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] mx-auto lg:pt-[300px] flex items-center lg:pb-[80px]'>
                 <div className='flex bg-white lg:border mx-auto drop-shadow-xl' >
-
                     <ImageCover
                         imageCover={"https://images.unsplash.com/photo-1563213126-a4273aed2016?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"}
                         tagLine1={"We handle it profesionally"}
@@ -200,14 +195,13 @@ const LoginPage = () => {
 
                             <div className="pt-[16px]">
                                 {/* Additional APKG1-4 */}
-                                <button onClick={() => { setTimeout(btnLogin, 2000); setDisableBtn(true); setSpinner(true) }} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-brightness-90'}  text-white font-bold py-2 mt-3 px-4 `}>
+                                <button onClick={() => { setTimeout(btnLogin, 2000); setDisableBtn(true); setSpinner(true) }} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Login'}
                                 </button>
 
                                 <p className="text-[12px] pt-2">
                                     Don't have account yet? <a className="text-blue-500 font-bold" href="/register">Register</a>
                                 </p>
-                                
                             </div>
                         </div>
                     </div>

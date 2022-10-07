@@ -119,7 +119,7 @@ module.exports = {
                 let token = createToken({ ...resGet[0] });
                 let link = `http://localhost:3000/verification/${token}`;
                 let name = resGet[0].name;
-
+                
                 transport.sendMail({
                     from: 'Sehat Bos <sehatbos@shop.com>',
                     to: resGet[0].email,
@@ -152,7 +152,7 @@ module.exports = {
         try {
             const { credential, password } = req.body;
 
-            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users 
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, profile_picture, status, birthdate, gender from users 
             WHERE ${credential.includes('@' && '.co') ? `email = ${dbConf.escape(credential)}` : `username = ${dbConf.escape(credential)}`}
             AND password = ${dbConf.escape((hashPassword(password)))};`);
 
@@ -167,7 +167,7 @@ module.exports = {
                 });
 
             } else {
-                res.status(404).send({
+                res.status(200).send({
                     success: false,
                     message: 'Login failed'
 
@@ -184,11 +184,10 @@ module.exports = {
     },
     keepLogin: async (req, res) => {
         try {
-
             let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender, profile_picture from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
 
             if (resUser.length > 0) {
-                let token = createToken({...resUser[0]});
+                let token = createToken({ ...resUser[0] });
 
                 console.log('ini token keeplogin', token);
 
@@ -201,7 +200,6 @@ module.exports = {
             }
 
         } catch (error) {
-            console.log(error);
             res.status(500).send({
                 succes: false,
                 massage: "Login failed"
@@ -336,26 +334,43 @@ module.exports = {
             console.log('ini data changePass', resUser);
 
             if (resUser.length > 0 ) {
-
                 await dbQuery(`UPDATE users SET password = ${dbConf.escape(hashPassword(req.body.password))} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`)
-
                 res.status(200).send({
                     success: true,
                     message: 'Change password success',
                 });
-
             } else {
                 res.status(200).send({
                     success: false,
                     message: 'Change password fail',
                 });
             }
-            
         } catch (error) {
             res.status(500).send({
                 success: false,
                 massage: 'Request failed'
             })
+        }
+    },
+    logout: async (req, res) => {
+        try {  
+            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender, profile_picture from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
+
+            console.log('ini resUser', resUser);
+
+            if (resUser.length > 0 ) {
+                res.status(200).send({
+                    success: true,
+                    message: 'Logout success'
+                });
+            }
+            
+        } catch (error) {
+            console.log(eorr);
+            res.status(500).send({
+                success: false,
+                message: 'Logout fail',
+            });
         }
     }
 };

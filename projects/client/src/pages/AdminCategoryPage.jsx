@@ -111,6 +111,7 @@ export default function AdminCategoryPage() {
 										onOpenEditCategory();
 										setSelectedCategory(prev => prev = val.category_name);
 										setSelectedCategoryIndex(prev => prev = val.category_id);
+										getCategoryData();
 									}}
 								/>
 							</Tooltip>
@@ -122,6 +123,7 @@ export default function AdminCategoryPage() {
 										onOpenDeleteConfirmation();
 										setSelectedCategory(prev => prev = val.category_name);
 										setSelectedCategoryIndex(prev => prev = val.category_id);
+										getCategoryData();
 									}} 
 								/>
 							</Tooltip>
@@ -130,7 +132,6 @@ export default function AdminCategoryPage() {
 				</Tr>
 			);
 		});
-		getCategoryData();
 		return categoryTable;
 	};
 
@@ -269,7 +270,7 @@ export default function AdminCategoryPage() {
 	);
 
 	return (
-		<main className="bg-bgWhite min-h-screen py-5 px-5">
+		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
 			<div className="container mx-auto mt-[2.5vh]">
 				<h1 className="font-bold text-lg text-hijauBtn text-center">
 					SEHATBOS.COM <span className="font-normal">| DASHBOARD</span>
@@ -297,7 +298,7 @@ export default function AdminCategoryPage() {
 			{modalEditCategory}
 			{modalDeleteConfirmation}
 			<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
-				<Box w="95vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" as="h6" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
+				<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" as="h6" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
 					<h1 className="inline">Category</h1>
 				</Box>
 			</div>
