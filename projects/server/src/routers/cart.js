@@ -9,5 +9,6 @@ route.patch('/decrement_cart_qty/:cart_id', cartController.decrementCart);
 route.patch('/increment_cart_qty/:cart_id', cartController.incrementCart);
 route.delete('/delete_item/:cart_id', cartController.deleteItem);
 route.get('/checkouted_item', readToken, cartController.getCheckedItem);
+route.get('/checkout_main_address', readToken, cartController.getAddress)
 
 module.exports = route;

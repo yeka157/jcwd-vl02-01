@@ -1,6 +1,18 @@
 import React from 'react';
 import { MdLocationOn } from "react-icons/md";
-import { Select, useToast } from '@chakra-ui/react';
+import {
+    Select,
+    useToast,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
+    Button
+} from '@chakra-ui/react';
 import CheckoutComponent from '../components/CheckoutComponent';
 import { useState } from 'react';
 import { API_URL } from '../helper';
@@ -8,16 +20,25 @@ import Cookies from 'js-cookie';
 import { useEffect } from 'react';
 import axios from 'axios';
 import { getUser } from "../slices/userSlice";
-import { useSelector } from 'react-redux'
+import { useSelector } from 'react-redux';
+import { getAddress } from '../slices/addressSlice';
 
 const CheckoutPage = (props) => {
 
     const [item, setItem] = useState([]);
     const [deliveryOption, setDeliveryOption] = useState([]);
     const [selectedDelivery, setSelectedDelivery] = useState('default-0');
+    const [address, setAddress] = useState({});
 
-    const user = useSelector(getUser);
     const toast = useToast();
+    const user = useSelector(getUser);
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const addressList = useSelector(getAddress);
+
+    useEffect(() => {
+        getData();
+        getMainAddress();
+    }, []);
 
     let getData = async () => {
         try {
@@ -38,17 +59,31 @@ const CheckoutPage = (props) => {
         }
     };
 
-    useEffect(() => {
-        getData();
-        getDeliveryService();
-    }, []);
-
-    // Nanti ini pake params dr alamat
-    let getDeliveryService = async () => {
+    const getMainAddress = async () => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resDelivery = await axios.get(API_URL + '/rajaongkir/get_delivery_option', {
+            let resAddress = await axios.get(API_URL + '/cart/checkout_main_address', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (resAddress.data.success) {
+                setAddress(resAddress.data.address);
+                getDeliveryService(resAddress.data.address.city_id);
+
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    let getDeliveryService = async (city_id) => {
+        try {
+            let token = Cookies.get('sehatToken');
+
+            let resDelivery = await axios.get(API_URL + `/rajaongkir/get_delivery_option/${city_id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -63,7 +98,7 @@ const CheckoutPage = (props) => {
         }
     };
 
-    const printOption = () => {
+    const printDeliveryOption = () => {
 
         let print = deliveryOption.map((val, idx) => {
             return (
@@ -72,7 +107,7 @@ const CheckoutPage = (props) => {
         })
 
         return print
-    }
+    };
 
     const printSubTotal = () => {
         let total = 0;
@@ -88,6 +123,8 @@ const CheckoutPage = (props) => {
         return printSubTotal() + parseInt(selectedDelivery.split('-')[1]);
     };
 
+    console.log(address);
+
     const btnOrder = () => {
         if (selectedDelivery != 'default-0') {
 
@@ -100,6 +137,11 @@ const CheckoutPage = (props) => {
                 total_purchase: printTotalPurchase(),
                 delivery_option: selectedDelivery.split('-')[0],
                 delivery_charge: parseInt(selectedDelivery.split('-')[1]),
+                province: address.province,
+                city: address.city,
+                city_id: address.city_id,
+                district: address.district,
+                address_detail: address.address_detail,
                 transaction_detail: item
             }
 
@@ -116,8 +158,42 @@ const CheckoutPage = (props) => {
                 isClosable: true
             })
         }
-    }
+    };
 
+    // Pindah ke component
+    const addressOptionModal = (
+        <>
+            <Modal isOpen={isOpen} onClose={onClose}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>Choose address</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <>
+                            {
+                                addressList.map((val, idx) => {
+                                    return (
+                                        <div className='border rounded-lg my-2 cursor-pointer hover:bg-hijauBtn hover:text-white' onClick={() => { setAddress(val); getDeliveryService(val.city_id); onClose(); }}>
+                                            <div className='p-2'>
+                                                <p className='text-btnHijau'>{val.address_detail}</p>
+                                                <p className='text-btnHijau'>{`${val.city}, ${val.province}`}</p>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </>
+                    </ModalBody>
+
+                    <ModalFooter>
+                        <Button colorScheme='teal' mr={3} onClick={onClose}>
+                            Close
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
+    )
 
     return (
         <div className='bg-bgWhite'>
@@ -131,13 +207,14 @@ const CheckoutPage = (props) => {
                             </div>
                             <div className='py-3'>
                                 <p className='font-bold text-hijauBtn'>{`${user.name} - ${user.phone_number}`}</p>
-                                <p>Jl. Arumanis 1 No.58 Kelurahan Pataruman 44151 </p>
-                                <p>Kabupaten Garut, Provinsi Jawa Barat </p>
+                                <p>{address.address_detail}</p>
+                                <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
                             </div>
                             <div className='flex lg:justify-end pb-3'>
-                                <button className='mr-2 my-2 bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[170px] h-[42px] font-bold '>
+                                <button onClick={() => onOpen()} className='mr-2 my-2 bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[170px] h-[42px] font-bold '>
                                     Change Address
                                 </button>
+                                {addressOptionModal}
 
                                 <button className='ml-2 my-2 bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[170px] h-[42px] font-bold'>
                                     Add new address
@@ -169,7 +246,7 @@ const CheckoutPage = (props) => {
                                 <p className='text-hijauBtn'>Delivery option</p>
                                 <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
                                     <option value="default-0" selected>Select option</option>
-                                    {printOption()}
+                                    {printDeliveryOption()}
                                 </Select>
                             </div>
 

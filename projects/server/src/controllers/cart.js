@@ -111,7 +111,24 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(500).send({
-                succes: false,
+                success: false,
+                massage: "Failed"
+            })
+        }
+    },
+    getAddress: async(req, res) => {
+        try {
+            let resAddress = await dbQuery(`SELECT * from address WHERE user_id = ${req.dataToken.user_id} AND main_address = 1`);
+
+            console.log(resAddress);
+            res.status(200).send({
+                success: true,
+                address: resAddress[0]
+            })
+            
+        } catch (error) {
+            res.status(500).send({
+                success: false,
                 massage: "Failed"
             })
         }

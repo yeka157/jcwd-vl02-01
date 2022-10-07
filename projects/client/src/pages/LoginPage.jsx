@@ -84,7 +84,18 @@ const LoginPage = () => {
                 } else {
                     navigate('/admin');
                 }
-            };
+            } else {
+                setDisableBtn(false);
+                setSpinner(false);
+                toast({
+                    title: 'Error found',
+                    description: "Please check your email or username and password ",
+                    status: 'error',
+                    position: 'top',
+                    duration: 4000,
+                    isClosable: true,
+                })
+            }
         } catch (error) {
             setDisableBtn(false);
             setSpinner(false);
