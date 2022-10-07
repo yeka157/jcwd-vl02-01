@@ -13,6 +13,7 @@ route.post('/send_reset_password', authController.sendResetPassword);
 route.patch('/reset_password', readToken, authController.resetPassword);
 route.get('/change_password_request', readToken, authController.changePasswordRequest);
 route.patch('/change_password', readToken, authController.changePassword);
+// route.get('/logout', readToken, authController.logout);
 
 
 module.exports = route;

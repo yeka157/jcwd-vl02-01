@@ -26,7 +26,7 @@ export default function MenuComponent() {
         </div>
         </div>
         <div className='flex justify-center mt-8'>
-            <ButtonComponent text='SHOW MORE' py='2.5' px='8' brightness='95' class='border-borderHijau bg-bgWhite text-black font-semibold border'/>
+            <ButtonComponent text='SHOW MORE' py='2' px='8' brightness='90' class='border-borderHijau bg-bgWhite text-black font-semibold border'/>
         </div>
     </div>
   )
