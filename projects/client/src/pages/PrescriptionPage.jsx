@@ -146,10 +146,7 @@ const PrescriptionPage = (props) => {
 
                                 </div>
                             </div>
-
                         </div>
-
-
                     </div>
 
                     {/* Checkout Component */}

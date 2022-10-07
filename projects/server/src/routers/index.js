@@ -10,15 +10,21 @@ const userRouter = require('./user');
 // APKG1-20
 const categoryRouter = require('./category');
 
+const rajaongkirRouter = require('./rajaOngkir');
 
+//Vikri 
 const cartRouter = require('./cart');
 router.use('/cart', cartRouter);
-const rajaongkirRouter = require('./rajaOngkir');
-router.use('/rajaongkir', rajaongkirRouter);
 
+
+router.use('/rajaongkir', rajaongkirRouter);
 router.use('/auth', authRouter);
 router.use('/user', userRouter);
 router.use("/category", categoryRouter);
+
+// APKG1-21
+const productRouter = require('./product');
+router.use("/product", productRouter);
 
 
 module.exports = router;

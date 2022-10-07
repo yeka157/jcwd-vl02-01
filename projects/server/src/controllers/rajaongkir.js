@@ -1,19 +1,39 @@
-// CONFIG DEFAULT
-const axios = require('axios')
+const { dbConf, dbQuery } = require('../config/db');
+const Axios = require('axios');
+const { default: axios } = require('axios');
 
-// Config Defaults Axios dengan Detail Akun Rajaongkir
-axios.defaults.baseURL = 'https://api.rajaongkir.com/starter'
-axios.defaults.headers.common['key'] = '9da1d6853ef2088e089d31bb7126546f'
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+Axios.defaults.baseURL = 'https://api.rajaongkir.com/starter';
+Axios.defaults.headers.common['key'] = process.env.rajaOngkirAPI;
+Axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 module.exports = {
+    getProvince : async (req,res) => {
+        try {
+            let data = await Axios.get('/province');
+            let list = data.data.rajaongkir.results;
+            res.status(200).send(list);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
+    },
+    getCity : async(req,res) => {
+        try {
+            let getData = await Axios.get(`/city?province=${req.body.province}`);
+            let listCity = getData.data.rajaongkir.results;
+            res.status(200).send(listCity);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
+    },
     delivery: async (req, res) => {
         try {
 
             let getAll = [];
 
             let getJNE = await axios.post('/cost', {
-                origin: 501,
+                origin: 153,
                 destination: 114,
                 weight: 1000,
                 courier: 'jne'

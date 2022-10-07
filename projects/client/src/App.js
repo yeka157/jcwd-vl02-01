@@ -8,6 +8,7 @@ import RegisterPage from './pages/RegisterPage';
 import VerificationPage from './pages/VerificationPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminCategoryPage from './pages/AdminCategoryPage';
+import AdminProductPage from './pages/AdminProductPage';
 import Cookies from 'js-cookie';
 import { userLogin, getUser } from './slices/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,22 +17,24 @@ import ResetPassword from './pages/ResetPassword';
 import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
 import NavbarComponent from './components/NavbarComponent';
+import { userAddress } from './slices/addressSlice';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PrescriptionPage from './pages/PrescriptionPage';
 
 function App() {
+	const [userData, setUserData] = useState([]);
 
   const dispatch = useDispatch();
   const user = useSelector(getUser);
 
   useEffect(() => {
     KeepLogin();
+    KeepAddress();
   }, [])
 
   const KeepLogin = async () => {
     try {
-
       let token = Cookies.get('sehatToken');
 
       if (token) {
@@ -45,7 +48,7 @@ function App() {
           Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
           delete resUser.data.token
           dispatch(userLogin(resUser.data.dataUser));
-          console.log('data login');
+          setUserData(resUser.data.dataUser);
         }
       }
 
@@ -55,10 +58,25 @@ function App() {
 
   };
 
+  const KeepAddress = async () => {
+    try {
+      let token = Cookies.get('sehatToken');
+      let response = await axios.get(API_URL + '/user/get_address', {
+        headers : {
+          'Authorization' : `Bearer ${token}`
+        }
+      })
+      if (response.data) {
+        dispatch(userAddress(response.data));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <div>
-      <NavbarComponent class='bg-bgWhite' function={KeepLogin} />
+      <NavbarComponent class={'bg-bgWhite'} />
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
@@ -96,6 +114,7 @@ function App() {
               {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
               <Route path='/admin' element={<AdminDashboardPage />} />
               <Route path='/admin/category' element={<AdminCategoryPage />} />
+              <Route path="/admin/product" element={<AdminProductPage />} />
             </>
             :
             <Route path='/*' element={<NotFoundPage />} />

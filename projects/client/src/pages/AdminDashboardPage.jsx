@@ -43,6 +43,7 @@ export default function AdminDashboardPage() {
 					as="h6"
 					lineHeight="tight"
 					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					onClick={() => navigate('/admin/product/1')}
 				>
 					<h1 className="inline">Product</h1>
 					<MdOutlineProductionQuantityLimits className="inline ml-2" />
