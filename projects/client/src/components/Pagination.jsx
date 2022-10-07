@@ -50,7 +50,7 @@ export default function Pagination({ totalData, itemsPerPage, currentPage, setCu
 						Showing
 						<span className="font-bold"> {range.start + (itemsPerPage * (currentPage - 1))} </span>
 						to
-						<span className="font-bold"> {totalData} </span>
+						<span className="font-bold"> {totalData >= itemsPerPage ? itemsPerPage * currentPage : totalData} </span>
 						of
 						<span className="font-bold"> {totalData} </span>
 						results

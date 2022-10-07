@@ -203,7 +203,7 @@ export default function AdminProductPage() {
 						</div>
 						<h1 className="text-xs font-bold mt-[20px] mb-[5px]">Price</h1>
 						<p className="text-xs text-justify">
-							Rp. {productData[selectedProductIndex]?.product_price.toLocaleString('id')} / {productData[selectedProductIndex]?.default_unit}
+							Rp {productData[selectedProductIndex]?.product_price.toLocaleString('id')} / {productData[selectedProductIndex]?.default_unit}
 						</p>
 						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Description</h1>
 						<p className="text-xs text-justify">{productData[selectedProductIndex]?.product_description}</p>
