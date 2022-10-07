@@ -1,10 +1,10 @@
 const express = require('express');
 const route = express.Router();
-const { getCategory, createCategory, updateCategory, deleteCategory } = require('../controllers/category');
+const { getCategory, addCategory, editCategory, deleteCategory } = require('../controllers/category');
 
 route.get('/', getCategory);
-route.post('/create_category', createCategory);
-route.patch('/update_category/:category_name', updateCategory);
-route.delete('/delete_category/:category_name', deleteCategory);
+route.post('/add_category', addCategory);
+route.patch('/edit_category/:id', editCategory);
+route.delete('/delete_category/:id', deleteCategory);
 
 module.exports = route;
