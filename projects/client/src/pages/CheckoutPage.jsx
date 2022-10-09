@@ -35,6 +35,8 @@ const CheckoutPage = (props) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const addressList = useSelector(getAddress);
 
+    console.log(addressList);
+
     useEffect(() => {
         getData();
         getMainAddress();
@@ -78,6 +80,19 @@ const CheckoutPage = (props) => {
             console.log(error);
         }
     };
+
+    const btnChangeAddress = (address) => {
+        setAddress(address)
+        getDeliveryService(address.city_id)
+        onClose();
+        toast({
+            title: `Address change success`,
+            position: 'top',
+            status: 'success',
+            duration: 3000,
+            isClosable: true
+        })
+    }
 
     let getDeliveryService = async (city_id) => {
         try {
@@ -132,7 +147,7 @@ const CheckoutPage = (props) => {
 
             let data = {
                 user_id: user.user_id,
-                transaction_status: 'Unpaid',
+                transaction_status: 'Waiting for payment',
                 invoice: `INV/${date.getTime()}`,
                 total_purchase: printTotalPurchase(),
                 delivery_option: selectedDelivery.split('-')[0],
@@ -150,8 +165,8 @@ const CheckoutPage = (props) => {
 
         } else {
             toast({
-                title: `Order can't be processed`,
-                description: 'You have not choose the delivery option',
+                title: `Order can't be proccessed`,
+                description: 'Please choose the delivery option first',
                 position: 'top',
                 status: 'error',
                 duration: 3000,
@@ -173,7 +188,7 @@ const CheckoutPage = (props) => {
                             {
                                 addressList.map((val, idx) => {
                                     return (
-                                        <div className='border rounded-lg my-2 cursor-pointer hover:bg-hijauBtn hover:text-white' onClick={() => { setAddress(val); getDeliveryService(val.city_id); onClose(); }}>
+                                        <div className='border rounded-lg my-2 cursor-pointer hover:bg-hijauBtn hover:text-white' onClick={() => btnChangeAddress(val)}>
                                             <div className='p-2'>
                                                 <p className='text-btnHijau'>{val.address_detail}</p>
                                                 <p className='text-btnHijau'>{`${val.city}, ${val.province}`}</p>
@@ -205,14 +220,20 @@ const CheckoutPage = (props) => {
                                 <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
                                 <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
                             </div>
-                            <div className='py-3'>
-                                <p className='font-bold text-hijauBtn'>{`${user.name} - ${user.phone_number}`}</p>
-                                <p>{address.address_detail}</p>
-                                <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                            </div>
+                            {addressList.length > 0 ?
+                                <div className='py-3'>
+                                    <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - ${user.phone_number}`}</p>
+                                    <p>{address.address_detail}</p>
+                                    <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
+                                </div> :
+                                <div className='flex items-center'> 
+                                    <p className='text-red-500 text-center'>  You dont have any address yet please add your address</p>
+                                </div>
+                            }
+
                             <div className='flex lg:justify-end pb-3'>
                                 <button onClick={() => onOpen()} className='mr-2 my-2 bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[170px] h-[42px] font-bold '>
-                                    Change Address
+                                    Change address
                                 </button>
                                 {addressOptionModal}
 
