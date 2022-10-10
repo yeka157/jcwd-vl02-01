@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getUser, userLogOut } from "../slices/userSlice";
 
-export default function Navbar() {
+export default function Navbar(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const pathName = window.location.pathname;

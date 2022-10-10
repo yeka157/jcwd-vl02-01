@@ -1,7 +1,5 @@
 const { dbConf, dbQuery } = require('../config/db');
 
-const dataProduct = async (product) => await dbQuery(`SELECT * FROM products WHERE product_name = ${dbConf.escape(product)};`);
-
 module.exports = {
 	countProduct: async (req, res) => {
 		try {
@@ -25,7 +23,8 @@ module.exports = {
 			const categoryName = req.query.category_name;
 
 			const products = await dbQuery(
-				`SELECT * FROM products p JOIN categories c ON p.category_id = c.category_id
+				`SELECT * FROM products p 
+				JOIN categories c ON p.category_id = c.category_id
 				${productName && !categoryName ? `WHERE product_name LIKE "%${productName}%"`:''}
 				${categoryName && !productName ? `WHERE category_name LIKE "%${categoryName}%"` :''}
 				${categoryName && productName ? `WHERE product_name LIKE "%${productName}%" AND category_name LIKE "%${categoryName}%"` :''}
@@ -38,22 +37,7 @@ module.exports = {
 				return;
 			}
 
-			res.status(400).send({ success: false, message: 'Failed to get products ❌' });
-		} catch (error) {
-			res.status(500).send({ success: false, message: error });
-			console.log(error);
-		}
-	},
-	getProductStock: async (req, res) => {
-		try {
-			let productStock = await dbQuery(`SELECT * FROM stock WHERE product_id = ${dbConf.escape(req.params?.id)}`);
-
-			if (productStock.length > 0) {
-				res.status(200).send({ success: true, stock: productStock });
-				return;
-			}
-
-			res.status(400).send({ success: false, message: 'Empty product stock!' });
+			res.status(200).send({ success: true, products: []});
 		} catch (error) {
 			res.status(500).send({ success: false, message: error });
 			console.log(error);
@@ -61,8 +45,11 @@ module.exports = {
 	},
 	addProduct: async (req, res) => {
 		try {
-			let { category_id, product_name, product_price, product_image, product_description, product_usage, default_unit } = req.body;
-			const product = await dataProduct(product_name);
+			const product_image = `imgProduct/${req.files[0]?.filename}`;
+			
+			let { category_id, product_name, product_price, product_description, product_usage, default_unit, product_stock } = JSON.parse(req.body.data);
+
+			let product = await dbQuery(`SELECT * FROM products WHERE product_name = ${dbConf.escape(product_name)};`);
 
 			if (product.length > 0) {
 				res.status(400).send({ success: false, message: 'Product already exists ❌' });
@@ -80,7 +67,24 @@ module.exports = {
 				${dbConf.escape(default_unit)});
 			`);
 
-			res.status(200).send({ success: true, message: 'New product has been added ✅' });
+			const insertedProduct = await dbQuery(`SELECT * FROM products WHERE product_name = ${dbConf.escape(product_name)};`);
+			// console.log(insertedProduct)
+
+			if (insertedProduct.length > 0) {
+				let stock = await dbQuery(
+					`INSERT INTO stock (product_id, product_stock, product_unit, product_netto, product_conversion) VALUES
+					(${dbConf.escape(insertedProduct[0].product_id)},
+					${dbConf.escape(product_stock)},
+					${dbConf.escape(default_unit)},
+					${dbConf.escape(0)},
+					${dbConf.escape('-')});
+				`)
+
+				if (stock.length > 0) {
+					res.status(200).send({ success: true, message: 'New product has been added ✅' });
+				}
+			}
+
 		} catch (error) {
 			res.status(500).send({ success: false, message: error });
 			console.log(error);
@@ -88,12 +92,22 @@ module.exports = {
 	},
 	updateProduct: async (req, res) => {
 		try {
+			let product_image;
+			if (req.files[0]?.filename) {
+				product_image = `imgProduct/${req.files[0]?.filename}`;
+			}
+
 			let newData = [];
 
-			Object.keys(req.body).forEach((val) => {
-				newData.push(`${val}=${dbConf.escape(req.body[val])}`);
+			Object.keys(JSON.parse(req.body.data)).forEach((val) => {
+				if (JSON.parse(req.body.data)[val]) {
+					newData.push(`${val}=${dbConf.escape(JSON.parse(req.body.data)[val])}`);
+				}
 			});
-			await dbQuery(`UPDATE products set ${newData.join(', ')} where product_id=${req.params.id}`);
+
+			product_image ? newData.push(`product_image=${dbConf.escape(product_image)}`) : '';
+
+			await dbQuery(`UPDATE products SET ${newData.join(', ')} WHERE product_id=${req.params.id}`);
 			res.status(200).send({ success: true, message: 'Product has been updated ✅' });
 		} catch (error) {
 			res.status(500).send({ success: false, message: error });
@@ -111,7 +125,107 @@ module.exports = {
 			}
 
 			await dbQuery(`DELETE FROM products WHERE product_id = ${dbConf.escape(id)};`);
+			await dbQuery(`DELETE FROM stock WHERE product_id = ${dbConf.escape(id)};`);
+
 			res.status(200).send({ success: true, message: 'Product has been deleted ✅' });
+		} catch (error) {
+			res.status(500).send({ success: false, message: error });
+			console.log(error);
+		}
+	},
+	getProductStock: async (req, res) => {
+		try {
+			let productStock = await dbQuery(`SELECT * FROM stock WHERE product_id = ${dbConf.escape(req.params?.id)}`);
+
+			if (productStock.length > 0) {
+				res.status(200).send({ success: true, stock: productStock });
+				return;
+			}
+
+			res.status(200).send({ success: false, stock: [], message: 'Empty product stock!' });
+		} catch (error) {
+			res.status(500).send({ success: false, message: error });
+			console.log(error);
+		}
+	},
+	addProductStock: async (req, res) => {
+		try {
+			let { product_id, product_stock, product_unit, product_netto, product_conversion } = req.body;
+
+			let stock = await dbQuery(`SELECT * FROM stock WHERE product_id=${dbConf.escape(product_id)} AND product_unit=${dbConf.escape(product_unit)};`);
+			if (stock.length > 0) {
+				res.status(400).send({ success: false, message: 'Stock already exists!' });
+				return;
+			}
+
+			await dbQuery(
+				`INSERT INTO stock (product_id, product_stock, product_unit, product_netto, product_conversion) VALUES
+				(${dbConf.escape(product_id)},
+				${dbConf.escape(product_stock)},
+				${dbConf.escape(product_unit)},
+				${dbConf.escape(product_netto)},
+				${dbConf.escape(product_conversion)});
+			`)
+
+			res.status(200).send({ success: true, message: 'New stock has been added! ✅' });
+		} catch (error) {
+			res.status(500).send({ success: false, message: error });
+			console.log(error);
+		}
+	},
+	updateProductStock: async (req, res) => {
+		try {
+			let productStock = await dbQuery(`SELECT * FROM stock WHERE product_id = ${dbConf.escape(req.params?.id)}`);
+
+			if (productStock.length === 0) {
+				let { product_id, product_stock, product_unit, product_netto, product_conversion } = req.body;
+
+				let stock = await dbQuery(`SELECT * FROM stock WHERE product_id=${dbConf.escape(product_id)} AND product_unit=${dbConf.escape(product_unit)};`);
+				if (stock.length > 0) {
+					res.status(400).send({ success: false, message: 'Stock already exists!' });
+					return;
+				}
+	
+				await dbQuery(
+					`INSERT INTO stock (product_id, product_stock, product_unit, product_netto, product_conversion) VALUES
+					(${dbConf.escape(product_id)},
+					${dbConf.escape(product_stock)},
+					${dbConf.escape(product_unit)},
+					${dbConf.escape(product_netto)},
+					${dbConf.escape(product_conversion)});
+				`)
+				res.status(200).send({ success: true, message: 'Stock has been updated ✅' });
+				return;
+			}
+
+			let newData = [];
+
+			Object.keys(req.body).forEach((val) => {
+				if(req.body[val]) {
+					newData.push(`${val}=${dbConf.escape(req.body[val])}`);
+				}
+			});
+			console.log(newData.join(', '))
+
+			await dbQuery(`UPDATE stock SET ${newData.join(', ')} WHERE stock_id=${req.params.id}`);
+			res.status(200).send({ success: true, message: 'Stock has been updated ✅' });
+		} catch (error) {
+			res.status(500).send({ success: false, message: error });
+			console.log(error);
+		}
+	},
+	deleteProductStock: async (req, res) => {
+		try {
+			let id = req.params.id;
+			const product = await dbQuery(`SELECT * FROM stock WHERE product_id=${dbConf.escape(id)};`);
+
+			if (product.length === 0) {
+				res.status(400).send({ success: false, message: 'Stock not found ❌' });
+				return;
+			}
+
+			await dbQuery(`DELETE FROM stock WHERE product_id = ${dbConf.escape(id)};`);
+			res.status(200).send({ success: true, message: 'Stock has been deleted ✅' });
 		} catch (error) {
 			res.status(500).send({ success: false, message: error });
 			console.log(error);
