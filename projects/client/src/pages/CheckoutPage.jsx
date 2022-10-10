@@ -181,9 +181,9 @@ const CheckoutPage = (props) => {
                             </div>
                         </div>
 
-                        <button onClick={btnOrder} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
+                        {/* <button onClick={btnOrder} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
                             Order
-                        </button>
+                        </button> */}
 
                     </div>
                 </div>
