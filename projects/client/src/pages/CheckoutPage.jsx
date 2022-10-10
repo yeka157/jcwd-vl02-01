@@ -111,41 +111,6 @@ const CheckoutPage = (props) => {
         return printSubTotal() + parseInt(selectedDelivery.split('-')[1]);
     };
 
-    const btnOrder = () => {
-        if (selectedDelivery != 'default-0') {
-
-            let date = new Date()
-
-            let data = {
-                user_id: user.user_id,
-                transaction_status: 'Waiting for payment',
-                invoice: `INV/${date.getTime()}`,
-                total_purchase: printTotalPurchase(),
-                delivery_option: selectedDelivery.split('-')[0],
-                delivery_charge: parseInt(selectedDelivery.split('-')[1]),
-                province: address.province,
-                city: address.city,
-                city_id: address.city_id,
-                district: address.district,
-                address_detail: address.address_detail,
-                transaction_detail: item
-            }
-
-            console.log(data);
-
-
-        } else {
-            toast({
-                title: `Order can't be proccessed`,
-                description: 'Please choose the delivery option first',
-                position: 'top',
-                status: 'error',
-                duration: 3000,
-                isClosable: true
-            })
-        }
-    };
-
 
     return (
         <div className='bg-bgWhite'>
