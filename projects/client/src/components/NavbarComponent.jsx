@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { getUser, userLogOut } from "../slices/userSlice";
 
-export default function Navbar() {
+export default function Navbar(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const pathName = window.location.pathname;
@@ -49,7 +49,7 @@ export default function Navbar() {
     dispatch(userLogOut);
     Cookies.remove('sehatToken');
     if (pathName !== '/') {
-      navigate('/');
+      navigate('/', { replace : true});
     } 
   }
 
@@ -88,17 +88,17 @@ export default function Navbar() {
       </div>
       <div className="sm:flex items-center justify-center hidden ">
         <div className="flex justify-evenly space-x-4 my-3">
-          <h1 className="text-sm cursor-pointer hover:underline">SHOP ALL</h1>
+          <h1 className={`hover:underline ${pathName === '/' ? 'font-medium text-base underline leading-[5px] cursor-default disabled' : 'text-sm hover:leading-3 cursor-pointer'}`} onClick={() => navigate('/')}>HOME</h1>
           <h1 className="text-sm">|</h1>
-          <h1 className="text-sm cursor-pointer hover:underline">BEAUTY</h1>
+          <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">BEAUTY</h1>
           <h1 className="text-sm">|</h1>
-          <h1 className="text-sm cursor-pointer hover:underline">HEALTH & WELLNESS</h1>
+          <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">HEALTH & WELLNESS</h1>
           <h1 className="text-sm">|</h1>
-          <h1 className="text-sm cursor-pointer hover:underline">PRODUCT LINE</h1>
+          <h1 className={`hover:underline ${pathName === '/product' ? 'font-medium text-base underline leading-[5px] cursor-default disabled' : 'text-sm hover:leading-3 cursor-pointer '}`} onClick={() => navigate('/product')}>PRODUCT LINE</h1>
           <h1 className="text-sm">|</h1>
-          <h1 className="text-sm cursor-pointer hover:underline">ABOUT US</h1>
+          <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">ABOUT US</h1>
           <h1 className="text-sm">|</h1>
-          <h1 className="text-sm cursor-pointer hover:underline">SCIENCE</h1>
+          <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">SCIENCE</h1>
         </div>
       </div>
     </div>

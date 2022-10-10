@@ -177,15 +177,6 @@ export default function ProfileComponent(props) {
 
   React.useEffect(() => {
     getData();
-    if (props.birth) {
-      const date = new Date(props.birth);
-      setDate(date.toLocaleDateString("en-GB", {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      }))
-    }
   }, []);
 
   const getData = async () => {
@@ -252,8 +243,6 @@ export default function ProfileComponent(props) {
       console.log(error);
     }
   };
-
-
 
   const btnSaveImage = async () => {
     try {
