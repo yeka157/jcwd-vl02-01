@@ -10,7 +10,8 @@ import { API_URL } from '../helper';
 import { HiXCircle } from "react-icons/hi";
 import { AiOutlineUpload } from "react-icons/ai";
 import { getAddress } from '../slices/addressSlice';
-import ChangeAddressComponent from '../components/ChangeAddressComponent'
+import ChangeAddressComponent from '../components/ChangeAddressComponent';
+import { useNavigate } from 'react-router-dom';
 
 
 const PrescriptionPage = (props) => {
@@ -23,6 +24,7 @@ const PrescriptionPage = (props) => {
     const [btnThrottle, setBtnThrottle] = useState(false)
 
     const user = useSelector(getUser);
+    const navigate = useNavigate();
     const addressList = useSelector(getAddress);
     const toast = useToast();
 
@@ -183,7 +185,8 @@ const PrescriptionPage = (props) => {
                         status: 'success',
                         duration: 5000,
                         isClosable: true
-                    })
+                    });
+                    setTimeout(navigate('/transaction_list'), 2000)
                 }
             }
 
