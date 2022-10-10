@@ -22,6 +22,7 @@ export default function ProductListPage() {
   const [filters, setFilters] = React.useState({ product_name : '', category_name : '', sort : '', order : ''});
   const [currentPage, setCurrentPage] = React.useState(1);
   const [productData, setProductData] = React.useState([]);
+  const [totalData, setTotalData] = React.useState(0);
 
   const itemsPerPage = 10;
 
@@ -70,12 +71,20 @@ export default function ProductListPage() {
 
   const getTotalProduct = async () => {
     try {
-      const totalData = await Axios.get(API_URL + '/product/count')
+      const totalData = await Axios.get(API_URL + '/product/count');
+      setTotalData((prev) => (prev = totalData.data.total_data));
     } catch (error) {
       console.log(error);
     }
   }
-  
+
+  const resetFilter = () => {
+    setFilters((prev) => (prev = { product_name : '', category_name : '', sort : '', order : ''}));
+    setCurrentPage(prev => prev = 1) ;
+    getProduct();
+    getTotalProduct();
+  }
+
   React.useEffect(() => {
     getCategory();
   }, []);
@@ -110,14 +119,6 @@ export default function ProductListPage() {
             <div className="space-x-5">
               <ButtonComponent
                 text="Reset"
-                py="2"
-                px="5"
-                brightness="90"
-                class="border border-borderHijau hover:bg-borderHijau hover:text-white font-medium rounded-full my-3"
-                onclick={() => setCategoryFilter("0")}
-              />
-              <ButtonComponent
-                text="Search"
                 py="2"
                 px="5"
                 brightness="90"
