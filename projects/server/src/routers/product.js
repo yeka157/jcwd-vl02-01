@@ -1,12 +1,21 @@
 const express = require('express');
 const route = express.Router();
-const { countProduct, getProduct, getProductStock, addProduct, updateProduct, deleteProduct } = require('../controllers/product');
+const { countProduct, getProduct, addProduct, updateProduct, deleteProduct, getProductStock, updateProductStock, addProductStock, deleteProductStock } = require('../controllers/product');
+const { uploader } = require('../config/uploader');
+
+const uploadProductImage = uploader('/imgProduct', 'IMGPRDCT').array('product_image', 1);
 
 route.get('/', getProduct);
 route.get('/count', countProduct);
 route.get('/stock/:id', getProductStock);
-route.post('/add_product', addProduct);
-route.patch('/update_product/:id', updateProduct);
+
+route.post('/add_product', uploadProductImage, addProduct);
+route.post('/add_stock', addProductStock);
+
+route.patch('/update_product/:id', uploadProductImage, updateProduct);
+route.patch('/update_stock/:id', updateProductStock);
+
 route.delete('/delete_product/:id', deleteProduct);
+route.delete('/delete_stock/:id', deleteProductStock);
 
 module.exports = route;
