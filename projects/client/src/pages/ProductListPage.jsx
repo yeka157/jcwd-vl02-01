@@ -40,7 +40,7 @@ export default function ProductListPage() {
       if (!filters.category_name && !filters.product_name && filters.sort && filters.order) {
         let temp = [];
         for (let filter in filters) {
-          if (filters[filter] != '') {
+          if (filters[filter] !== '') {
             temp.push(`${filter} = ${filters[filter]}`);
           }
         }
