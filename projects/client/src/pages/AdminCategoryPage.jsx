@@ -65,8 +65,31 @@ export default function AdminCategoryPage() {
 			const result = await axios.post(API_URL + '/category/add_category', { category_name });
 			if (result.data.success) {
 				setInputCategory((prev) => (prev = ''));
+				toast({
+					size: 'xs',
+					title: 'New category has been added!',
+					position: 'top-right',
+					status: 'success',
+					isClosable: true,
+				});
+			} else {
+				setInputCategory((prev) => (prev = ''));
+				toast({
+					size: 'xs',
+					title: 'Category already exists!',
+					position: 'top-right',
+					status: 'success',
+					isClosable: true,
+				});
 			}
 		} catch (error) {
+			toast({
+				size: 'xs',
+				title: 'Category already exists!',
+				position: 'top-right',
+				status: 'error',
+				isClosable: true,
+			});
 			console.log(error);
 		}
 	};
@@ -74,6 +97,8 @@ export default function AdminCategoryPage() {
 	const btnEditCategory = async (category_id, new_category) => {
 		let result = await axios.patch(API_URL + '/category/edit_category/' + category_id, { new_category });
 		if (result.data.success) {
+			getCategoryData();
+			displayCategoryData();
 			toast({
 				size: 'xs',
 				title: `"${selectedCategory}" has been updated to "${newCategory}"!`,
@@ -87,6 +112,8 @@ export default function AdminCategoryPage() {
 	const btnDeleteCategory = async (category_id) => {
 		let result = await axios.delete(API_URL + '/category/delete_category/' + category_id);
 		if (result.data.success) {
+			getCategoryData();
+			displayCategoryData();
 			toast({
 				size: 'xs',
 				title: `"${selectedCategory}" has been deleted from category list!`,
@@ -137,7 +164,8 @@ export default function AdminCategoryPage() {
 
 	useEffect(() => {
 		getCategoryData();
-	}, []);
+		displayCategoryData()
+	}, [categoryData]);
 
 	const modalAddCategory = (
 		<div>
@@ -157,7 +185,7 @@ export default function AdminCategoryPage() {
 								placeholder="Category name"
 								_focusVisible={{ outline: '2px solid #1F6C75' }}
 								_placeholder={{ color: 'inherit' }}
-								color="rgb(2,93,103,0.8)"
+								color="gray"
 								onChange={(e) => setInputCategory((prev) => (prev = e.target.value))}
 							/>
 						</FormControl>
@@ -171,19 +199,6 @@ export default function AdminCategoryPage() {
 							onClick={() => {
 								btnAddCategory(inputCategory);
 								onCloseAddCategory();
-								toast({
-									size: 'xs',
-									title: 'New category has been added!',
-									position: 'top-right',
-									// status: 'success',
-									isClosable: true,
-									render: () => (
-										<Box color="white" p={3} bg="green.500">
-											<MdCategory className="inline ml-2" />
-											<h1 className="inline ml-5 mr-2">New category has been added!</h1>
-										</Box>
-									),
-								});
 							}}
 						>
 							Save
@@ -213,7 +228,7 @@ export default function AdminCategoryPage() {
 							placeholder={selectedCategory}
 							_focusVisible={{ outline: '2px solid #1F6C75' }}
 							_placeholder={{ color: 'inherit' }}
-							color="rgb(2,93,103,0.7)"
+							color="gray"
 							onChange={(e) => setNewCategory((prev) => (prev = e.target.value))}
 						/>
 					</FormControl>
@@ -246,7 +261,7 @@ export default function AdminCategoryPage() {
 				<ModalHeader fontSize="md">Delete confirmation</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody pb={2}>
-					<h1>Delete "{selectedCategory}" from category list?</h1>
+					<h1>Delete <span className='font-bold'>{selectedCategory}</span> from category list?</h1>
 				</ModalBody>
 
 				<ModalFooter>
@@ -298,7 +313,7 @@ export default function AdminCategoryPage() {
 			{modalEditCategory}
 			{modalDeleteConfirmation}
 			<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
-				<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" as="h6" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
+				<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
 					<h1 className="inline">Category</h1>
 				</Box>
 			</div>
