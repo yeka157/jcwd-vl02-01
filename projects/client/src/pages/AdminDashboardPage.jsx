@@ -40,10 +40,9 @@ export default function AdminDashboardPage() {
 					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
-					as="h6"
 					lineHeight="tight"
 					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
-					onClick={() => navigate('/admin/product/1')}
+					onClick={() => navigate('/admin/product')}
 				>
 					<h1 className="inline">Product</h1>
 					<MdOutlineProductionQuantityLimits className="inline ml-2" />
@@ -56,7 +55,6 @@ export default function AdminDashboardPage() {
 					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
-					as="h6"
 					lineHeight="tight"
 					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 					onClick={() => navigate('/admin/category')}
@@ -72,7 +70,6 @@ export default function AdminDashboardPage() {
 					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
-					as="h6"
 					lineHeight="tight"
 					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 				>
@@ -87,7 +84,6 @@ export default function AdminDashboardPage() {
 					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
-					as="h6"
 					lineHeight="tight"
 					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 				>
@@ -102,7 +98,6 @@ export default function AdminDashboardPage() {
 					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
-					as="h6"
 					lineHeight="tight"
 					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 				>

@@ -3,12 +3,14 @@ import { MdLocationOn } from "react-icons/md";
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux'
 import { useState } from 'react';
-import { Select, useToast } from '@chakra-ui/react';
+import { Select, Spinner, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { API_URL } from '../helper';
 import { HiXCircle } from "react-icons/hi";
 import { AiOutlineUpload } from "react-icons/ai";
+import { getAddress } from '../slices/addressSlice';
+import ChangeAddressComponent from '../components/ChangeAddressComponent'
 
 
 const PrescriptionPage = (props) => {
@@ -17,16 +19,42 @@ const PrescriptionPage = (props) => {
     const [selectedImage, setSelectedImage] = React.useState(null);
     const [deliveryOption, setDeliveryOption] = useState([]);
     const [selectedDelivery, setSelectedDelivery] = useState('default-0');
+    const [address, setAddress] = useState({});
+    const [btnThrottle, setBtnThrottle] = useState(false)
 
     const user = useSelector(getUser);
+    const addressList = useSelector(getAddress);
     const toast = useToast();
 
-    // Nanti ini pake params dr alamat
-    let getDeliveryService = async () => {
+    useEffect(() => {
+        getMainAddress();
+    }, []);
+
+    const getMainAddress = async () => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resDelivery = await axios.get(API_URL + '/rajaongkir/get_delivery_option', {
+            let resAddress = await axios.get(API_URL + '/user/get_main_address', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (resAddress.data.success) {
+                setAddress(resAddress.data.address);
+                getDeliveryService(resAddress.data.address.city_id);
+
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    let getDeliveryService = async (city_id) => {
+        try {
+            let token = Cookies.get('sehatToken');
+
+            let resDelivery = await axios.get(API_URL + `/rajaongkir/get_delivery_option/${city_id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -41,12 +69,7 @@ const PrescriptionPage = (props) => {
         }
     };
 
-    useEffect(() => {
-        getDeliveryService();
-    }, []);
-
-
-    const printOption = () => {
+    const printDeliveryOption = () => {
 
         let print = deliveryOption.map((val, idx) => {
             return (
@@ -55,8 +78,7 @@ const PrescriptionPage = (props) => {
         })
 
         return print
-    }
-
+    };
 
     const addImage = (e) => {
         if (e.target.files[0].type === 'image/png' || e.target.files[0].type === "image/jpeg" || e.target.files[0].type === "image/jpg" || e.target.files[0].type === 'image/gif') {
@@ -90,10 +112,86 @@ const PrescriptionPage = (props) => {
                 isClosable: true
             })
         }
+    };
 
+    const btnOrder = async () => {
+        try {
+            let date = new Date();
+            let formData = new FormData();
+            let token = Cookies.get('sehatToken');
 
+            formData.append('image', prescriptionImage);
 
-    }
+            formData.append('data', JSON.stringify({
+                user_id: user.user_id,
+                transaction_status: 'Processed',
+                invoice: `INV/CSTM/${date.getTime()}`,
+                delivery_option: selectedDelivery.split('-')[0],
+                delivery_charge: parseInt(selectedDelivery.split('-')[1]),
+                province: address.province,
+                city: address.city,
+                city_id: address.city_id,
+                district: address.district,
+                address_detail: address.address_detail,
+
+            }));
+
+            if (selectedDelivery == 'default-0' && !prescriptionImage) {
+                setBtnThrottle(false)
+                toast({
+                    title: `Please make sure your form is not empty`,
+                    position: 'top',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                })
+
+            } else if (selectedDelivery == 'default-0') {
+                setBtnThrottle(false)
+                toast({
+                    title: `Please choose delivery option first`,
+                    position: 'top',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                })
+            } else if (!prescriptionImage) {
+                setBtnThrottle(false)
+                toast({
+                    title: `Please upload your doctor prescription`,
+                    position: 'top',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                })
+            } else {
+                let resInsert = await axios.post(API_URL + '/transaction/add_custom_transaction', formData, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (resInsert.data.success) {
+                    setPrescription('');
+                    setSelectedImage(null);
+                    setSelectedDelivery('default-0');
+                    setBtnThrottle(false)
+                    toast({
+                        title: `Order processed by admin`,
+                        description: 'Your order will be ready in few moment',
+                        position: 'top',
+                        status: 'success',
+                        duration: 5000,
+                        isClosable: true
+                    })
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    };
 
 
     return (
@@ -106,20 +204,18 @@ const PrescriptionPage = (props) => {
                                 <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
                                 <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
                             </div>
-                            <div className='py-3'>
-                                <p className='font-bold text-hijauBtn'>{`${user.name} - ${user.phone_number}`}</p>
-                                <p>Jl. Arumanis 1 No.58 Kelurahan Pataruman 44151 </p>
-                                <p>Kabupaten Garut, Provinsi Jawa Barat </p>
-                            </div>
-                            <div className='flex lg:justify-end pb-3'>
-                                <button className='mr-2 my-2 bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[170px] h-[42px] font-bold '>
-                                    Change Address
-                                </button>
+                            {addressList.length > 0 ?
+                                <div className='py-3'>
+                                    <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                    <p>{address.address_detail}</p>
+                                    <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
+                                </div> :
+                                <div className='flex items-center'>
+                                    <p className='text-red-500 text-center'>  You dont have any address yet please add your address</p>
+                                </div>
+                            }
 
-                                <button className='ml-2 my-2 bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[170px] h-[42px] font-bold'>
-                                    Add new address
-                                </button>
-                            </div>
+                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
                         </div>
 
                         {/* Prescription */}
@@ -158,7 +254,7 @@ const PrescriptionPage = (props) => {
                                 <p className='py-2 text-hijauBtn'>Delivery option</p>
                                 <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
                                     <option value="default-0" selected>Select option</option>
-                                    {printOption()}
+                                    {printDeliveryOption()}
                                 </Select>
                             </div>
 
@@ -174,8 +270,8 @@ const PrescriptionPage = (props) => {
 
                         </div>
 
-                        <button className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
-                            Order
+                        <button onClick={ () => {setTimeout(btnOrder, 2000) ; setBtnThrottle(true)}} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
+                           {btnThrottle ? <Spinner size='xs'/> :  'Order'}
                         </button>
 
                     </div>

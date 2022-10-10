@@ -251,6 +251,9 @@ export default function ProfileComponent(props) {
       let token = Cookies.get('sehatToken');
       let formData = new FormData();
       formData.append('images', images);
+
+      console.log(formData);
+
       let res = await Axios.patch(API_URL + '/user/update_picture', formData, {
         headers: {
           'Authorization': `Bearer ${token}`

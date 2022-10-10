@@ -26,7 +26,7 @@ module.exports = {
             console.log(error);
             res.status(500).send(error);
         }
-    },
+    }, //APKG1-32 : Vikri
     delivery: async (req, res) => {
         try {
 

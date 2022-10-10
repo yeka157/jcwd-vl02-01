@@ -48,7 +48,7 @@ const ChangeAddressComponent = (props) => {
         props.getDeliveryService(address.city_id)
         onClose();
         toast({
-            title: `Address change success`,
+            title: `Address successfully changed`,
             position: 'top',
             status: 'success',
             duration: 3000,
