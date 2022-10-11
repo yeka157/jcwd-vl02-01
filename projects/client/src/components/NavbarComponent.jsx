@@ -52,11 +52,11 @@ export default function Navbar(props) {
               </MenuButton>
               <MenuList>
                 <MenuItem onClick={()=> {navigate('/profile')}} icon={<CgProfile/>}>Profile</MenuItem>
-                <MenuItem icon={<HiOutlineShoppingCart/>}>Cart</MenuItem>
+                <MenuItem onClick={()=> {navigate('/cart')}} icon={<HiOutlineShoppingCart/>}>Cart</MenuItem>
                 <MenuItem icon={<RiLogoutBoxLine/>} onClick={btnLogout}>Logout</MenuItem>
               </MenuList>
             </Menu>
-              <HiOutlineShoppingBag className="cursor-pointer hoverIcons text-black" />
+              <HiOutlineShoppingBag onClick={()=> {navigate('/cart')}} className="cursor-pointer hoverIcons text-black" />
             </>
             :
             <div className="flex items-center">

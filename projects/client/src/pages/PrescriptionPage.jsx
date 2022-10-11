@@ -75,7 +75,7 @@ const PrescriptionPage = (props) => {
 
         let print = deliveryOption.map((val, idx) => {
             return (
-                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}`}>{`${val.name} ${val.service} - Rp. ${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
+                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}`}>{`${val.name} ${val.service} - Rp${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
             )
         })
 
