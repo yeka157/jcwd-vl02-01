@@ -4,7 +4,7 @@ import axios from 'axios';
 import { API_URL } from '../helper';
 import PasswordForm from '../components/PasswordFormComponent';
 import { FaUserSlash } from "react-icons/fa";
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineKey } from "react-icons/ai";
 import { Spinner, useToast } from '@chakra-ui/react'
 
@@ -25,6 +25,7 @@ const ResetPassword = () => {
     const params = useParams();
     const resetCookie = Cookies.get('resetToken');
     const toast = useToast();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const passwordChecker = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/;
@@ -88,17 +89,9 @@ const ResetPassword = () => {
                     setPassword('');
                     setConfirmPassword('');
                     setSpinner(false);
-                    setDisableBtn(false)
-                    toast({
-                        title: 'Reset Password success',
-                        description: "Now you can login with new passwword",
-                        status: 'success',
-                        position: 'top',
-                        duration: 4000,
-                        isClosable: true,
-                    });
-                }
-
+                    setDisableBtn(false);
+                    navigate('/login');
+                };
 
             } else {
                 setSpinner(false);

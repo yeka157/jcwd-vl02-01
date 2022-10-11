@@ -9,11 +9,15 @@ const authRouter = require('./auth');
 const userRouter = require('./user');
 // APKG1-20
 const categoryRouter = require('./category');
-const rajaOngkirRouter = require('./rajaongkir');
+const rajaongkirRouter = require('./rajaOngkir');
+// APKG1-32
+const transactionRouter = require('./transaction')
+
+router.use('/rajaongkir', rajaongkirRouter);
 router.use('/auth', authRouter);
 router.use('/user', userRouter);
 router.use("/category", categoryRouter);
-router.use('/rajaOngkir', rajaOngkirRouter);
+router.use("/transaction", transactionRouter);
 
 // APKG1-21
 const productRouter = require('./product');

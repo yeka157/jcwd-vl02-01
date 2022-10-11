@@ -20,6 +20,7 @@ import NavbarComponent from './components/NavbarComponent';
 import { userAddress } from './slices/addressSlice';
 import CartPage from './pages/CartPage';
 import ProductListPage from './pages/ProductListPage';
+import PrescriptionPage from './pages/PrescriptionPage';
 
 function App() {
   const [userData, setUserData] = useState([]);
@@ -50,6 +51,7 @@ function App() {
           setUserData(resUser.data.dataUser);
         }
       }
+
     } catch (error) {
       console.log(error);
     }
@@ -75,7 +77,7 @@ function App() {
 
   return (
     <div>
-      <NavbarComponent class='bg-bgWhite' function={KeepLogin} />
+      <NavbarComponent class={'bg-bgWhite'} />
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
@@ -92,7 +94,7 @@ function App() {
               <>
                 {/* Kevin - APKG1-13 - Profile Page */}
                 <Route path='/profile' element={<ProfilePage />} />
-                <Route path='/cart' element={<CartPage />} />
+                <Route path='/prescription' element={<PrescriptionPage />} />
               </>
               :
               <>
