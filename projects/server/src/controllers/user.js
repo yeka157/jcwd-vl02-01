@@ -59,18 +59,18 @@ module.exports = {
                 (${dbConf.escape(req.dataToken.user_id)}, ${dbConf.escape(req.body.province)}, ${dbConf.escape(req.body.city)}, ${dbConf.escape(req.body.city_id)}, ${dbConf.escape(req.body.address_detail)}, 
                 ${dbConf.escape(req.body.district)}, 0)`);
                 if (addData.insertId) {
-                    res.status(200).send({success : true});
+                    res.status(200).send({ success: true });
                 } else {
-                    res.status(500).send({success : false});
+                    res.status(500).send({ success: false });
                 }
             } else {
                 let addData = await dbQuery(`INSERT INTO address (user_id, province, city, city_id, address_detail, district, main_address) VALUES 
                 (${dbConf.escape(req.dataToken.user_id)}, ${dbConf.escape(req.body.province)}, ${dbConf.escape(req.body.city)}, ${dbConf.escape(req.body.city_id)}, ${dbConf.escape(req.body.address_detail)}, 
                 ${dbConf.escape(req.body.district)}, 1)`);
                 if (addData.insertId) {
-                    res.status(200).send({success : true});
+                    res.status(200).send({ success: true });
                 } else {
-                    res.status(500).send({success : false});
+                    res.status(500).send({ success: false });
                 }
             }
         } catch (error) {
@@ -87,7 +87,7 @@ module.exports = {
                 let getData = await dbQuery(`Select * from address WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
                 res.status(200).send(getData);
             } else {
-                res.status(500).send({success : false});
+                res.status(500).send({ success: false });
             }
         } catch (error) {
             console.log(error);
@@ -101,14 +101,14 @@ module.exports = {
                 let getData = await dbQuery(`Select * from address WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
                 res.status(200).send(getData);
             } else {
-                res.status(500).send({success : false});
+                res.status(500).send({ success: false });
             }
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
         }
     },
-    getAddress : async (req,res) => {
+    getAddress: async (req, res) => {
         try {
             let getData = await dbQuery(`Select * from address WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
             res.status(200).send(getData);
@@ -118,7 +118,7 @@ module.exports = {
             res.status(200).send(error);
         }
     },
-    changeMainAddress : async(req,res) => {
+    changeMainAddress: async (req, res) => {
         try {
             //buat semua address jadi 0
             let change = await dbQuery(`UPDATE address set main_address=0 WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
@@ -129,14 +129,31 @@ module.exports = {
                     let getData = await dbQuery(`Select * from address WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
                     res.status(200).send(getData);
                 } else {
-                    res.status(500).send({success : false});
+                    res.status(500).send({ success: false });
                 }
             } else {
-                res.status(500).send({success : false});
+                res.status(500).send({ success: false });
             }
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
+        }
+    }, // Vikri: APKG1-32
+    getMainAddress: async (req, res) => {
+        try {
+            let resAddress = await dbQuery(`SELECT * from address WHERE user_id = ${req.dataToken.user_id} AND main_address = 1;`);
+
+            console.log('ini data address', resAddress);
+            res.status(200).send({
+                success: true,
+                address: resAddress[0]
+            })
+
+        } catch (error) {
+            res.status(500).send({
+                success: false,
+                massage: "Failed"
+            })
         }
     }
 }

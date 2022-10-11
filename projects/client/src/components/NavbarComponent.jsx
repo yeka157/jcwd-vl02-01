@@ -24,29 +24,8 @@ export default function Navbar(props) {
 
   const user = useSelector(getUser);
 
-  const btnLogOut = async () => {
-    try {
-      let token = Cookies.get('sehatToken');
-
-      let resLogout = await axios.get(API_URL + '/auth/logout', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (resLogout.data.success) {
-        Cookies.remove('sehatToken');
-        dispatch(userLogOut());
-        navigate("/", { replace: true });
-      }
-
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   const btnLogout = () => {
-    dispatch(userLogOut);
+    dispatch(userLogOut());
     Cookies.remove('sehatToken');
     if (pathName !== '/') {
       navigate('/');
@@ -54,7 +33,8 @@ export default function Navbar(props) {
   }
 
   return (
-    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/profile' || pathName === '/product' || pathName === '/cart' || pathName === '/login' || pathName === '/register' ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ''}`}>
+    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/prescription' || pathName === '/profile' || pathName === '/product' || pathName === '/cart'  || pathName === '/checkout'|| pathName === '/login' || pathName === '/register' ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
+
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
           {/* dropdown menu untuk ukuran hp */}
@@ -80,8 +60,9 @@ export default function Navbar(props) {
             </>
             :
             <div className="flex items-center">
-              <ButtonComponent onclick={() => {navigate('/register')}} text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
-              <ButtonComponent onclick={() => {navigate('/login')}} text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' />
+              <ButtonComponent text='Sign Up' class='border-borderHijau border-y border-l hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/register')} />
+              <ButtonComponent text='Login' class='border-borderHijau border hover:bg-hijauBtn hover:text-white font-medium' px='4' py='2' brightness='95' onclick={() => navigate('/login')} />
+
             </div>
           }
         </div>

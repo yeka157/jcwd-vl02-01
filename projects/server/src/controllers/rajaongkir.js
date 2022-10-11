@@ -26,5 +26,44 @@ module.exports = {
             console.log(error);
             res.status(500).send(error);
         }
+    }, //APKG1-32 : Vikri
+    delivery: async (req, res) => {
+        try {
+
+            let getAll = [];
+
+            let getJNE = await axios.post('/cost', {
+                origin: '153',
+                destination: req.params.city_id,
+                weight: 1000,
+                courier: 'jne'
+            });
+
+            getJNE.data.rajaongkir.results[0].costs.forEach(val => {
+                getAll.push({ name: 'JNE', ...val })
+            })
+
+            let getTIKI = await axios.post('/cost', {
+                origin: '501',
+                destination: req.params.city_id,
+                weight: 1000,
+                courier: 'tiki'
+            });
+
+            getTIKI.data.rajaongkir.results[0].costs.forEach(val => {
+                getAll.push({ name: 'TIKI', ...val })
+            })
+
+            res.status(200).send({
+                success: true,
+                option: getAll
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                error
+            })
+        }
     }
 }

@@ -18,7 +18,7 @@ import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
 import NavbarComponent from './components/NavbarComponent';
 import { userAddress } from './slices/addressSlice';
-import CartPage from './pages/CartPage';
+import PrescriptionPage from './pages/PrescriptionPage';
 
 function App() {
 	const [userData, setUserData] = useState([]);
@@ -46,15 +46,10 @@ function App() {
           Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
           delete resUser.data.token
           dispatch(userLogin(resUser.data.dataUser));
-          console.log('data login');
+          setUserData(resUser.data.dataUser);
         }
-      })
-      if (resUser.data.success) {
-        Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
-        delete resUser.data.token
-        dispatch(userLogin(resUser.data.dataUser));
-        setUserData(resUser.data.dataUser);
       }
+
     } catch (error) {
       console.log(error);
     }
@@ -79,7 +74,7 @@ function App() {
 
   return (
     <div>
-      <NavbarComponent class='bg-bgWhite' function={KeepLogin} />
+      <NavbarComponent class={'bg-bgWhite'} />
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
@@ -95,7 +90,7 @@ function App() {
               <>
                 {/* Kevin - APKG1-13 - Profile Page */}
                 <Route path='/profile' element={<ProfilePage />} />
-                <Route path='/cart' element={<CartPage />} />
+                <Route path='/prescription' element={<PrescriptionPage />} />
               </>
               :
               <>
