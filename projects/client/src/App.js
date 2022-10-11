@@ -18,10 +18,12 @@ import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
 import NavbarComponent from './components/NavbarComponent';
 import { userAddress } from './slices/addressSlice';
+import CartPage from './pages/CartPage';
+import ProductListPage from './pages/ProductListPage';
 import PrescriptionPage from './pages/PrescriptionPage';
 
 function App() {
-	const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState([]);
 
   const dispatch = useDispatch();
   const user = useSelector(getUser);
@@ -53,19 +55,20 @@ function App() {
     } catch (error) {
       console.log(error);
     }
-
   };
 
   const KeepAddress = async () => {
     try {
       let token = Cookies.get('sehatToken');
-      let response = await axios.get(API_URL + '/user/get_address', {
-        headers : {
-          'Authorization' : `Bearer ${token}`
+      if (token) {
+        let response = await axios.get(API_URL + '/user/get_address', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        if (response.data) {
+          dispatch(userAddress(response.data));
         }
-      })
-      if (response.data) {
-        dispatch(userAddress(response.data));
       }
     } catch (error) {
       console.log(error);
@@ -78,6 +81,7 @@ function App() {
       <Routes>
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
+        <Route path='/product' element={<ProductListPage />} />
         {/* Vikri APKG1- 3 s/d APKG1-13 */}
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/reset_password/:token' element={<ResetPassword />} />
