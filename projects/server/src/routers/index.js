@@ -13,11 +13,14 @@ const rajaongkirRouter = require('./rajaOngkir');
 // APKG1-32
 const transactionRouter = require('./transaction')
 
+const cartRouter = require('./cart')
+
 router.use('/rajaongkir', rajaongkirRouter);
 router.use('/auth', authRouter);
 router.use('/user', userRouter);
 router.use("/category", categoryRouter);
 router.use("/transaction", transactionRouter);
+router.use('/cart', cartRouter)
 
 // APKG1-21
 const productRouter = require('./product');

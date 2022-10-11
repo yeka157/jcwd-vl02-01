@@ -21,6 +21,7 @@ import { userAddress } from './slices/addressSlice';
 import CartPage from './pages/CartPage';
 import ProductListPage from './pages/ProductListPage';
 import PrescriptionPage from './pages/PrescriptionPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 function App() {
   const [userData, setUserData] = useState([]);
@@ -95,6 +96,7 @@ function App() {
                 {/* Kevin - APKG1-13 - Profile Page */}
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/prescription' element={<PrescriptionPage />} />
+                <Route path='/checkout' element={<CheckoutPage/>}/>
               </>
               :
               <>
