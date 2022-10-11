@@ -263,7 +263,7 @@ const PrescriptionPage = (props) => {
 
                             <div className='py-1 pt-3 flex justify-between'>
                                 <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP. {parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
                             </div>
 
                             <div className='py-1 pt-3 flex justify-between'>
