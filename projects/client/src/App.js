@@ -48,12 +48,12 @@ function App() {
           dispatch(userLogin(resUser.data.dataUser));
           console.log('data login');
         }
-      })
-      if (resUser.data.success) {
-        Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
-        delete resUser.data.token
-        dispatch(userLogin(resUser.data.dataUser));
-        setUserData(resUser.data.dataUser);
+        if (resUser.data.success) {
+          Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
+          delete resUser.data.token
+          dispatch(userLogin(resUser.data.dataUser));
+          setUserData(resUser.data.dataUser);
+        }
       }
     } catch (error) {
       console.log(error);
