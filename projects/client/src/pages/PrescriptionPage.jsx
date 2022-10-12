@@ -12,7 +12,7 @@ import { AiOutlineUpload } from "react-icons/ai";
 import { getAddress } from '../slices/addressSlice';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
 import { useNavigate } from 'react-router-dom';
-
+import { RiErrorWarningLine } from "react-icons/ri";
 
 const PrescriptionPage = (props) => {
 
@@ -75,7 +75,7 @@ const PrescriptionPage = (props) => {
 
         let print = deliveryOption.map((val, idx) => {
             return (
-                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}`}>{`${val.name} ${val.service} - Rp. ${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
+                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}`}>{`${val.name} ${val.service} - Rp${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
             )
         })
 
@@ -263,18 +263,17 @@ const PrescriptionPage = (props) => {
 
                             <div className='py-1 pt-3 flex justify-between'>
                                 <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP. {parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
                             </div>
 
-                            <div className='py-1 pt-3 flex justify-between'>
-                                <p className='text-hijauBtn'>Sub total</p>
-                                <p className='text-hijauBtn  lg:pb-[8px]'>Wait for admin confirmation</p>
+                            <div className='py-1 pt-3 flex'>
+                                <span className='text-hijauBtn  lg:pb-[8px]'>  Total purchase will be shown in transaction list after admin served your order</span>
                             </div>
 
                         </div>
 
-                        <button onClick={ () => {setTimeout(btnOrder, 2000) ; setBtnThrottle(true)}} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
-                           {btnThrottle ? <Spinner size='xs'/> :  'Order'}
+                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
+                            {btnThrottle ? <Spinner size='xs' /> : 'Order'}
                         </button>
 
                     </div>

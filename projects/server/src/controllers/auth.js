@@ -23,10 +23,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src/template'),
                 extName: '.handlebars',
             }
 
@@ -100,10 +100,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src//template'),
                 extName: '.handlebars',
             }
 
@@ -211,10 +211,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src/template'),
                 extName: '.handlebars',
             }
 
@@ -275,10 +275,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src/template'),
                 extName: '.handlebars',
             }
 

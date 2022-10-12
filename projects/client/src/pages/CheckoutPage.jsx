@@ -90,7 +90,7 @@ const CheckoutPage = (props) => {
 
         let print = deliveryOption.map((val, idx) => {
             return (
-                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}`}>{`${val.name} ${val.service} - Rp. ${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
+                <option key={idx} value={`${val.name} ${val.service}-${val.cost[0].value}`}>{`${val.name} ${val.service} - Rp${val.cost[0].value.toLocaleString('id')} (${val.cost[0].etd} days)`}</option>
             )
         })
 
@@ -124,7 +124,7 @@ const CheckoutPage = (props) => {
                             </div>
                             {addressList.length > 0 ?
                                 <div className='py-3'>
-                                    <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - ${user.phone_number}`}</p>
+                                    <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
                                     <p>{address.address_detail}</p>
                                     <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
                                 </div> :
@@ -167,17 +167,17 @@ const CheckoutPage = (props) => {
 
                             <div className='py-1 pt-3 flex justify-between'>
                                 <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP. {parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
                             </div>
 
                             <div className='py-1 flex justify-between'>
                                 <p className='text-hijauBtn'>Sub total</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP. {printSubTotal().toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{printSubTotal().toLocaleString('id')},-</p>
                             </div>
 
                             <div className='py-1 border-t mt-3'>
                                 <p className='text-hijauBtn'>Total purchase</p>
-                                <p className='text-hijauBtn text-[32px] font-bold'>RP. {printTotalPurchase().toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn text-[32px] font-bold'>RP{printTotalPurchase().toLocaleString('id')},-</p>
                             </div>
                         </div>
 

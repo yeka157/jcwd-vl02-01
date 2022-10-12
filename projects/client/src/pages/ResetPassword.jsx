@@ -91,6 +91,14 @@ const ResetPassword = () => {
                     setSpinner(false);
                     setDisableBtn(false);
                     navigate('/login');
+                    toast({
+                        title: 'Password succesfully updated',
+                        description: "Now you can login with new password",
+                        status: 'success',
+                        position: 'top',
+                        duration: 4000,
+                        isClosable: true,
+                    });
                 };
 
             } else {
