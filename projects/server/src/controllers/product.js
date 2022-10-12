@@ -231,4 +231,40 @@ module.exports = {
 			console.log(error);
 		}
 	},
+	selectProduct : async (req,res) => {
+		try {
+			let result = await dbQuery(`Select * from products WHERE product_id = ${req.params.id};`);
+			if (result.length > 0) {
+				res.status(200).send(result);
+				return;
+			}
+			res.status(200).send([]);
+		} catch (error) {
+			console.log(error);
+			res.status(500).send(error);
+		}
+	},
+	selectRandomProduct : async(req,res) => {
+		try {
+			let temp = [];
+			let result = [];
+			let count = await dbQuery(`SELECT COUNT(*) as count FROM products`);
+			while (temp.length < 4) {
+				let random = Math.ceil(Math.random() * count[0].count);
+				if (random !== parseInt(req.params.id)) {
+					if (temp.indexOf(random) === -1) {
+						let data = await dbQuery(`Select * from products p JOIN categories c ON p.category_id = c.category_id WHERE product_id = ${random};`);
+						if (data.length > 0) {
+							temp = [...temp, random];
+							result.push(data[0]);
+						}
+					}
+				}
+			}
+			res.status(200).send(result);
+		} catch (error) {
+			console.log(error);
+			res.status(500).send(error);
+		}
+	}
 };
