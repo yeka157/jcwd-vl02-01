@@ -33,7 +33,7 @@ export default function Navbar(props) {
   }
 
   return (
-    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/prescription' || pathName === '/profile' || pathName === '/product' || pathName === '/cart'  || pathName === '/checkout'|| pathName === '/login' || pathName === '/register' ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
+    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/prescription' || pathName === '/profile' || pathName === '/cart'  || pathName === '/checkout'|| pathName === '/login' || pathName === '/register' || pathName.includes('/product') ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
 
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
@@ -75,7 +75,7 @@ export default function Navbar(props) {
           <h1 className="text-sm">|</h1>
           <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">HEALTH & WELLNESS</h1>
           <h1 className="text-sm">|</h1>
-          <h1 className={`hover:underline ${pathName === '/product' ? 'font-medium text-base underline leading-[5px] cursor-default disabled' : 'text-sm hover:leading-3 cursor-pointer '}`} onClick={() => navigate('/product')}>PRODUCT LINE</h1>
+          <h1 className={`hover:underline ${pathName.includes('/product') ? 'font-medium text-base underline leading-[5px] cursor-default disabled' : 'text-sm hover:leading-3 cursor-pointer '}`} onClick={() => navigate('/product')}>PRODUCT LINE</h1>
           <h1 className="text-sm">|</h1>
           <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">ABOUT US</h1>
           <h1 className="text-sm">|</h1>

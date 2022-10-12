@@ -22,6 +22,7 @@ import ProductListPage from './pages/ProductListPage';
 import PrescriptionPage from './pages/PrescriptionPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import ProductDetailsPage from './pages/ProductDetailsPage';
 
 function App() {
   const [userData, setUserData] = useState([]);
@@ -83,6 +84,7 @@ function App() {
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
         <Route path='/product' element={<ProductListPage />} />
+        <Route path='/product/detail' element={<ProductDetailsPage/>} />
         {/* Vikri APKG1- 3 s/d APKG1-13 */}
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/reset_password/:token' element={<ResetPassword />} />

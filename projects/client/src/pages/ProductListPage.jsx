@@ -19,7 +19,7 @@ import Pagination from "../components/Pagination";
 
 export default function ProductListPage() {
   const [categoryData, setCategoryData] = React.useState([]);
-  const [categoryFilter, setCategoryFilter] = React.useState("");
+  // const [categoryFilter, setCategoryFilter] = React.useState("");
   const [filters, setFilters] = React.useState({ product_name : '', category_name : '', sort : '', order : ''});
   const [currentPage, setCurrentPage] = React.useState(1);
   const [productData, setProductData] = React.useState([]);
@@ -141,7 +141,7 @@ export default function ProductListPage() {
                 })}
               </Stack>
             </RadioGroup>
-            <SearchBar />
+            <SearchBar filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage}/>
             <div className="space-x-5">
               <ButtonComponent
                 text="Reset"
@@ -152,7 +152,6 @@ export default function ProductListPage() {
                 onclick={resetFilter}
               />
             </div>
-            {/* Left Area : Filter bar  */}
           </div>
           <div className="xl:col-span-5 md:col-span-3">
             <div className="text-right mb-5">
@@ -181,11 +180,10 @@ export default function ProductListPage() {
                 </MenuList>
               </Menu>
             </div>
-            {/* Right Area : Product Carousel with sort */}
             <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-10 pb-10 px-10 ">
               {productData.map((val) => {
                 return (
-                  <CarouselComponent foto={val.product_image} name={val.product_name} category={val.category_name} price={val.product_price} key={val.product_id} id={val.product_id}/>
+                  <CarouselComponent foto={val.product_image} name={val.product_name} category={val.category_name} price={val.product_price} key={val.product_id} id={val.product_id} data={val}/>
                 )
               })}
             </div>
