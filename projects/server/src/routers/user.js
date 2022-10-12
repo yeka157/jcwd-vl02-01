@@ -13,6 +13,7 @@ route.patch('/edit_address/:id', readToken, userController.editAddress);
 route.patch('/edit_main_address/:id', readToken, userController.changeMainAddress);
 route.delete('/delete_address/:id', readToken, userController.deleteAddress);
 route.get('/get_address', readToken, userController.getAddress);
+route.get('/get_main_address', readToken, userController.getMainAddress);
 
 
 module.exports = route;
