@@ -106,7 +106,7 @@ const CartPage = (props) => {
 
                         <div className='pt-5'>
                             <p className='text-hijauBtn'>Total purchase :</p>
-                            <p className='text-hijauBtn font-bold text-[32px] lg:border-b lg:pb-[40px]'>RP{printTotalPurchase().toLocaleString('id')},-</p>
+                            <p className='text-hijauBtn font-bold text-[32px] lg:border-b lg:pb-[40px]'>Rp{printTotalPurchase().toLocaleString('id')},-</p>
                         </div>
 
                         <button onClick={btnCheckout} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[42px]'>

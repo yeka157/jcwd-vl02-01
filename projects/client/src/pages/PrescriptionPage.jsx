@@ -135,60 +135,86 @@ const PrescriptionPage = (props) => {
                 city_id: address.city_id,
                 district: address.district,
                 address_detail: address.address_detail,
-
             }));
 
-            if (selectedDelivery == 'default-0' && !prescriptionImage) {
-                setBtnThrottle(false)
-                toast({
-                    title: `Please make sure your form is not empty`,
-                    position: 'top',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true
-                })
+            if (user.user_id) {
+                if (user.user.status == 'VERIFIED') {
+                    if (selectedDelivery == 'default-0' && !prescriptionImage) {
+                        setBtnThrottle(false)
+                        toast({
+                            title: `Please make sure your form is not empty`,
+                            position: 'top',
+                            status: 'error',
+                            duration: 3000,
+                            isClosable: true
+                        })
 
-            } else if (selectedDelivery == 'default-0') {
-                setBtnThrottle(false)
-                toast({
-                    title: `Please choose delivery option first`,
-                    position: 'top',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true
-                })
-            } else if (!prescriptionImage) {
-                setBtnThrottle(false)
-                toast({
-                    title: `Please upload your doctor prescription`,
-                    position: 'top',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true
-                })
-            } else {
-                let resInsert = await axios.post(API_URL + '/transaction/add_custom_transaction', formData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+                    } else if (selectedDelivery == 'default-0') {
+                        setBtnThrottle(false)
+                        toast({
+                            title: `Please choose delivery option first`,
+                            position: 'top',
+                            status: 'error',
+                            duration: 3000,
+                            isClosable: true
+                        })
+                    } else if (!prescriptionImage) {
+                        setBtnThrottle(false)
+                        toast({
+                            title: `Please upload your doctor prescription`,
+                            position: 'top',
+                            status: 'error',
+                            duration: 3000,
+                            isClosable: true
+                        })
+                    } else {
+                        let resInsert = await axios.post(API_URL + '/transaction/add_custom_transaction', formData, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        if (resInsert.data.success) {
+                            setPrescription('');
+                            setSelectedImage(null);
+                            setSelectedDelivery('default-0');
+                            setBtnThrottle(false)
+                            toast({
+                                title: `Order processed by admin`,
+                                description: 'Your order will be ready in few moment',
+                                position: 'top',
+                                status: 'success',
+                                duration: 5000,
+                                isClosable: true
+                            });
+                            setTimeout(navigate('/transaction_list'), 2000)
+                        }
                     }
-                });
-
-                if (resInsert.data.success) {
-                    setPrescription('');
-                    setSelectedImage(null);
-                    setSelectedDelivery('default-0');
+                } else {
                     setBtnThrottle(false)
                     toast({
-                        title: `Order processed by admin`,
-                        description: 'Your order will be ready in few moment',
+                        title: `Order can't be processed`,
+                        description: 'Please verify your first',
                         position: 'top',
-                        status: 'success',
-                        duration: 5000,
+                        status: 'error',
+                        duration: 3000,
                         isClosable: true
-                    });
-                    setTimeout(navigate('/transaction_list'), 2000)
+                    })
                 }
+
+            } else {
+                setBtnThrottle(false)
+                toast({
+                    title: `Order can't be processed`,
+                    description: 'Please loged in first',
+                    position: 'top',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                })
             }
+
+
 
         } catch (error) {
             console.log(error);
