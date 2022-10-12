@@ -37,26 +37,24 @@ export default function AdminDashboardPage() {
 				<Box
 					w="xs"
 					borderWidth="1px"
-					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
 					lineHeight="tight"
-					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 					onClick={() => navigate('/admin/product')}
 				>
 					<h1 className="inline">Product</h1>
 					<MdOutlineProductionQuantityLimits className="inline ml-2" />
 				</Box>
 			</div>
-			<div className="flex container mx-auto mt-[15px] justify-center content-center">
+			<div className="flex container mx-auto my-[15px] justify-center content-center">
 				<Box
 					w="xs"
 					borderWidth="1px"
-					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
 					lineHeight="tight"
-					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 					onClick={() => navigate('/admin/category')}
 				>
 					<h1 className="inline">Category</h1>
@@ -67,39 +65,36 @@ export default function AdminDashboardPage() {
 				<Box
 					w="xs"
 					borderWidth="1px"
-					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
 					lineHeight="tight"
-					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 				>
 					<h1 className="inline">Transaction</h1>
 					<AiOutlineTransaction className="inline ml-2" />
 				</Box>
 			</div>
-			<div className="flex container mx-auto mt-[15px] justify-center content-center">
+			<div className="flex container mx-auto my-[15px] justify-center content-center">
 				<Box
 					w="xs"
 					borderWidth="1px"
-					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
 					lineHeight="tight"
-					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 				>
 					<h1 className="inline">Report</h1>
 					<TbReportAnalytics className="inline ml-2" />
 				</Box>
 			</div>
-			<div className="flex container mx-auto mt-[15px] justify-center content-center">
+			<div className="flex container mx-auto my-[15px] justify-center content-center">
 				<Box
 					w="xs"
 					borderWidth="1px"
-					borderRadius="lg"
 					overflow="hidden"
 					fontWeight="semibold"
 					lineHeight="tight"
-					className="py-[15px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
 				>
 					<h1 className="inline">Visit Website</h1>
 					<CgWebsite className="inline ml-2" />

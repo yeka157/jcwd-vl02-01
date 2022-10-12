@@ -1,250 +1,238 @@
-import React from "react";
-import AddressComponent from "./AddressComponent";
-import ButtonComponent from "./ButtonComponent";
-import {
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  FormControl,
-  FormLabel,
-  Input,
-  Select,
-  ModalFooter,
-  Button,
-  ModalContent,
-  useToast,
-} from "@chakra-ui/react";
-import { HiXCircle } from "react-icons/hi";
-import { API_URL, COOKIE_EXP } from "../helper";
-import Axios from "axios";
-import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { userLogin } from "../slices/userSlice";
-import axios from "axios";
+import React from 'react';
+import AddressComponent from './AddressComponent';
+import ButtonComponent from './ButtonComponent';
+import { useDisclosure, Modal, ModalOverlay, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, Select, ModalFooter, Button, ModalContent, useToast } from '@chakra-ui/react';
+import { HiXCircle } from 'react-icons/hi';
+import { API_URL, COOKIE_EXP } from '../helper';
+import Axios from 'axios';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { userLogin } from '../slices/userSlice';
+import axios from 'axios';
 
 export default function ProfileComponent(props) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
-  const dispatch = useDispatch();
-  const filePickerRef = React.useRef(null);
-  const [images, setImages] = React.useState("");
-  const [selectedImg, setSelectedImg] = React.useState(null);
-  const [open, setOpen] = React.useState(false);
-  const [fullName, setFullName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [birthDate, setBirthDate] = React.useState();
-  const [gender, setGender] = React.useState("");
-  const [emailMsg, setEmailMsg] = React.useState("");
-  const [emailClass, setEmailClass] = React.useState("");
-  const [usersData, setUsersData] = React.useState([]);
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const toast = useToast();
+	const dispatch = useDispatch();
+	const filePickerRef = React.useRef(null);
+	const [images, setImages] = React.useState('');
+	const [selectedImg, setSelectedImg] = React.useState(null);
+	const [open, setOpen] = React.useState(false);
+	const [fullName, setFullName] = React.useState('');
+	const [email, setEmail] = React.useState('');
+	const [birthDate, setBirthDate] = React.useState();
+	const [gender, setGender] = React.useState('');
+	const [emailMsg, setEmailMsg] = React.useState('');
+	const [emailClass, setEmailClass] = React.useState('');
+	const [usersData, setUsersData] = React.useState([]);
 
-  const addImage = (e) => {
-    console.log(e.target.files);
-    if (e.target.files[0].type === 'image/png' || e.target.files[0].type === "image/jpeg" || e.target.files[0].type === "image/jpg" || e.target.files[0].type === 'image/gif') {
-      if (e.target.files[0].size > 1048576) {
-        toast({
-          title: 'File uploaded is too big',
-          description: 'Max size is 1 MB',
-          status: 'error',
-          duration: 3000,
-          isClosable: true
-        })
-      } else {
-        setImages(e.target.files[0]);
-        const reader = new FileReader();
-        if (e.target.files[0]) {
-          reader.readAsDataURL(e.target.files[0]);
-        }
-        reader.onload = (readerEvent) => {
-          setSelectedImg(readerEvent.target.result);
-        };
-      }
-    } else {
-      toast({
-        title: 'Wrong file format',
-        description: 'Your file format is not supported',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      })
-    }
-  };
+	const addImage = (e) => {
+		console.log(e.target.files);
+		if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg' || e.target.files[0].type === 'image/jpg' || e.target.files[0].type === 'image/gif') {
+			if (e.target.files[0].size > 1048576) {
+				toast({
+					title: 'File uploaded is too big',
+					description: 'Max size is 1 MB',
+					status: 'error',
+					duration: 3000,
+					isClosable: true,
+				});
+			} else {
+				setImages(e.target.files[0]);
+				const reader = new FileReader();
+				if (e.target.files[0]) {
+					reader.readAsDataURL(e.target.files[0]);
+				}
+				reader.onload = (readerEvent) => {
+					setSelectedImg(readerEvent.target.result);
+				};
+			}
+		} else {
+			toast({
+				title: 'Wrong file format',
+				description: 'Your file format is not supported',
+				status: 'error',
+				duration: 3000,
+				isClosable: true,
+			});
+		}
+	};
 
-  const btnSave = async () => {
-    try {
-      let token = Cookies.get('sehatToken');
-      if (email) {
-        if (emailMsg === "Email available") {
-          let res = await Axios.patch(API_URL + "/user/update_profile", {
-            'name' : fullName,
-            email,
-            'birthdate' : birthDate,
-            gender,
-          }, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          if (res.data.success) {
-            toast({
-              description: "Profile successfully updated",
-              status: "success",
-              duration: 3000,
-              isClosable: true,
-            });
-            let getData = await Axios.get(API_URL + '/auth/keep_login', {
-              headers : {
-                'Authorization' : `Bearer ${token}`
-              }
-            })
-            if (getData.data.success) {
-              delete getData.data.token;
-              dispatch(userLogin(getData.data.dataUser));
-              onClose();
-            }
-          }
-        } else if (emailMsg === "Email already used") {
-          toast({
-            description: "Email already used",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
-      } else {
-        let res = await Axios.patch(API_URL + "/user/update_profile", {
-          'name': fullName,
-          email,
-          'birthdate': birthDate,
-          gender,
-        }, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (res.data.success) {
-          toast({
-            description: "Profile successfully updated",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-          });
-          let getData = await Axios.get(API_URL + '/auth/keep_login', {
-            headers : {
-              'Authorization' : `Bearer ${token}`
-            }
-          })
-          if (getData.data.success) {
-            delete getData.data.token;
-            console.log(getData.data.dataUser);
-            dispatch(userLogin(getData.data.dataUser));
-            onClose();
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+	const btnSave = async () => {
+		try {
+			let token = Cookies.get('sehatToken');
+			if (email) {
+				if (emailMsg === 'Email available') {
+					let res = await Axios.patch(
+						API_URL + '/user/update_profile',
+						{
+							name: fullName,
+							email,
+							birthdate: birthDate,
+							gender,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						}
+					);
+					if (res.data.success) {
+						toast({
+							description: 'Profile successfully updated',
+							status: 'success',
+							duration: 3000,
+							isClosable: true,
+						});
+						let getData = await Axios.get(API_URL + '/auth/keep_login', {
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						});
+						if (getData.data.success) {
+							delete getData.data.token;
+							dispatch(userLogin(getData.data.dataUser));
+							onClose();
+						}
+					}
+				} else if (emailMsg === 'Email already used') {
+					toast({
+						description: 'Email already used',
+						status: 'error',
+						duration: 3000,
+						isClosable: true,
+					});
+				}
+			} else {
+				let res = await Axios.patch(
+					API_URL + '/user/update_profile',
+					{
+						name: fullName,
+						email,
+						birthdate: birthDate,
+						gender,
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					}
+				);
+				if (res.data.success) {
+					toast({
+						description: 'Profile successfully updated',
+						status: 'success',
+						duration: 3000,
+						isClosable: true,
+					});
+					let getData = await Axios.get(API_URL + '/auth/keep_login', {
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					});
+					if (getData.data.success) {
+						delete getData.data.token;
+						console.log(getData.data.dataUser);
+						dispatch(userLogin(getData.data.dataUser));
+						onClose();
+					}
+				}
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-  React.useEffect(() => {
-    let findEmail = usersData.findIndex(val => val.email === email);
-    let mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-    if (email) {
-      if (email === props.email) {
-        setEmailMsg('');
-      } else {
-        if (email.match(mailFormat)) {
-          if (findEmail < 0) {
-            setEmailMsg('Email available');
-            setEmailClass('text-green-400');
-          } else {
-            setEmailMsg('Email already exist');
-            setEmailClass('text-red-500');
-          }
-        } else {
-          setEmailMsg('Enter a valid email');
-          setEmailClass('text-red-500');
-        }
-      }
-    } else {
-      setEmailMsg("");
-    }
-  }, [email, props.email, usersData]);
+	React.useEffect(() => {
+		let findEmail = usersData.findIndex((val) => val.email === email);
+		let mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		if (email) {
+			if (email === props.email) {
+				setEmailMsg('');
+			} else {
+				if (email.match(mailFormat)) {
+					if (findEmail < 0) {
+						setEmailMsg('Email available');
+						setEmailClass('text-green-400');
+					} else {
+						setEmailMsg('Email already exist');
+						setEmailClass('text-red-500');
+					}
+				} else {
+					setEmailMsg('Enter a valid email');
+					setEmailClass('text-red-500');
+				}
+			}
+		} else {
+			setEmailMsg('');
+		}
+	}, [email, props.email, usersData]);
 
-  React.useEffect(() => {
-    getData();
-  }, []);
 
-  const getData = async () => {
-    try {
-      const getUsers = await Axios.get(API_URL + '/auth/get_all_users');
-      setUsersData(getUsers.data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+	const getData = async () => {
+		try {
+			const getUsers = await Axios.get(API_URL + '/auth/get_all_users');
+			setUsersData(getUsers.data);
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-  // Vikri - APKG1-11: Adding veriification and change password request
+	// Vikri - APKG1-11: Adding veriification and change password request
 
-  const btnVerifyRequest = async () => {
-    try {
-      let cookie = Cookies.get('sehatToken')
+	const btnVerifyRequest = async () => {
+		try {
+			let cookie = Cookies.get('sehatToken');
 
-      let res = await axios.get(API_URL + '/auth//send_email_verify', {
-        headers: {
-          'Authorization': `Bearer ${cookie}`
-        }
-      })
+			let res = await axios.get(API_URL + '/auth//send_email_verify', {
+				headers: {
+					Authorization: `Bearer ${cookie}`,
+				},
+			});
 
-      if (res.data.success) {
-        Cookies.set('verifToken', res.data.token, { expires: COOKIE_EXP });
-        toast({
-          title: 'Account verification has been sent',
-          description: "Please check your email",
-          position: 'top',
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
+			if (res.data.success) {
+				Cookies.set('verifToken', res.data.token, { expires: COOKIE_EXP });
+				toast({
+					title: 'Account verification has been sent',
+					description: 'Please check your email',
+					position: 'top',
+					status: 'success',
+					duration: 3000,
+					isClosable: true,
+				});
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-    } catch (error) {
-      console.log(error);
-    }
-  };
+	const btnChangePasswordRequest = async () => {
+		try {
+			let cookie = Cookies.get('sehatToken');
 
-  const btnChangePasswordRequest = async () => {
-    try {
-      let cookie = Cookies.get('sehatToken')
+			let res = await axios.get(API_URL + '/auth//change_password_request', {
+				headers: {
+					Authorization: `Bearer ${cookie}`,
+				},
+			});
 
-      let res = await axios.get(API_URL + '/auth//change_password_request', {
-        headers: {
-          'Authorization': `Bearer ${cookie}`
-        }
-      })
+			if (res.data.success) {
+				Cookies.set('resetToken', res.data.token, { expires: COOKIE_EXP });
+				toast({
+					title: 'Change password request has been sent',
+					description: 'Please check your email',
+					position: 'top',
+					status: 'success',
+					duration: 3000,
+					isClosable: true,
+				});
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	};
 
-      if (res.data.success) {
-        Cookies.set('resetToken', res.data.token, { expires: COOKIE_EXP });
-        toast({
-          title: 'Change password request has been sent',
-          description: "Please check your email",
-          position: 'top',
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const btnSaveImage = async () => {
+	const btnSaveImage = async () => {
     try {
       let token = Cookies.get('sehatToken');
       let formData = new FormData();

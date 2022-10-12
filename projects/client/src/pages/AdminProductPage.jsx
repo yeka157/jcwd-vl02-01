@@ -25,7 +25,7 @@ import {
 	MenuList,
 	MenuItem,
 	Tooltip,
-	useToast
+	useToast,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API_URL } from '../helper';
@@ -64,7 +64,6 @@ export default function AdminProductPage() {
 	const getProductData = async () => {
 		try {
 			if (!filters.category_name && !filters.product_name && filters.sort && filters.order) {
-
 				let temp = [];
 				for (let filter in filters) {
 					if (filters[filter] != '') {
@@ -101,7 +100,6 @@ export default function AdminProductPage() {
 				getTotalData();
 				return;
 			}
-
 		} catch (error) {
 			// setProductData((prev) => (prev = []));
 			console.log(error);
@@ -109,7 +107,7 @@ export default function AdminProductPage() {
 	};
 
 	const getTotalData = async () => {
-		const totalData = await axios(`${API_URL}/product/count`);
+		const totalData = await axios.get(`${API_URL}/product/count`);
 		setTotalData((prev) => (prev = totalData.data.total_data));
 	};
 
@@ -134,7 +132,9 @@ export default function AdminProductPage() {
 				<ModalHeader fontSize="md">Delete confirmation</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody pb={2}>
-					<h1>Delete <span className='font-bold'>{selectedProduct}</span> from product list?</h1>
+					<h1>
+						Delete <span className="font-bold">{selectedProduct}</span> from product list?
+					</h1>
 				</ModalBody>
 
 				<ModalFooter>
@@ -150,16 +150,15 @@ export default function AdminProductPage() {
 									displayProductData();
 									toast({
 										size: 'xs',
-										title: `"${selectedProduct}" has been deleted from product list!`,
+										title: `${selectedProduct} has been deleted from product list!`,
 										position: 'top-right',
 										status: 'success',
 										isClosable: true,
 									});
 								}
 								onCloseDeleteConfirmation();
-								setCurrentPage(prev => prev = 1)
 							} catch (error) {
-								console.log(error)
+								console.log(error);
 							}
 						}}
 					>
@@ -182,24 +181,29 @@ export default function AdminProductPage() {
 					<Td className="text-[rgb(67,67,67)]">Rp {val.product_price.toLocaleString('id')}</Td>
 					<Td className="text-[rgb(67,67,67)]">{val.category_name}</Td>
 					<Td className="text-[rgb(67,67,67)]">
-						<h1 
-							className='inline text-xs underline cursor-pointer'
+						<h1
+							className="inline text-xs underline cursor-pointer"
 							onClick={() => {
 								onOpenProductDetails();
-								setSelectedProduct(prev => prev = val.product_name);
+								setSelectedProduct((prev) => (prev = val.product_name));
 								setSelectedProductIndex((prev) => (prev = idx));
 								getProductStock(val.product_id);
 								getProductData();
 							}}
-						>see preview</h1>
+						>
+							see preview
+						</h1>
 					</Td>
 					<Td>
 						<div className="inline">
 							<Tooltip hasArrow label="edit" placement="right" shouldWrapChildren>
-								<AiFillEdit size={17} color="rgb(67,67,67,0.8)" className="cursor-pointer" 
+								<AiFillEdit
+									size={17}
+									color="rgb(67,67,67,0.8)"
+									className="cursor-pointer"
 									onClick={() => {
 										onOpenEditProduct();
-										setSelectedProduct(prev => prev = val.product_name);
+										setSelectedProduct((prev) => (prev = val.product_name));
 										setSelectedProductIndex((prev) => (prev = idx));
 										getProductStock(val.product_id);
 										getProductData();
@@ -209,14 +213,17 @@ export default function AdminProductPage() {
 						</div>
 						<div className="inline">
 							<Tooltip hasArrow label="delete" placement="right" shouldWrapChildren>
-								<AiFillDelete size={17} color="rgb(67,67,67,0.8)" className="cursor-pointer ml-5" 
+								<AiFillDelete
+									size={17}
+									color="rgb(67,67,67,0.8)"
+									className="cursor-pointer ml-5"
 									onClick={() => {
 										onOpenDeleteConfirmation();
-										setSelectedProduct(prev => prev = val.product_name);
+										setSelectedProduct((prev) => (prev = val.product_name));
 										setSelectedProductIndex((prev) => (prev = idx));
 										getProductStock(val.product_id);
 										getProductData();
-									}} 
+									}}
 								/>
 							</Tooltip>
 						</div>
@@ -228,12 +235,15 @@ export default function AdminProductPage() {
 	};
 
 	const displayStockData = () => {
-		return productStock.map((val, idx) => {
-			return (
-				<li key={idx}>
-					{productStock.length > 1 ? '•' : '' } {val.product_unit} : {val.product_stock}
-				</li>
-			);
+		return productStock?.map((val, idx) => {
+			if (val.product_stock) {
+				return (
+					<li key={idx}>
+						{productStock.length > 1 ? '•' : ''} {val.product_unit} : {val.product_stock}
+					</li>
+				);
+			}
+			return <h1>Out of stock</h1>
 		});
 	};
 
@@ -257,40 +267,45 @@ export default function AdminProductPage() {
 				<ModalBody pb={2}>
 					<div className="px-[20px]">
 						<div className="justify-center items-center flex mt-2">
-							<img 
-								className="max-w-[150px]" 
-								src={productData[selectedProductIndex]?.product_image.includes('http') ? productData[selectedProductIndex]?.product_image : `http://localhost:8000/${productData[selectedProductIndex]?.product_image}`} 
-								alt="" 
+							<img
+								className="max-w-[150px]"
+								src={
+									productData[selectedProductIndex]?.product_image.includes('http')
+										? productData[selectedProductIndex]?.product_image
+										: `http://localhost:8000/${productData[selectedProductIndex]?.product_image}`
+								}
+								alt=""
 							/>
 						</div>
 						<h1 className="text-xs font-bold mt-[20px] mb-[5px]">Price</h1>
 						<p className="text-xs text-justify">
 							Rp {productData[selectedProductIndex]?.product_price.toLocaleString('id')} per {productData[selectedProductIndex]?.default_unit}
 						</p>
-						<hr className='my-2'/>
+						<hr className="my-2" />
 						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Description</h1>
 						<p className="text-xs text-justify">{productData[selectedProductIndex]?.product_description}</p>
-						<hr className='my-2'/>
+						<hr className="my-2" />
 						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Usage</h1>
 						<p className="text-xs text-justify">{productData[selectedProductIndex]?.product_usage}</p>
-						<hr className='my-2'/>
+						<hr className="my-2" />
 						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Category</h1>
 						<p className="text-xs text-justify">{productData[selectedProductIndex]?.category_name}</p>
-						<hr className='my-2'/>
+						<hr className="my-2" />
 						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Default Unit</h1>
 						<p className="text-xs text-justify">{productData[selectedProductIndex]?.default_unit}</p>
-						<hr className='my-2'/>
-						{
-							productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && (
-								<>
-									<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Conversion Unit</h1>
-									<p className="text-xs text-justify">{productStock[0]?.product_netto} {productStock[0]?.product_conversion} per {productData[selectedProductIndex]?.default_unit}</p>
-									<hr className='my-2'/>
-								</>
-							)
-						}
+						<hr className="my-2" />
+						{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && (
+							<>
+								<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Conversion Unit</h1>
+								<p className="text-xs text-justify">
+									{productStock[0]?.product_netto} {productStock[0]?.product_conversion} per {productData[selectedProductIndex]?.default_unit}
+								</p>
+								<hr className="my-2" />
+							</>
+						)}
 						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Stock</h1>
-						<ol className="text-xs text-justify">{productStock?.length > 0 ? displayStockData() : 'Kosong'}</ol>
+						{/* <ol className="text-xs text-justify">{displayStockData()}</ol> */}
+						<ol className="text-xs text-justify">{productStock?.length > 0 ? displayStockData() : 'Out of stock'}</ol>
 					</div>
 				</ModalBody>
 
@@ -305,7 +320,7 @@ export default function AdminProductPage() {
 
 	const resetFilter = () => {
 		setFilters((prev) => (prev = { product_name: '', category_name: '', sort: '', order: '' }));
-		setCurrentPage(prev => prev = 1);
+		setCurrentPage((prev) => (prev = 1));
 		getProductData();
 		getTotalData();
 	};
@@ -316,15 +331,17 @@ export default function AdminProductPage() {
 	}, [currentPage]);
 
 	useEffect(() => {
-		if (filters.category_name || filters.product_name ) {
+		if (filters.category_name || filters.product_name) {
 			setTotalData((prev) => (prev = productData.length));
 		}
 	}, [productData]);
 
 	useEffect(() => {
 		if (filters.category_name === '' && filters.product_name === '' && filters.sort === '' && filters.order === '') {
+			getProductData();
 			getTotalData();
 		}
+		getProductData();
 	}, [filters]);
 
 	return (
@@ -333,9 +350,32 @@ export default function AdminProductPage() {
 			{modalProductDetails}
 
 			{/* {initialRef, finalRef, isOpenAddProduct, onCloseAddProduct, onCloseAddProduct} */}
-			<AddProductComponent setCurrentPage={setCurrentPage} productData={productData} getProductData={getProductData} categoryData={categoryData} initialRef={initialRef} finalRef={finalRef} isOpenAddProduct={isOpenAddProduct} onCloseAddProduct={onCloseAddProduct} />
-			<EditProductComponent productStock={productStock} selectedProductIndex={selectedProductIndex} selectedProduct={selectedProduct} productData={productData} getProductData={getProductData} categoryData={categoryData} initialRef={initialRef} finalRef={finalRef} isOpenEditProduct={isOpenEditProduct} onCloseEditProduct={onCloseEditProduct} />
-			
+			<AddProductComponent
+				totalData={totalData}
+				itemsPerPage={itemsPerPage}
+				setCurrentPage={setCurrentPage}
+				productData={productData}
+				getProductData={getProductData}
+				categoryData={categoryData}
+				initialRef={initialRef}
+				finalRef={finalRef}
+				isOpenAddProduct={isOpenAddProduct}
+				onCloseAddProduct={onCloseAddProduct}
+				currentPage={currentPage}
+			/>
+			<EditProductComponent
+				productStock={productStock}
+				selectedProductIndex={selectedProductIndex}
+				selectedProduct={selectedProduct}
+				productData={productData}
+				getProductData={getProductData}
+				categoryData={categoryData}
+				initialRef={initialRef}
+				finalRef={finalRef}
+				isOpenEditProduct={isOpenEditProduct}
+				onCloseEditProduct={onCloseEditProduct}
+			/>
+
 			<div className="container mx-auto mt-[2.5vh]">
 				<h1 className="font-bold text-lg text-hijauBtn text-center">
 					SEHATBOS.COM <span className="font-normal">| DASHBOARD</span>
@@ -360,7 +400,7 @@ export default function AdminProductPage() {
 				</Button>
 			</div>
 
-			<SearchBar filters={filters} setFilters={setFilters} inputValue={filters.product_name} />
+			<SearchBar filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage} getProductData={getProductData} />
 
 			<div className={`container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end`}>
 				<div>
@@ -373,7 +413,7 @@ export default function AdminProductPage() {
 								className="text-xs"
 								onClick={() => {
 									setFilters((prev) => ({ ...prev, category_name: '' }));
-									setCurrentPage(prev => prev = 1);
+									setCurrentPage((prev) => (prev = 1));
 								}}
 							>
 								None
@@ -385,7 +425,7 @@ export default function AdminProductPage() {
 										className="text-xs"
 										onClick={() => {
 											setFilters((prev) => ({ ...prev, category_name: val.category_name }));
-											setCurrentPage(prev => prev = 1);
+											setCurrentPage((prev) => (prev = 1));
 										}}
 									>
 										{val.category_name}
@@ -402,7 +442,7 @@ export default function AdminProductPage() {
 							<MenuItem
 								className="text-xs"
 								onClick={() => {
-									setCurrentPage(prev => prev = 1);
+									setCurrentPage((prev) => (prev = 1));
 									setFilters((prev) => ({ ...prev, sort: '', order: '' }));
 								}}
 							>
@@ -411,7 +451,7 @@ export default function AdminProductPage() {
 							<MenuItem
 								className="text-xs"
 								onClick={() => {
-									setCurrentPage(prev => prev = 1);
+									setCurrentPage((prev) => (prev = 1));
 									setFilters((prev) => ({ ...prev, sort: 'Price', order: 'asc' }));
 								}}
 							>
@@ -420,7 +460,7 @@ export default function AdminProductPage() {
 							<MenuItem
 								className="text-xs"
 								onClick={() => {
-									setCurrentPage(prev => prev = 1);
+									setCurrentPage((prev) => (prev = 1));
 									setFilters((prev) => ({ ...prev, sort: 'Price', order: 'desc' }));
 								}}
 							>
@@ -429,7 +469,7 @@ export default function AdminProductPage() {
 							<MenuItem
 								className="text-xs"
 								onClick={() => {
-									setCurrentPage(prev => prev = 1);
+									setCurrentPage((prev) => (prev = 1));
 									setFilters((prev) => ({ ...prev, sort: 'Name', order: 'asc' }));
 								}}
 							>
@@ -438,7 +478,7 @@ export default function AdminProductPage() {
 							<MenuItem
 								className="text-xs"
 								onClick={() => {
-									setCurrentPage(prev => prev = 1);
+									setCurrentPage((prev) => (prev = 1));
 									setFilters((prev) => ({ ...prev, sort: 'Name', order: 'desc' }));
 								}}
 							>
@@ -465,13 +505,13 @@ export default function AdminProductPage() {
 					>
 						Search
 					</Button> */}
-					<Button 
-						style={{ borderColor: 'gray' }} 
+					<Button
+						style={{ borderColor: 'gray' }}
 						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
-						borderRadius={'0'} 
-						color="gray" 
-						variant="outline" 
-						size={'sm'} 
+						borderRadius={'0'}
+						color="gray"
+						variant="outline"
+						size={'sm'}
 						onClick={resetFilter}
 					>
 						Reset Filter

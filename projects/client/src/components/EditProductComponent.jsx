@@ -40,7 +40,7 @@ export default function EditProductComponent({
 	productData,
 	selectedProduct,
 	selectedProductIndex,
-	productStock
+	productStock,
 }) {
 	const [form, setForm] = useState({
 		category_id: 0,
@@ -53,7 +53,7 @@ export default function EditProductComponent({
 		default_unit: '',
 		product_stock: 0,
 		product_netto: 0,
-		product_conversion: '-'
+		product_conversion: '',
 	});
 
 	const [selectedForm, setSelectedForm] = useState('details');
@@ -73,18 +73,15 @@ export default function EditProductComponent({
 				product_description: form.product_description ? form.product_description : productData[selectedProductIndex]?.product_description,
 				product_usage: form.product_usage ? form.product_usage : productData[selectedProductIndex]?.product_usage,
 				default_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
-				product_image: productData[selectedProductIndex]?.product_image
-			}
+				product_image: productData[selectedProductIndex]?.product_image,
+			};
 
 			if (form.product_image) {
 				delete inputData.product_image;
 				formData.append('product_image', form.product_image);
-			} 
+			}
 
-			formData.append(
-				'data',
-				JSON.stringify(inputData)
-			);
+			formData.append('data', JSON.stringify(inputData));
 
 			let updateProduct = await axios.patch(`${API_URL}/product/update_product/${productData[selectedProductIndex]?.product_id}`, formData);
 
@@ -119,7 +116,7 @@ export default function EditProductComponent({
 						product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto,
 						product_conversion: form.product_conversion && form.product_conversion !== '-' ? form.product_conversion : productData[selectedProductIndex]?.product_conversion,
 					});
-	
+
 					if (updateStock.data.success) {
 						getProductData();
 						toast({
@@ -138,9 +135,9 @@ export default function EditProductComponent({
 							isClosable: true,
 						});
 					}
-				} 
-				
-				if (productStock?.length === 0 && !checkedDeleteStock)  {
+				}
+
+				if (productStock?.length === 0 && !checkedDeleteStock) {
 					let addStock = await axios.post(`${API_URL}/product/add_stock`, {
 						product_id: productData[selectedProductIndex]?.product_id,
 						product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
@@ -168,7 +165,7 @@ export default function EditProductComponent({
 						});
 					}
 				}
-			} 
+			}
 
 			onCloseEditProduct();
 
@@ -183,9 +180,8 @@ export default function EditProductComponent({
 				default_unit: '',
 				product_stock: 0,
 				product_netto: 0,
-				product_conversion: '-'
+				product_conversion: '-',
 			});
-
 		} catch (error) {
 			toast({
 				size: 'xs',
@@ -211,11 +207,11 @@ export default function EditProductComponent({
 				default_unit: '',
 				product_stock: 0,
 				product_netto: 0,
-				product_conversion: '-'
+				product_conversion: '-',
 			});
 			setCheckedItems((prev) => (prev = false));
-			setSelectedForm(prev => prev = 'details');
-			setCheckedDeleteStock(prev => prev = false);
+			setSelectedForm((prev) => (prev = 'details'));
+			setCheckedDeleteStock((prev) => (prev = false));
 		}
 	}, [isOpenEditProduct]);
 
@@ -228,261 +224,259 @@ export default function EditProductComponent({
 			<Modal isCentered className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenEditProduct} onClose={onCloseEditProduct} size={'md'}>
 				<ModalOverlay />
 				<ModalContent>
-					<ModalHeader fontSize="md" className={!checkedDeleteStock ? 'text-center' : ''}>{!checkedDeleteStock ? selectedProduct : 'Delete confirmation'}</ModalHeader>
+					<ModalHeader fontSize="md" className={!checkedDeleteStock ? 'text-center' : ''}>
+						{!checkedDeleteStock ? selectedProduct : 'Delete confirmation'}
+					</ModalHeader>
 					<ModalCloseButton />
 					<ModalBody pb={2}>
-						{
-							checkedDeleteStock && (
-								<h1 className='text-sm'>Are you sure <span className='underline'>remove</span> all <span className='text-sm font-bold'>{selectedProduct} stock</span> from the list and <span className='underline'>update</span> its data?</h1>
-							)
-						}
-						{
-							!checkedDeleteStock && 
+						{checkedDeleteStock && (
+							<h1 className="text-sm">
+								Are you sure <span className="underline">remove</span> all <span className="text-sm font-bold">{selectedProduct} stock</span> from the list and{' '}
+								<span className="underline">update</span> its data?
+							</h1>
+						)}
+						{!checkedDeleteStock && (
 							<FormControl>
-								<div className='flex justify-center mb-5'> 
-									<h1 
+								<div className="flex justify-center mb-5">
+									<h1
 										className={`inline text-sm text-center px-10 pb-2 font-semibold ${selectedForm === 'details' ? 'text-borderHijau border-b-2 border-borderHijau' : 'text-gray-400 cursor-pointer'}`}
 										onClick={() => {
-											setSelectedForm(prev => prev = 'details');
+											setSelectedForm((prev) => (prev = 'details'));
 										}}
 									>
 										Details
 									</h1>
-									<h1 
-										className={`inline text-sm text-center px-10 pb-2 font-semibold ${selectedForm === 'stock' || selectedForm === 'delete_stock' ? 'text-borderHijau border-b-2 border-borderHijau' : 'text-gray-400 cursor-pointer'}`}
+									<h1
+										className={`inline text-sm text-center px-10 pb-2 font-semibold ${
+											selectedForm === 'stock' || selectedForm === 'delete_stock' ? 'text-borderHijau border-b-2 border-borderHijau' : 'text-gray-400 cursor-pointer'
+										}`}
 										onClick={() => {
-											setSelectedForm(prev => prev = 'stock')
+											setSelectedForm((prev) => (prev = 'stock'));
 										}}
 									>
 										Stock
 									</h1>
 								</div>
 
-								{
-									selectedForm === 'details' && (
-										<>
-											<h1 className='font-semibold text-gray text-xs'>Product Name:</h1>
-											<Input
-												required
-												className="text-borderHijau my-2"
-												borderRadius="0"
-												size="sm"
-												ref={initialRef}
-												placeholder={selectedProduct}
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												color="gray"
-												onChange={(e) => setForm((prev) => ({ ...prev, product_name: e.target.value }))}
-											/>
+								{selectedForm === 'details' && (
+									<>
+										<h1 className="font-semibold text-gray text-xs">Product Name:</h1>
+										<Input
+											required
+											className="text-borderHijau my-2"
+											borderRadius="0"
+											size="sm"
+											ref={initialRef}
+											placeholder={selectedProduct}
+											_focusVisible={{ outline: '2px solid #1F6C75' }}
+											_placeholder={{ color: 'inherit' }}
+											color="gray"
+											onChange={(e) => setForm((prev) => ({ ...prev, product_name: e.target.value }))}
+										/>
 
-											<h1 className='font-semibold text-gray text-xs'>Product Category:</h1>		
-											<Menu>
-												<MenuButton
-													className="my-2 w-[100%] border-[1px] border-gray text-xs"
-													color={'gray'}
-													bgColor={'white'}
-													style={{ borderRadius: 0 }}
-													as={Button}
-													rightIcon={<HiOutlineChevronDown />}
-													size={'sm'}
-												>
-													{form.category_name ? form.category_name : productData[selectedProductIndex]?.category_name}
-												</MenuButton>
-												<MenuList>
-													{categoryData.map((val, idx) => {
-														return (
-															<MenuItem
-																key={idx}
-																className="text-xs"
-																color={'gray'}
-																onClick={() => {
-																	setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
-																}}
-															>
-																{val.category_name}
-															</MenuItem>
-														);
-													})}
-												</MenuList>
-											</Menu>
-											
-											<h1 className='font-semibold text-gray text-xs'>Product Price:</h1>
-											<NumberInput size="sm" min={1} className="text-borderHijau my-2">
-												<NumberInputField
-													borderRadius="0"
-													placeholder={`Rp ${productData[selectedProductIndex]?.product_price.toLocaleString('id')}`}
-													color="gray"
-													_focusVisible={{ outline: '2px solid #1F6C75' }}
-													_placeholder={{ color: 'inherit' }}
-													onChange={(e) => setForm((prev) => ({ ...prev, product_price: parseInt(e.target.value) }))}
-												/>
-											</NumberInput>
-											
-											<h1 className='font-semibold text-gray text-xs'>Product Description:</h1>
-											<Textarea
-												required
-												className="text-borderHijau my-2 max-h-[100px]"
-												borderRadius="0"
-												size="sm"
-												placeholder={productData[selectedProductIndex]?.product_description}
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												color="gray"
-												onChange={(e) => setForm((prev) => ({ ...prev, product_description: e.target.value }))}
-											/>
-
-											<h1 className='font-semibold text-gray text-xs'>Product Usage:</h1>
-											<Textarea
-												required
-												className="text-borderHijau my-2 max-h-[100px]"
-												borderRadius="0"
-												size="sm"
-												placeholder={productData[selectedProductIndex]?.product_usage}
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												color="gray"
-												onChange={(e) => setForm((prev) => ({ ...prev, product_usage: e.target.value }))}
-											/>
-
-											<Box borderWidth="1px" overflow="hidden" className="text-center p-3 my-2">
-												<div className="wrapper">
-													<input
-														type="file"
-														id="file-input"
-														onChange={(e) => {
-															const file = e.target?.files[0];
-															setForm((prev) => ({ ...prev, product_image: file }));
-														}}
-													/>
-													<label htmlFor="file-input">
-														<AiOutlinePaperClip size={17} className="inline" color="gray" />
-														{form.product_image ? (
-															<p className="inline ml-1 font-semibold text-sm text-gray-500">{form.product_image.name}</p>
-														) : (
-															<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Profile Picture</p>
-														)}
-													</label>
-												</div>
-											</Box>
-										</>
-									)
-								}
-		
-								{
-									selectedForm === 'stock' && !checkedDeleteStock && (
-										<>
-											<h1 className='font-semibold text-gray text-xs'>Product Stock:</h1>
-											<NumberInput size="sm" min={0} className="text-borderHijau my-2">
-												<NumberInputField
-													borderRadius="0"
-													placeholder={productStock[0]?.product_stock ? productStock[0]?.product_stock : 0}
-													color="gray"
-													_focusVisible={{ outline: '2px solid #1F6C75' }}
-													_placeholder={{ color: 'inherit' }}
-													onChange={(e) => setForm((prev) => ({ ...prev, product_stock: parseInt(e.target.value) }))}
-												/>
-												<NumberInputStepper>
-													<NumberIncrementStepper />
-													<NumberDecrementStepper />
-												</NumberInputStepper>
-											</NumberInput>
-
-											<h1 className='font-semibold text-gray text-xs'>Default Unit:</h1>
-											<Input
-												required
-												className="text-borderHijau my-2 inline"
-												borderRadius="0"
-												size="sm"
-												placeholder={productData[selectedProductIndex]?.default_unit ? productData[selectedProductIndex]?.default_unit : 'Default unit'}
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												color="gray"
-												onChange={(e) => setForm((prev) => ({ ...prev, default_unit: e.target.value }))}
-											/>
-
-											{		
-												productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && (
-													<>
-														<hr className='my-2'/>
-														<h1 className='font-semibold text-gray text-xs mt-2 text-center'>
-															Conversion: {productStock[0]?.product_netto} {productStock[0]?.product_conversion} per {productData[selectedProductIndex]?.default_unit}
-														</h1>
-														<hr className='my-2'/>
-													</>
-												)
-											}
-
-											<Checkbox
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												colorScheme="teal"
+										<h1 className="font-semibold text-gray text-xs">Product Category:</h1>
+										<Menu>
+											<MenuButton
+												className="my-2 w-[100%] border-[1px] border-gray text-xs"
 												color={'gray'}
-												className="my-2"
-												isChecked={checkedItems}
-												onChange={(e) => setCheckedItems(e.target.checked)}
+												bgColor={'white'}
+												style={{ borderRadius: 0 }}
+												as={Button}
+												rightIcon={<HiOutlineChevronDown />}
+												size={'sm'}
 											>
-												<p className="text-gray text-sm">{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-'  && productStock[0]?.product_conversion ? "Edit conversion unit" : "Create new conversion unit" }</p>
-											</Checkbox>
+												{form.category_name ? form.category_name : productData[selectedProductIndex]?.category_name}
+											</MenuButton>
+											<MenuList>
+												{categoryData.map((val, idx) => {
+													return (
+														<MenuItem
+															key={idx}
+															className="text-xs"
+															color={'gray'}
+															onClick={() => {
+																setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
+															}}
+														>
+															{val.category_name}
+														</MenuItem>
+													);
+												})}
+											</MenuList>
+										</Menu>
 
-											{checkedItems && (
-												<>
-													<h1 className='font-semibold text-gray text-xs mt-2'>Product Netto:</h1>
-													<NumberInput size="sm" min={0} className="text-borderHijau my-2">
-														<NumberInputField
-															borderRadius="0"
-															placeholder={productStock[0]?.product_netto ? productStock[0]?.product_netto : 0}
-															color="gray"
-															_focusVisible={{ outline: '2px solid #1F6C75' }}
-															_placeholder={{ color: 'inherit' }}
-															onChange={(e) => setForm((prev) => ({ ...prev, product_netto: parseInt(e.target.value) }))}
-														/>
-														<NumberInputStepper>
-															<NumberIncrementStepper />
-															<NumberDecrementStepper />
-														</NumberInputStepper>
-													</NumberInput>
+										<h1 className="font-semibold text-gray text-xs">Product Price:</h1>
+										<NumberInput size="sm" min={1} className="text-borderHijau my-2">
+											<NumberInputField
+												borderRadius="0"
+												placeholder={`Rp ${productData[selectedProductIndex]?.product_price.toLocaleString('id')}`}
+												color="gray"
+												_focusVisible={{ outline: '2px solid #1F6C75' }}
+												_placeholder={{ color: 'inherit' }}
+												onChange={(e) => setForm((prev) => ({ ...prev, product_price: parseInt(e.target.value) }))}
+											/>
+										</NumberInput>
 
-													<h1 className='font-semibold text-gray text-xs mt-2'>Conversion Unit:</h1>
-													<Input
-														required
-														className="text-borderHijau my-2"
-														borderRadius="0"
-														size="sm"
-														ref={initialRef}
-														placeholder={productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' ? productStock[0]?.product_conversion : 'Conversion unit'}
-														_focusVisible={{ outline: '2px solid #1F6C75' }}
-														_placeholder={{ color: 'inherit' }}
-														color="gray"
-														onChange={(e) => setForm((prev) => ({ ...prev, product_conversion: e.target.value }))}
-													/>
-												</>
-											)}
-											<br />
-										</>
-									)
-								}
+										<h1 className="font-semibold text-gray text-xs">Product Description:</h1>
+										<Textarea
+											required
+											className="text-borderHijau my-2 max-h-[100px]"
+											borderRadius="0"
+											size="sm"
+											placeholder={productData[selectedProductIndex]?.product_description}
+											_focusVisible={{ outline: '2px solid #1F6C75' }}
+											_placeholder={{ color: 'inherit' }}
+											color="gray"
+											onChange={(e) => setForm((prev) => ({ ...prev, product_description: e.target.value }))}
+										/>
 
-								{
-									selectedForm === 'stock' && productStock.length > 0 && (
+										<h1 className="font-semibold text-gray text-xs">Product Usage:</h1>
+										<Textarea
+											required
+											className="text-borderHijau my-2 max-h-[100px]"
+											borderRadius="0"
+											size="sm"
+											placeholder={productData[selectedProductIndex]?.product_usage}
+											_focusVisible={{ outline: '2px solid #1F6C75' }}
+											_placeholder={{ color: 'inherit' }}
+											color="gray"
+											onChange={(e) => setForm((prev) => ({ ...prev, product_usage: e.target.value }))}
+										/>
+
+										<Box borderWidth="1px" overflow="hidden" className="text-center p-3 my-2">
+											<div className="wrapper">
+												<input
+													type="file"
+													id="file-input"
+													onChange={(e) => {
+														const file = e.target?.files[0];
+														setForm((prev) => ({ ...prev, product_image: file }));
+													}}
+												/>
+												<label htmlFor="file-input">
+													<AiOutlinePaperClip size={17} className="inline" color="gray" />
+													{form.product_image ? (
+														<p className="inline ml-1 font-semibold text-sm text-gray-500">{form.product_image.name}</p>
+													) : (
+														<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Profile Picture</p>
+													)}
+												</label>
+											</div>
+										</Box>
+									</>
+								)}
+
+								{selectedForm === 'stock' && !checkedDeleteStock && (
+									<>
+										<h1 className="font-semibold text-gray text-xs">Product Stock:</h1>
+										<NumberInput size="sm" min={0} className="text-borderHijau my-2">
+											<NumberInputField
+												borderRadius="0"
+												placeholder={productStock[0]?.product_stock ? productStock[0]?.product_stock : 0}
+												color="gray"
+												_focusVisible={{ outline: '2px solid #1F6C75' }}
+												_placeholder={{ color: 'inherit' }}
+												onChange={(e) => setForm((prev) => ({ ...prev, product_stock: parseInt(e.target.value) }))}
+											/>
+											<NumberInputStepper>
+												<NumberIncrementStepper />
+												<NumberDecrementStepper />
+											</NumberInputStepper>
+										</NumberInput>
+
+										<h1 className="font-semibold text-gray text-xs">Default Unit:</h1>
+										<Input
+											required
+											className="text-borderHijau my-2 inline"
+											borderRadius="0"
+											size="sm"
+											placeholder={productData[selectedProductIndex]?.default_unit ? productData[selectedProductIndex]?.default_unit : 'Default unit'}
+											_focusVisible={{ outline: '2px solid #1F6C75' }}
+											_placeholder={{ color: 'inherit' }}
+											color="gray"
+											onChange={(e) => setForm((prev) => ({ ...prev, default_unit: e.target.value }))}
+										/>
+
+										{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && (
+											<>
+												<hr className="my-2" />
+												<h1 className="font-semibold text-gray text-xs mt-2 text-center">
+													Conversion: {productStock[0]?.product_netto} {productStock[0]?.product_conversion} per {productData[selectedProductIndex]?.default_unit}
+												</h1>
+												<hr className="my-2" />
+											</>
+										)}
+
 										<Checkbox
 											_focusVisible={{ outline: '2px solid #1F6C75' }}
 											_placeholder={{ color: 'inherit' }}
-											className='my-2'
-											colorScheme="red"
+											colorScheme="teal"
 											color={'gray'}
-											isChecked={checkedDeleteStock}
-											onChange={(e) => {
-												setCheckedDeleteStock(e.target.checked)
-											}}
+											className="my-2"
+											isChecked={checkedItems}
+											onChange={(e) => setCheckedItems(e.target.checked)}
 										>
-											<p className="text-gray text-sm">Delete all product stock</p>
-										</Checkbox> 
-									)
-								}
+											<p className="text-gray text-sm">
+												{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
+													? 'Edit conversion unit'
+													: 'Create new conversion unit'}
+											</p>
+										</Checkbox>
 
+										{checkedItems && (
+											<>
+												<h1 className="font-semibold text-gray text-xs mt-2">Product Netto:</h1>
+												<NumberInput size="sm" min={0} className="text-borderHijau my-2">
+													<NumberInputField
+														borderRadius="0"
+														placeholder={productStock[0]?.product_netto ? productStock[0]?.product_netto : 0}
+														color="gray"
+														_focusVisible={{ outline: '2px solid #1F6C75' }}
+														_placeholder={{ color: 'inherit' }}
+														onChange={(e) => setForm((prev) => ({ ...prev, product_netto: parseInt(e.target.value) }))}
+													/>
+													<NumberInputStepper>
+														<NumberIncrementStepper />
+														<NumberDecrementStepper />
+													</NumberInputStepper>
+												</NumberInput>
+
+												<h1 className="font-semibold text-gray text-xs mt-2">Conversion Unit:</h1>
+												<Input
+													required
+													className="text-borderHijau my-2"
+													borderRadius="0"
+													size="sm"
+													ref={initialRef}
+													placeholder={productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' ? productStock[0]?.product_conversion : 'Conversion unit'}
+													_focusVisible={{ outline: '2px solid #1F6C75' }}
+													_placeholder={{ color: 'inherit' }}
+													color="gray"
+													onChange={(e) => setForm((prev) => ({ ...prev, product_conversion: e.target.value }))}
+												/>
+											</>
+										)}
+										<br />
+									</>
+								)}
+
+								{selectedForm === 'stock' && productStock.length > 0 && (
+									<Checkbox
+										_focusVisible={{ outline: '2px solid #1F6C75' }}
+										_placeholder={{ color: 'inherit' }}
+										className="my-2"
+										colorScheme="red"
+										color={'gray'}
+										isChecked={checkedDeleteStock}
+										onChange={(e) => {
+											setCheckedDeleteStock(e.target.checked);
+										}}
+									>
+										<p className="text-gray text-sm">Delete all product stock</p>
+									</Checkbox>
+								)}
 							</FormControl>
-						}
-
+						)}
 					</ModalBody>
 
 					<ModalFooter>
@@ -500,7 +494,7 @@ export default function EditProductComponent({
 									form.product_description ||
 									form.product_usage ||
 									form.default_unit ||
-									form.product_stock || 
+									form.product_stock ||
 									form.product_netto ||
 									form.product_conversion
 								) {
@@ -522,8 +516,8 @@ export default function EditProductComponent({
 							size="sm"
 							onClick={() => {
 								if (checkedDeleteStock) {
-									setCheckedDeleteStock(prev => prev = false);
-								} else  {
+									setCheckedDeleteStock((prev) => (prev = false));
+								} else {
 									onCloseEditProduct();
 									setForm({
 										category_id: 0,
@@ -536,8 +530,8 @@ export default function EditProductComponent({
 										default_unit: '',
 										product_stock: 0,
 									});
-								}}
-							}
+								}
+							}}
 						>
 							Cancel
 						</Button>

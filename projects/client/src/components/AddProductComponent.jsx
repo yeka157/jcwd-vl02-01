@@ -29,7 +29,7 @@ import { HiOutlineChevronDown } from 'react-icons/hi';
 import axios from 'axios';
 import { API_URL } from '../helper';
 
-export default function AddProductComponent({ initialRef, finalRef, isOpenAddProduct, onCloseAddProduct, categoryData, getProductData, productData, setCurrentPage }) {
+export default function AddProductComponent({ initialRef, finalRef, isOpenAddProduct, onCloseAddProduct, categoryData, getProductData, productData, setCurrentPage, totalData, itemsPerPage, currentPage }) {
 	const [form, setForm] = useState({
 		category_id: 0,
 		category_name: '',
@@ -44,7 +44,10 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 
 	const toast = useToast();
 
+	const totalPage = Math.ceil(totalData / itemsPerPage);
+
 	const btnAddProduct = async () => {
+		let message = '';
 		try {
 			let formData = new FormData();
 			formData.append(
@@ -64,12 +67,14 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 			formData.append('product_image', form.product_image);
 
 			let res = await axios.post(`${API_URL}/product/add_product`, formData);
+			message = res.data.message;
 
 			if (res.data.success) {
 				getProductData();
+				setCurrentPage((prev) => prev = 1);
 				toast({
 					size: 'xs',
-					title: `New product has been added!`,
+					title: `${form.product_name} has been added to product list!`,
 					position: 'top-right',
 					status: 'success',
 					isClosable: true,
@@ -77,7 +82,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 			} else {
 				toast({
 					size: 'xs',
-					title: `Failed to add new product!`,
+					title: `Failed to add ${form.product_name} to product list: ${message}`,
 					position: 'top-right',
 					status: 'error',
 					isClosable: true,
@@ -86,7 +91,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 		} catch (error) {
 			toast({
 				size: 'xs',
-				title: `Failed to add new product!`,
+				title: `Failed to add ${form.product_name} to product list: ${message}`,
 				position: 'top-right',
 				status: 'error',
 				isClosable: true,
@@ -111,9 +116,9 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 		}
 	}, [isOpenAddProduct]);
 
-	useEffect(() => {
-		getProductData();
-	}, [productData]);
+	// useEffect(() => {
+	// 	getProductData();
+	// }, [currentPage]);
 
 	return (
 		<div>
