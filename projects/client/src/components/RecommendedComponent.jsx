@@ -8,10 +8,12 @@ export default function RecommendedComponent(props) {
 
     const selectRandomProduct = async() => {
         try {
+            let queryParams = new URLSearchParams(window.location.search);
+            let query = queryParams.get("id");
             if (arrNum.length !== 4 ) {
-                let getData = await Axios.get(API_URL + `/product/random/${props.currentId}`);
+                let getData = await Axios.get(API_URL + `/product/random/${query}`);
                 if (getData.data.length === 4) {
-                    setArrNum(getData.data);
+                    setArrNum((prev) => prev = getData.data);
                 }
             }
         } catch (error) {
@@ -20,8 +22,11 @@ export default function RecommendedComponent(props) {
     }
 
     React.useEffect(() => {
-        selectRandomProduct();
-    });
+        if (!arrNum.length) {
+            console.log("test");
+            selectRandomProduct();
+        }
+    }, [arrNum]);
 
   return (
     <div className='bg-bgWhite'>

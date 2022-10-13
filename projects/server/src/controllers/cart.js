@@ -3,7 +3,7 @@ const { dbConf, dbQuery } = require('../config/db');
 module.exports = {
     getCart: async (req, res) => {
         try {
-            let resCart = await dbQuery(`SELECT c.cart_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, c.is_selected, c.quantity from carts c
+            let resCart = await dbQuery(`SELECT c.cart_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, p.product_id, c.is_selected, c.quantity from carts c
             JOIN products p ON p.product_id = c.product_id
             JOIN stock s ON s.product_id = c.product_id
             WHERE c.user_id = ${req.dataToken.user_id};`);
@@ -11,9 +11,8 @@ module.exports = {
             res.status(200).send({
                 succes: true,
                 massage: "Get cart success",
-                cartData: resCart
+                cartData: resCart,
             })
-
 
         } catch (error) {
             console.log(error);
@@ -114,6 +113,30 @@ module.exports = {
                 success: false,
                 massage: "Failed"
             })
+        }
+    },
+    addCart : async (req,res) => {
+        try {
+            let get = await dbQuery(`Select * from carts WHERE product_id = ${dbConf.escape(req.body.product_id)} AND user_id = ${req.dataToken.user_id};`);
+            if (get.length > 0) {
+                let update = await dbQuery(`UPDATE carts c SET quantity = c.quantity + ${dbConf.escape(req.body.quantity)} WHERE c.product_id = ${dbConf.escape(req.body.product_id)} AND c.user_id = ${req.dataToken.user_id};`);
+                let getNew = await dbQuery(`Select * from carts WHERE product_id = ${dbConf.escape(req.body.product_id)} AND user_id = ${req.dataToken.user_id};`);
+                res.status(200).send({success : true, message : "Success", cart : getNew});
+            } else {
+                let add = await dbQuery(`INSERT INTO carts
+                (user_id, product_id, quantity, is_selected) 
+                VALUES (${req.dataToken.user_id}, ${dbConf.escape(req.body.product_id)}, ${dbConf.escape(req.body.quantity)}, 1);`);
+                if (add.insertId) {
+                    res.status(200).send({
+                        success : true,
+                        message : "Success",
+                        add
+                    });
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error);
         }
     }
 }

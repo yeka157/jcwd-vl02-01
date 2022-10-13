@@ -16,6 +16,7 @@ import SearchBar from "../components/SearchBar";
 import { HiChevronDown } from "react-icons/hi";
 import CarouselComponent from '../components/CarouselComponent';
 import Pagination from "../components/Pagination";
+import { useLocation } from "react-router-dom";
 
 export default function ProductListPage() {
   const [categoryData, setCategoryData] = React.useState([]);
@@ -24,6 +25,7 @@ export default function ProductListPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [productData, setProductData] = React.useState([]);
   const [totalData, setTotalData] = React.useState(0);
+  const pathname = useLocation();
 
   const itemsPerPage = 12;
 
@@ -92,6 +94,10 @@ export default function ProductListPage() {
   }, []);
 
   React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  React.useEffect(() => {
     getProduct();
   }, [currentPage]);
 
@@ -155,6 +161,7 @@ export default function ProductListPage() {
           </div>
           <div className="xl:col-span-5 md:col-span-3">
             <div className="text-right mb-5">
+              {/* bikin dropdown untuk filter mobile */}
               <Menu>
                 <MenuButton as={Button} rightIcon={<HiChevronDown />} className='border border-borderHijau hover:bg-borderHijau hover:!text-white !font-medium !text-black hover:brightness-110' size='sm' colorScheme='hijau'
                 style={{ borderRadius : 0, border : '1px solid #1F6C75'}}>
