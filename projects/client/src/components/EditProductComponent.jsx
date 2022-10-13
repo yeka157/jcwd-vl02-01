@@ -358,7 +358,7 @@ export default function EditProductComponent({
 													{form.product_image ? (
 														<p className="inline ml-1 font-semibold text-sm text-gray-500">{form.product_image.name}</p>
 													) : (
-														<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Profile Picture</p>
+														<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Product Image</p>
 													)}
 												</label>
 											</div>
@@ -384,18 +384,17 @@ export default function EditProductComponent({
 											</NumberInputStepper>
 										</NumberInput>
 
-										<h1 className="font-semibold text-gray text-xs">Default Unit:</h1>
+										{/* <h1 className="font-semibold text-gray text-xs">Default Unit:</h1>
 										<Input
-											required
-											className="text-borderHijau my-2 inline"
+											isDisabled
+											className="text-!gray-700 my-2 inline"
 											borderRadius="0"
 											size="sm"
 											placeholder={productData[selectedProductIndex]?.default_unit ? productData[selectedProductIndex]?.default_unit : 'Default unit'}
 											_focusVisible={{ outline: '2px solid #1F6C75' }}
 											_placeholder={{ color: 'inherit' }}
-											color="gray"
 											onChange={(e) => setForm((prev) => ({ ...prev, default_unit: e.target.value }))}
-										/>
+										/> */}
 
 										{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && (
 											<>
@@ -407,7 +406,7 @@ export default function EditProductComponent({
 											</>
 										)}
 
-										<Checkbox
+										{/* <Checkbox
 											_focusVisible={{ outline: '2px solid #1F6C75' }}
 											_placeholder={{ color: 'inherit' }}
 											colorScheme="teal"
@@ -456,7 +455,7 @@ export default function EditProductComponent({
 												/>
 											</>
 										)}
-										<br />
+										<br /> */}
 									</>
 								)}
 

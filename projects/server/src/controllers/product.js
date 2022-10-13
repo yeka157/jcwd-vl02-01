@@ -47,7 +47,7 @@ module.exports = {
 		try {
 			const product_image = `imgProduct/${req.files[0]?.filename}`;
 
-			let { category_id, product_name, product_price, product_description, product_usage, default_unit, product_stock } = JSON.parse(req.body.data);
+			let { category_id, product_name, product_price, product_description, product_usage, default_unit, product_stock, product_netto, product_conversion } = JSON.parse(req.body.data);
 
 			let product = await dbQuery(`SELECT * FROM products WHERE product_name=${dbConf.escape(product_name)};`);
 
@@ -76,8 +76,8 @@ module.exports = {
 					(${dbConf.escape(insertedProduct[0].product_id)},
 					${dbConf.escape(product_stock)},
 					${dbConf.escape(default_unit)},
-					${dbConf.escape(0)},
-					${dbConf.escape('-')});
+					${dbConf.escape(product_netto)},
+					${dbConf.escape(product_conversion)});
 				`
 				);
 

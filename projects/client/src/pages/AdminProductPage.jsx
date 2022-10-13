@@ -361,7 +361,6 @@ export default function AdminProductPage() {
 				finalRef={finalRef}
 				isOpenAddProduct={isOpenAddProduct}
 				onCloseAddProduct={onCloseAddProduct}
-				currentPage={currentPage}
 			/>
 			<EditProductComponent
 				productStock={productStock}
