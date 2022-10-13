@@ -10,6 +10,7 @@ import axios from 'axios';
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux';
 import { getAddress} from '../slices/addressSlice';
+import { useNavigate } from 'react-router-dom';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
 
 const CheckoutPage = (props) => {
@@ -22,6 +23,7 @@ const CheckoutPage = (props) => {
     const user = useSelector(getUser);
     const addressList = useSelector(getAddress);
     const toast = useToast();
+    const navigate = useNavigate();
 
     useEffect(() => {
         getData();
@@ -139,8 +141,18 @@ const CheckoutPage = (props) => {
                 }
             });
             
-            console.log(resOrder.data);
-
+            if (resOrder.data.success) {
+                updateStock();
+                navigate('/transaction_list')
+                toast({
+                    title: `Order success`,
+                    description: 'Product will be shipped after payment completed',
+                    position: 'top',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true
+                });
+            };
 
         } else {
             toast({
@@ -154,10 +166,24 @@ const CheckoutPage = (props) => {
         }
     };
 
+    const updateStock = async () => {
+        try {
+            for (let i = 0; i < item.length; i++) {
+                let data = item[i].product_stock - item[i].quantity
+                console.log(data);
+
+                const resUpdate = await axios.patch(API_URL + `/transaction/substract_stock/${item[i].stock_id}`, {data});
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     return (
-        <div className='bg-bgWhite'>
-            <div className='h-screen py-5 px-5 bg-white'>
+        <div className='bg-white'>
+            <div className='min-h-screen py-5 px-5 bg-white'>
                 <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
                     <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>
                         <div className='border-b'>

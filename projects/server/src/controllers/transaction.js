@@ -1,4 +1,5 @@
 const { dbConf, dbQuery } = require('../config/db');
+const fs = require('fs');
 
 module.exports = {
     addCustomTransaction: async (req, res) => {
@@ -53,7 +54,7 @@ module.exports = {
             `);
 
             if (resOrder.insertId) {
-
+                // Add to transaction detail
                 let detailValues = transaction_detail.map(item => [
                     resOrder.insertId,
                     item.quantity,
@@ -67,6 +68,7 @@ module.exports = {
                 let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description) VALUES ?`
                 let resDetail = await dbQuery(transDetailQuery, [detailValues]);
 
+                // Add to reports
                 let reportValues = transaction_detail.map(item => [
                     resOrder.insertId,
                     item.product_id,
@@ -82,7 +84,10 @@ module.exports = {
                 let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_price, product_unit, quantity, type, note) VALUES ?`
                 let resReports = await dbQuery(reportQuery, [reportValues]);
 
-                if (resDetail.insertId && resReports.insertId) {
+                // Delete from cart
+                let resCart = await dbQuery(`DELETE from carts WHERE user_id = ${req.dataToken.user_id} AND is_selected = 1`);
+
+                if (resDetail.insertId && resReports.insertId && resCart.affectedRows) {
                     res.status(200).send({
                         success: true,
                         massage: 'Order success'
@@ -90,8 +95,19 @@ module.exports = {
                 }
             }
 
-
-
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    substractStock: async (req, res) => {
+        try {
+            let resUpdate = await dbQuery(`UPDATE stock SET product_stock = ${req.body.data} WHERE stock_id = ${req.params.stock_id};`);
+            
+            res.status(200).send({
+                success: true,
+                massage: 'Stocl update success'
+            })
 
         } catch (error) {
             console.log(error);

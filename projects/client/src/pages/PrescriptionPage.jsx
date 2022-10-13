@@ -138,7 +138,7 @@ const PrescriptionPage = (props) => {
             }));
 
             if (user.user_id) {
-                if (user.user.status == 'VERIFIED') {
+                if (user.status == 'VERIFIED') {
                     if (selectedDelivery == 'default-0' && !prescriptionImage) {
                         setBtnThrottle(false)
                         toast({
@@ -194,7 +194,7 @@ const PrescriptionPage = (props) => {
                     setBtnThrottle(false)
                     toast({
                         title: `Order can't be processed`,
-                        description: 'Please verify your first',
+                        description: 'Please verify your account first',
                         position: 'top',
                         status: 'error',
                         duration: 3000,
@@ -206,7 +206,7 @@ const PrescriptionPage = (props) => {
                 setBtnThrottle(false)
                 toast({
                     title: `Order can't be processed`,
-                    description: 'Please loged in first',
+                    description: 'Please log in first',
                     position: 'top',
                     status: 'error',
                     duration: 3000,
@@ -289,7 +289,7 @@ const PrescriptionPage = (props) => {
 
                             <div className='py-1 pt-3 flex justify-between'>
                                 <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
                             </div>
 
                             <div className='py-1 pt-3 flex'>
@@ -298,7 +298,7 @@ const PrescriptionPage = (props) => {
 
                         </div>
 
-                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
+                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold'>
                             {btnThrottle ? <Spinner size='xs' /> : 'Order'}
                         </button>
 
