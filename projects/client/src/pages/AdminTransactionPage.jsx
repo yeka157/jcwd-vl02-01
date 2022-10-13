@@ -26,6 +26,7 @@ import {
 	MenuItem,
 	Tooltip,
 	useToast,
+  Badge
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API_URL } from '../helper';
@@ -394,13 +395,13 @@ export default function AdminTransactionPage() {
 				</Breadcrumb>
 			</div>
 
-			<SearchBar filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage} getProductData={getProductData} />
+			<SearchBar placeholder={'Search by product name'} filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage} getProductData={getProductData} />
 
 			<div className={`container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end`}>
 				<div>
 					<Menu>
 						<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
-							{filters.category_name === '' ? 'Category' : filters.category_name}
+							{filters.category_name === '' ? 'Order Status' : filters.category_name}
 						</MenuButton>
 						<MenuList>
 							<MenuItem
@@ -535,14 +536,20 @@ export default function AdminTransactionPage() {
 					      <Td className="text-[rgb(67,67,67)]">01 May 2022</Td>
 					      <Td className="text-[rgb(67,67,67)]">INV-ABC-123</Td>
 					      <Td className="text-[rgb(67,67,67)]">Rp 160.000</Td>
-					      <Td className="text-[rgb(67,67,67)]">Dikirim</Td>
+					      <Td className="text-[rgb(67,67,67)]">
+                  <Badge colorScheme='green'>Dikirim</Badge>
+                </Td>
+					      <Td className="text-[rgb(67,67,67)]">Action</Td>
               </Tr>
               <Tr >
 					      <Td className="text-[rgb(67,67,67)]">2</Td>
 					      <Td className="text-[rgb(67,67,67)]">02 May 2022</Td>
 					      <Td className="text-[rgb(67,67,67)]">INV-ABC-321</Td>
 					      <Td className="text-[rgb(67,67,67)]">Rp 160.000</Td>
-					      <Td className="text-[rgb(67,67,67)]">Dikirim</Td>
+                <Td className="text-[rgb(67,67,67)]">
+                  <Badge colorScheme='green'>Dikirim</Badge>
+                </Td>
+					      <Td className="text-[rgb(67,67,67)]">Action</Td>
               </Tr>
 						</Thead>
 						<Tbody>
