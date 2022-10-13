@@ -212,9 +212,7 @@ const PrescriptionPage = (props) => {
                     duration: 3000,
                     isClosable: true
                 })
-            }
-
-
+            };
 
         } catch (error) {
             console.log(error);
