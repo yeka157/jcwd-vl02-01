@@ -17,7 +17,7 @@ export default function CarouselComponent(props) {
       </div>
       <div className="pt-2 w-full flex items-center">
         <ButtonComponent
-          text="ADD TO CART"
+          text="Show Details"
           class="grow border-y border-l border-black bg-white font-medium h-[45px] sm:h-auto text-xs lg:text-base lg:px-3 lg:py-2.5 md:py-3.5 sm:py-3.5"
           brightness="90"
           py="1.5"

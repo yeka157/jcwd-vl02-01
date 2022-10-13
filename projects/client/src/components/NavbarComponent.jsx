@@ -3,8 +3,8 @@ import {
   HiOutlineMenuAlt4,
   HiOutlineUser,
   HiOutlineShoppingBag,
-  HiOutlineShoppingCart,
 } from "react-icons/hi";
+import { GoChecklist } from 'react-icons/go';
 import { RiLogoutBoxLine } from 'react-icons/ri';
 import { CgProfile } from 'react-icons/cg';
 import Cookies from 'js-cookie';
@@ -52,7 +52,7 @@ export default function Navbar(props) {
               </MenuButton>
               <MenuList>
                 <MenuItem onClick={()=> {navigate('/profile')}} icon={<CgProfile/>}>Profile</MenuItem>
-                <MenuItem onClick={()=> {navigate('/cart')}} icon={<HiOutlineShoppingCart/>}>Cart</MenuItem>
+                <MenuItem onClick={()=> {navigate('/cart')}} icon={<GoChecklist/>}>Transaction List</MenuItem>
                 <MenuItem icon={<RiLogoutBoxLine/>} onClick={btnLogout}>Logout</MenuItem>
               </MenuList>
             </Menu>
@@ -67,7 +67,7 @@ export default function Navbar(props) {
           }
         </div>
       </div>
-      <div className="sm:flex items-center justify-center hidden ">
+      <div className="md:flex items-center justify-center hidden ">
         <div className="flex justify-evenly space-x-4 my-3">
           <h1 className={`hover:underline ${pathName === '/' ? 'font-medium text-base underline leading-[5px] cursor-default disabled' : 'text-sm hover:leading-3 cursor-pointer'}`} onClick={() => navigate('/')}>HOME</h1>
           <h1 className="text-sm">|</h1>

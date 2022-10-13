@@ -109,7 +109,7 @@ export default function AddressComponent() {
             <ModalContent>
               <ModalHeader>Add a new Address</ModalHeader>
               <ModalCloseButton />
-              <ModalBody>
+              <ModalBody className='space-y-3'>
                 <FormControl>
                   <FormLabel>Province</FormLabel>
                   <Select placeholder='Select province' onChange={(e) => { setProvinceId(e.target.value.split('-')[0]); getDataCity(e.target.value); setProvince(e.target.value.split('-')[1]) }}>
