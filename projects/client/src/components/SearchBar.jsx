@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function SearchBar({setFilters, inputValue, filters}) {
+export default function SearchBar({setFilters, inputValue, filters, setCurrentPage}) {
   return (
     <div className="flex">
       <div className="mb-3 xl:w-96">
@@ -15,6 +15,7 @@ export default function SearchBar({setFilters, inputValue, filters}) {
               aria-label="Search" 
               aria-describedby="button-addon3" 
               onChange={(e) => {
+                setCurrentPage(prev => prev = 1);
                 setFilters(prev => ({...prev, product_name: e.target.value}));
               }}
             />

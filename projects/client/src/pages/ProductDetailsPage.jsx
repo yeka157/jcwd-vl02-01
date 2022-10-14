@@ -6,15 +6,20 @@ import ButtonComponent from "../components/ButtonComponent";
 import { useSelector } from "react-redux";
 import { getUser } from "../slices/userSlice";
 import RecommendedComponent from "../components/RecommendedComponent";
+import Cookies from 'js-cookie';
+import { Skeleton, useToast } from "@chakra-ui/react";
 
 export default function ProductDetailsPage() {
   const { state } = useLocation();
   const user = useSelector(getUser);
+  const toast = useToast();
   const [data, setData] = React.useState([]);
   const [stock, setStock] = React.useState([]);
   const [addCart, setAddCart] = React.useState(1);
   const [incrBtn, setIncrBtn] = React.useState(false);
   const [decrBtn, setDecrBtn] = React.useState(true);
+  const [btn, setBtn] = React.useState(false);
+  const [skeleton, setSkeleton] = React.useState(true);
   const [query, setQuery] = React.useState(0);
 
   const getStock = React.useCallback(
@@ -41,8 +46,34 @@ export default function ProductDetailsPage() {
     setAddCart((prev) => (prev -= 1));
   };
 
-  const btnCheckout = async () => {
+  const btnAddCart = async () => {
     try {
+      if (addCart <= stock.product_stock) {
+        let token = Cookies.get('sehatToken');
+        if (token) {
+          let queryParams = new URLSearchParams(window.location.search);
+          let product_id = queryParams.get("id");
+          let add = await Axios.post(API_URL + '/cart/add_cart', {
+            product_id,
+            quantity : addCart
+          }, {
+            headers : {
+              'Authorization' : `Bearer ${token}`
+            }
+          })
+          if (add.data.success) {
+            toast({
+              title : "Product added to cart",
+              status : 'success',
+              duration : 3000,
+              isClosable : true,
+              position : "top"
+            });
+            setAddCart(1);
+            getStock(product_id);
+          }
+        }
+      }
     } catch (error) {
       console.log(error);
     }
@@ -75,6 +106,20 @@ export default function ProductDetailsPage() {
     }
   }, [addCart, stock.product_stock]);
 
+  React.useEffect(() => {
+    if (!stock.product_stock) {
+      setBtn(true);
+    } else {
+      setBtn(false);
+    }
+  }, [setBtn, stock.product_stock]);
+
+  React.useEffect(() => {
+    setTimeout(() => {
+      setSkeleton(false);
+    }, 1500);
+  }, []);
+
   return (
     <div className="bg-bgWhite">
       <div className="max-w-[1400px] mx-auto border-borderHijau border-x min-h-[50vh]">
@@ -104,11 +149,15 @@ export default function ProductDetailsPage() {
             </div>
             <div>
               <h1>Stock available :</h1>
-              {stock.product_stock ? 
+              { skeleton ? 
+              <Skeleton height='20px' className="w-[25%]"/>
+              : 
+              stock.product_stock ? 
               <h1 className="text-base">
                 {stock.product_stock} {stock.product_unit}
-              </h1> :
-              <h1 className="text-red-500 font-medium text-base">OUT OF STOCK</h1>
+              </h1> 
+              :
+              <h1 className="text-red-500 font-medium text-base">OUT OF STOCK</h1> 
               }
             </div>
           </div>
@@ -127,7 +176,7 @@ export default function ProductDetailsPage() {
                   class="border border-borderHijau text-black hover:bg-borderHijau hover:text-white rounded-lg text-xl font-semibold w-[40px] disabled:opacity-50 disabled:hover:brightness-100 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-black"
                   onclick={decrQty}
                 />
-                <h1 className="py-2 ">{addCart}</h1>
+                <h1 className="py-2 ">{stock.product_stock ? addCart : '0'}</h1>
                 <ButtonComponent
                   text="+"
                   px="2"
@@ -143,8 +192,9 @@ export default function ProductDetailsPage() {
                   text="Add to cart"
                   px="5"
                   py="3"
-                  class="border border-borderHijau text-black rounded-full hover:bg-borderHijau hover:text-white fond-medium"
-                  onclick={btnCheckout}
+                  class="border border-borderHijau text-black rounded-full hover:bg-borderHijau hover:text-white fond-medium disabled:opacity-50 disabled:hover:brightness-100 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-black"
+                  onclick={btnAddCart}
+                  disabled={btn}
                 />
               ) : (
                 <></>

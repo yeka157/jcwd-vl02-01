@@ -28,7 +28,6 @@ import ImageCover from "../components/AuthImageCoverComponent";
 import Navbar from "../components/NavbarComponent";
 
 const LoginPage = () => {
-
     const [credential, setCredential] = useState();
     const [password, setPassword] = useState();
     const [showPassword, setShowPassword] = useState(false);

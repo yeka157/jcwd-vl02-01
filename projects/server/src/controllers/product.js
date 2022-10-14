@@ -4,8 +4,7 @@ module.exports = {
 	countProduct: async (req, res) => {
 		try {
 			let count = await dbQuery(`SELECT COUNT(*) as count FROM products`);
-			res.status(200).send({success: true, total_data: count[0].count});
-
+			res.status(200).send({ success: true, total_data: count[0].count });
 		} catch (error) {
 			res.status(500).send({ success: false, message: error });
 			console.log(error);
@@ -15,7 +14,7 @@ module.exports = {
 		try {
 			const order = req.query.order;
 			const sort = req.query.sort;
-			
+
 			const offset = req.query.offset;
 			const limit = req.query.limit;
 
@@ -25,19 +24,20 @@ module.exports = {
 			const products = await dbQuery(
 				`SELECT * FROM products p 
 				JOIN categories c ON p.category_id = c.category_id
-				${productName && !categoryName ? `WHERE product_name LIKE "%${productName}%"`:''}
-				${categoryName && !productName ? `WHERE category_name LIKE "%${categoryName}%"` :''}
-				${categoryName && productName ? `WHERE product_name LIKE "%${productName}%" AND category_name LIKE "%${categoryName}%"` :''}
-				${sort ? 'ORDER BY product_' + sort + " " + order : ''} 
+				${productName && !categoryName ? `WHERE product_name LIKE "%${productName}%"` : ''}
+				${categoryName && !productName ? `WHERE category_name LIKE "%${categoryName}%"` : ''}
+				${categoryName && productName ? `WHERE product_name LIKE "%${productName}%" AND category_name LIKE "%${categoryName}%"` : ''}
+				${sort ? 'ORDER BY product_' + sort + ' ' + order : ''} 
 				${limit ? 'LIMIT ' + limit + ' OFFSET ' + offset : ''}
-			`);
+			`
+			);
 
 			if (products.length > 0) {
 				res.status(200).send({ success: true, products });
 				return;
 			}
 
-			res.status(200).send({ success: true, products: []});
+			res.status(200).send({ success: true, products: [] });
 		} catch (error) {
 			res.status(500).send({ success: false, message: error });
 			console.log(error);
@@ -46,13 +46,13 @@ module.exports = {
 	addProduct: async (req, res) => {
 		try {
 			const product_image = `imgProduct/${req.files[0]?.filename}`;
-			
+
 			let { category_id, product_name, product_price, product_description, product_usage, default_unit, product_stock } = JSON.parse(req.body.data);
 
-			let product = await dbQuery(`SELECT * FROM products WHERE product_name = ${dbConf.escape(product_name)};`);
+			let product = await dbQuery(`SELECT * FROM products WHERE product_name=${dbConf.escape(product_name)};`);
 
 			if (product.length > 0) {
-				res.status(400).send({ success: false, message: 'Product already exists ❌' });
+				res.status(200).send({ success: false, message: 'Product already exists.' });
 				return;
 			}
 
@@ -78,13 +78,16 @@ module.exports = {
 					${dbConf.escape(default_unit)},
 					${dbConf.escape(0)},
 					${dbConf.escape('-')});
-				`)
+				`
+				);
 
-				if (stock.length > 0) {
-					res.status(200).send({ success: true, message: 'New product has been added ✅' });
+				if (stock.length === 0) {
+					res.status(400).send({ success: false, message: 'New product has been added ✅' });
+					return;
 				}
-			}
 
+				res.status(200).send({ success: true, message: 'New product has been added ✅' });
+			}
 		} catch (error) {
 			res.status(500).send({ success: false, message: error });
 			console.log(error);
@@ -165,7 +168,8 @@ module.exports = {
 				${dbConf.escape(product_unit)},
 				${dbConf.escape(product_netto)},
 				${dbConf.escape(product_conversion)});
-			`)
+			`
+			);
 
 			res.status(200).send({ success: true, message: 'New stock has been added! ✅' });
 		} catch (error) {
@@ -181,31 +185,29 @@ module.exports = {
 				let { product_id, product_stock, product_unit, product_netto, product_conversion } = req.body;
 
 				let stock = await dbQuery(`SELECT * FROM stock WHERE product_id=${dbConf.escape(product_id)} AND product_unit=${dbConf.escape(product_unit)};`);
-				if (stock.length > 0) {
-					res.status(400).send({ success: false, message: 'Stock already exists!' });
+				if (stock.length === 0) {
+					await dbQuery(
+						`INSERT INTO stock (product_id, product_stock, product_unit, product_netto, product_conversion) VALUES
+						(${dbConf.escape(product_id)},
+						${dbConf.escape(product_stock)},
+						${dbConf.escape(product_unit)},
+						${dbConf.escape(product_netto)},
+						${dbConf.escape(product_conversion)});
+					`
+					);
+					res.status(200).send({ success: true, message: 'Stock has been updated ✅' });
 					return;
 				}
-	
-				await dbQuery(
-					`INSERT INTO stock (product_id, product_stock, product_unit, product_netto, product_conversion) VALUES
-					(${dbConf.escape(product_id)},
-					${dbConf.escape(product_stock)},
-					${dbConf.escape(product_unit)},
-					${dbConf.escape(product_netto)},
-					${dbConf.escape(product_conversion)});
-				`)
-				res.status(200).send({ success: true, message: 'Stock has been updated ✅' });
-				return;
 			}
 
 			let newData = [];
 
 			Object.keys(req.body).forEach((val) => {
-				if(req.body[val]) {
+				if (req.body[val]) {
 					newData.push(`${val}=${dbConf.escape(req.body[val])}`);
 				}
 			});
-			console.log(newData.join(', '))
+			console.log(newData.join(', '));
 
 			await dbQuery(`UPDATE stock SET ${newData.join(', ')} WHERE stock_id=${req.params.id}`);
 			res.status(200).send({ success: true, message: 'Stock has been updated ✅' });

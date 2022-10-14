@@ -4,8 +4,8 @@ import { API_URL, COOKIE_EXP } from '../helper/index';
 import PasswordForm from '../components/PasswordFormComponent';
 import ImageCover from '../components/AuthImageCoverComponent';
 import axios from 'axios';
-import Cookies from 'js-cookie'
-import Navbar from "../components/NavbarComponent";
+import Cookies from 'js-cookie';
+import Navbar from '../components/NavbarComponent';
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
