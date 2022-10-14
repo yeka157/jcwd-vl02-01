@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Input, useToast, Spinner } from '@chakra-ui/react';
+import React, { useState, useEffect } from "react";
+import { Input, InputGroup, InputLeftElement, useToast, Spinner } from '@chakra-ui/react'
 import { API_URL, COOKIE_EXP } from '../helper/index';
 import PasswordForm from '../components/PasswordFormComponent';
 import ImageCover from '../components/AuthImageCoverComponent';
@@ -220,7 +220,7 @@ const RegisterPage = () => {
 
     return (
         <div>
-            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] pt-[220px] pb-1 lg:pt-[420px] lg:pb-[80px] mx-auto flex items-center'>
+            <div className='h-screen w-screen lg:w-3/4 pt-[220px] pb-1 lg:pt-[175px] lg:pb-[80px] mx-auto flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:drop-shadow-xl'>
                     <ImageCover
                         imageCover={"https://images.unsplash.com/photo-1555633514-abcee6ab92e1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8N3x8cGhhcm1hY3l8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60"}
@@ -266,17 +266,24 @@ const RegisterPage = () => {
 
                             <div className="pt-2">
                                 <p className="pb=[4px] text-[16px]  font-semibold">Phone Number</p>
-                                <Input
-                                    size="sm"
-                                    _focusVisible={{ outline: `2px solid  ${phoneIndicator != 'indicator' ? 'red' : '#87E4D8'}` }}
-                                    backgroundColor="white"
-                                    pr="4.5rem"
-                                    type={'number'}
-                                    placeholder="+62 xxx xxx xxx"
-                                    _placeholder={{ color: "grey" }}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
-                                    value={phoneNumber}
-                                />
+                                <InputGroup>
+                                    <InputLeftElement>
+                                        <p className="font-semi text-[15px] text-[#565656] pb-2 pr-1 border-r">+62</p>
+                                    </InputLeftElement>
+
+                                    <Input
+                                        size="sm"
+                                        _focusVisible={{ outline: `2px solid  ${phoneIndicator != 'indicator' ? 'red' : '#87E4D8'}` }}
+                                        backgroundColor="white"
+                                        pr="4.5rem"
+                                        type={'number'}
+                                        placeholder=" xxx xxx xxx"
+                                        _placeholder={{ color: "grey" }}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        value={phoneNumber}
+                                    />
+                                </InputGroup>
+
                                 <p className={`text-[12px] pl-[2px] ${phoneIndicator != 'Phone number already exist' ? 'text-white' : 'text-red-500'}`}>{phoneIndicator}</p>
                             </div>
 

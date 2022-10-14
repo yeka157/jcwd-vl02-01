@@ -84,11 +84,12 @@ function App() {
         {/* Kevin - APKG1-2 - Landing Page */}
         <Route path='/' element={<LandingPage />} />
         <Route path='/product' element={<ProductListPage />} />
-        <Route path='/product/detail' element={<ProductDetailsPage/>} />
+        <Route path='/product/detail' element={<ProductDetailsPage />} />
         {/* Vikri APKG1- 3 s/d APKG1-13 */}
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/reset_password/:token' element={<ResetPassword />} />
         <Route path='/change_password/:token' element={<ChangePassword />} />
+        <Route path='/prescription' element={<PrescriptionPage />} />
 
 
         {
@@ -97,9 +98,8 @@ function App() {
               <>
                 {/* Kevin - APKG1-13 - Profile Page */}
                 <Route path='/profile' element={<ProfilePage />} />
-                <Route path='/prescription' element={<PrescriptionPage />} />
-                <Route path='/cart' element={<CartPage/>}/>
-                <Route path='/checkout' element={<CheckoutPage/>}/>
+                <Route path='/cart' element={<CartPage />} />
+                <Route path='/checkout' element={<CheckoutPage />} />
               </>
               :
               <>

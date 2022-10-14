@@ -1,4 +1,5 @@
 const { dbConf, dbQuery } = require('../config/db');
+const fs = require('fs');
 
 module.exports = {
     addCustomTransaction: async (req, res) => {
@@ -24,12 +25,93 @@ module.exports = {
                     success: true,
                     massage: 'Prescription Uploaded'
                 })
-            }
+            };
 
         } catch (error) {
             console.log(error);
             res.status(500).send({ success: false, message: error });
 
+        }
+    },
+    addTransaction: async (req, res) => {
+        try {
+
+            let { user_id, transaction_status, invoice, delivery_option, delivery_charge, province, city, city_id, district, address_detail, total_purchase, transaction_detail } = req.body;
+
+
+            resOrder = await dbQuery(`INSERT INTO transactions (user_id, transaction_status, invoice, province, city, city_id, district,  address_detail, delivery_option, delivery_charge, total_purchase) VALUES 
+            (${dbConf.escape(user_id)},
+            ${dbConf.escape(transaction_status)},
+            ${dbConf.escape(invoice)},
+            ${dbConf.escape(province)},
+            ${dbConf.escape(city)},
+            ${dbConf.escape(city_id)},
+            ${dbConf.escape(district)},
+            ${dbConf.escape(address_detail)},
+            ${dbConf.escape(delivery_option)},
+            ${dbConf.escape(delivery_charge)},
+            ${dbConf.escape(total_purchase)});
+            `);
+
+            if (resOrder.insertId) {
+                // Add to transaction detail
+                let detailValues = transaction_detail.map(item => [
+                    resOrder.insertId,
+                    item.quantity,
+                    item.product_id,
+                    item.product_name,
+                    item.product_image,
+                    item.product_price,
+                    item.product_description
+                ])
+
+                let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description) VALUES ?`
+                let resDetail = await dbQuery(transDetailQuery, [detailValues]);
+
+                // Add to reports
+                let reportValues = transaction_detail.map(item => [
+                    resOrder.insertId,
+                    item.product_id,
+                    item.product_name,
+                    item.product_image,
+                    item.product_price,
+                    item.default_unit,
+                    item.quantity,
+                    'Selling',
+                    'Substraction'
+                ])
+
+                let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_price, product_unit, quantity, type, note) VALUES ?`
+                let resReports = await dbQuery(reportQuery, [reportValues]);
+
+                // Delete from cart
+                let resCart = await dbQuery(`DELETE from carts WHERE user_id = ${req.dataToken.user_id} AND is_selected = 1`);
+
+                if (resDetail.insertId && resReports.insertId && resCart.affectedRows) {
+                    res.status(200).send({
+                        success: true,
+                        massage: 'Order success'
+                    })
+                }
+            }
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    substractStock: async (req, res) => {
+        try {
+            let resUpdate = await dbQuery(`UPDATE stock SET product_stock = ${req.body.data} WHERE stock_id = ${req.params.stock_id};`);
+            
+            res.status(200).send({
+                success: true,
+                massage: 'Stocl update success'
+            })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
         }
     }
 }

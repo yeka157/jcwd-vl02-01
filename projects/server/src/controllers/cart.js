@@ -3,7 +3,7 @@ const { dbConf, dbQuery } = require('../config/db');
 module.exports = {
     getCart: async (req, res) => {
         try {
-            let resCart = await dbQuery(`SELECT c.cart_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, p.product_id, c.is_selected, c.quantity from carts c
+            let resCart = await dbQuery(`SELECT c.cart_id, p.default_unit, c.product_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, c.is_selected, c.quantity from carts c
             JOIN products p ON p.product_id = c.product_id
             JOIN stock s ON s.product_id = c.product_id
             WHERE c.user_id = ${req.dataToken.user_id};`);
@@ -96,7 +96,7 @@ module.exports = {
     },
     getCheckedItem: async (req, res) => {
         try {
-            let resChecked = await dbQuery(`SELECT c.cart_id, p.product_id, p.product_name, p.product_price, p.product_image, p.product_description, s.product_stock, c.is_selected, c.quantity from carts c
+            let resChecked = await dbQuery(`SELECT c.cart_id, s.stock_id, c.product_id, p.default_unit, p.product_name, p.product_price, p.product_image, p.product_description, s.product_stock, c.is_selected, c.quantity from carts c
             JOIN products p ON c.product_id = p.product_id
             JOIN stock s ON c.product_id = s.product_id
             WHERE user_id = ${req.dataToken.user_id} AND c.is_selected = 1;`);
@@ -139,4 +139,4 @@ module.exports = {
             res.status(500).send(error);
         }
     }
-}
+};

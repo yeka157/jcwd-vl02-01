@@ -76,8 +76,8 @@ const CartPage = (props) => {
     }
 
     return (
-        <div className='bg-bgWhite'>
-            <div className='h-screen py-5 px-5 bg-white'>
+        <div>
+            <div className='min-h-screen py-5 px-5 bg-white'>
                 <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
                     <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>
                         <div className='border-b'>
@@ -94,7 +94,6 @@ const CartPage = (props) => {
                             cartData.map((val, idx) => {
                                 return (
                                     <CartComponent key={idx} data={val} getData={getCartData} cart={cartData}/>
-
                                 )
                             })
                         }
@@ -107,7 +106,7 @@ const CartPage = (props) => {
 
                         <div className='pt-5'>
                             <p className='text-hijauBtn'>Total purchase :</p>
-                            <p className='text-hijauBtn font-bold text-[32px] lg:border-b lg:pb-[40px]'>RP{printTotalPurchase().toLocaleString('id')},-</p>
+                            <p className='text-hijauBtn font-bold text-[32px] lg:border-b lg:pb-[40px]'>Rp{printTotalPurchase().toLocaleString('id')},-</p>
                         </div>
 
                         <button onClick={btnCheckout} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[42px]'>

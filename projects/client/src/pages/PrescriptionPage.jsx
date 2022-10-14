@@ -135,60 +135,84 @@ const PrescriptionPage = (props) => {
                 city_id: address.city_id,
                 district: address.district,
                 address_detail: address.address_detail,
-
             }));
 
-            if (selectedDelivery == 'default-0' && !prescriptionImage) {
-                setBtnThrottle(false)
-                toast({
-                    title: `Please make sure your form is not empty`,
-                    position: 'top',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true
-                })
+            if (user.user_id) {
+                if (user.status == 'VERIFIED') {
+                    if (selectedDelivery == 'default-0' && !prescriptionImage) {
+                        setBtnThrottle(false)
+                        toast({
+                            title: `Please make sure your form is not empty`,
+                            position: 'top',
+                            status: 'error',
+                            duration: 3000,
+                            isClosable: true
+                        })
 
-            } else if (selectedDelivery == 'default-0') {
-                setBtnThrottle(false)
-                toast({
-                    title: `Please choose delivery option first`,
-                    position: 'top',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true
-                })
-            } else if (!prescriptionImage) {
-                setBtnThrottle(false)
-                toast({
-                    title: `Please upload your doctor prescription`,
-                    position: 'top',
-                    status: 'error',
-                    duration: 3000,
-                    isClosable: true
-                })
-            } else {
-                let resInsert = await axios.post(API_URL + '/transaction/add_custom_transaction', formData, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
+                    } else if (selectedDelivery == 'default-0') {
+                        setBtnThrottle(false)
+                        toast({
+                            title: `Please choose delivery option first`,
+                            position: 'top',
+                            status: 'error',
+                            duration: 3000,
+                            isClosable: true
+                        })
+                    } else if (!prescriptionImage) {
+                        setBtnThrottle(false)
+                        toast({
+                            title: `Please upload your doctor prescription`,
+                            position: 'top',
+                            status: 'error',
+                            duration: 3000,
+                            isClosable: true
+                        })
+                    } else {
+                        let resInsert = await axios.post(API_URL + '/transaction/add_custom_transaction', formData, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`
+                            }
+                        });
+
+                        if (resInsert.data.success) {
+                            setPrescription('');
+                            setSelectedImage(null);
+                            setSelectedDelivery('default-0');
+                            setBtnThrottle(false)
+                            toast({
+                                title: `Order processed by admin`,
+                                description: 'Your order will be ready in few moment',
+                                position: 'top',
+                                status: 'success',
+                                duration: 5000,
+                                isClosable: true
+                            });
+                            setTimeout(navigate('/transaction_list'), 2000)
+                        }
                     }
-                });
-
-                if (resInsert.data.success) {
-                    setPrescription('');
-                    setSelectedImage(null);
-                    setSelectedDelivery('default-0');
+                } else {
                     setBtnThrottle(false)
                     toast({
-                        title: `Order processed by admin`,
-                        description: 'Your order will be ready in few moment',
+                        title: `Order can't be processed`,
+                        description: 'Please verify your account first',
                         position: 'top',
-                        status: 'success',
-                        duration: 5000,
+                        status: 'error',
+                        duration: 3000,
                         isClosable: true
-                    });
-                    setTimeout(navigate('/transaction_list'), 2000)
+                    })
                 }
-            }
+
+            } else {
+                setBtnThrottle(false)
+                toast({
+                    title: `Order can't be processed`,
+                    description: 'Please log in first',
+                    position: 'top',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true
+                })
+            };
 
         } catch (error) {
             console.log(error);
@@ -263,7 +287,7 @@ const PrescriptionPage = (props) => {
 
                             <div className='py-1 pt-3 flex justify-between'>
                                 <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
                             </div>
 
                             <div className='py-1 pt-3 flex'>
@@ -272,7 +296,7 @@ const PrescriptionPage = (props) => {
 
                         </div>
 
-                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
+                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold'>
                             {btnThrottle ? <Spinner size='xs' /> : 'Order'}
                         </button>
 

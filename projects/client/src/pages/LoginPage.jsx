@@ -147,10 +147,8 @@ const LoginPage = () => {
 
     return (
         <div>
-            <div className='h-screen w-screen lg:w-3/4 lg:h-[670px] pt-[220px] pb-1 lg:pt-[420px] lg:pb-[80px] mx-auto flex items-center'>
+            <div className='h-screen w-screen lg:w-3/4 pt-[220px] pb-1 lg:pt-[175px] lg:pb-[80px] mx-auto flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:drop-shadow-xl'>
-
-
                     <ImageCover
                         imageCover={"https://images.unsplash.com/photo-1563213126-a4273aed2016?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"}
                         tagLine1={"We handle it profesionally"}

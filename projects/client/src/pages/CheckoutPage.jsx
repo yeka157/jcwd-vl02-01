@@ -10,6 +10,7 @@ import axios from 'axios';
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux';
 import { getAddress} from '../slices/addressSlice';
+import { useNavigate } from 'react-router-dom';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
 
 const CheckoutPage = (props) => {
@@ -22,6 +23,7 @@ const CheckoutPage = (props) => {
     const user = useSelector(getUser);
     const addressList = useSelector(getAddress);
     const toast = useToast();
+    const navigate = useNavigate();
 
     useEffect(() => {
         getData();
@@ -111,10 +113,77 @@ const CheckoutPage = (props) => {
         return printSubTotal() + parseInt(selectedDelivery.split('-')[1]);
     };
 
+    console.log(item);
+
+    const btnOrder = async () => {
+        if (selectedDelivery != 'default-0') {
+            let token = Cookies.get('sehatToken');
+            let date = new Date()
+
+            let data = {
+                user_id: user.user_id,
+                transaction_status: 'Awaiting Payment',
+                invoice: `INV/${date.getTime()}`,
+                total_purchase: printTotalPurchase(),
+                delivery_option: selectedDelivery.split('-')[0],
+                delivery_charge: parseInt(selectedDelivery.split('-')[1]),
+                province: address.province,
+                city: address.city,
+                city_id: address.city_id,
+                district: address.district,
+                address_detail: address.address_detail,
+                transaction_detail: item
+            }
+
+            let resOrder = await axios.post(API_URL + `/transaction/add_transaction`, data, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (resOrder.data.success) {
+                updateStock();
+                navigate('/transaction_list')
+                toast({
+                    title: `Order success`,
+                    description: 'Product will be shipped after payment completed',
+                    position: 'top',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true
+                });
+            };
+
+        } else {
+            toast({
+                title: `Order can't be proccessed`,
+                description: 'Please choose the delivery option first',
+                position: 'top',
+                status: 'error',
+                duration: 3000,
+                isClosable: true
+            })
+        }
+    };
+
+    const updateStock = async () => {
+        try {
+            for (let i = 0; i < item.length; i++) {
+                let data = item[i].product_stock - item[i].quantity
+                console.log(data);
+
+                const resUpdate = await axios.patch(API_URL + `/transaction/substract_stock/${item[i].stock_id}`, {data});
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     return (
-        <div className='bg-bgWhite'>
-            <div className='h-screen py-5 px-5 bg-white'>
+        <div className='bg-white'>
+            <div className='min-h-screen py-5 px-5 bg-white'>
                 <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
                     <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>
                         <div className='border-b'>
@@ -167,23 +236,23 @@ const CheckoutPage = (props) => {
 
                             <div className='py-1 pt-3 flex justify-between'>
                                 <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
                             </div>
 
                             <div className='py-1 flex justify-between'>
                                 <p className='text-hijauBtn'>Sub total</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>RP{printSubTotal().toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{printSubTotal().toLocaleString('id')},-</p>
                             </div>
 
                             <div className='py-1 border-t mt-3'>
                                 <p className='text-hijauBtn'>Total purchase</p>
-                                <p className='text-hijauBtn text-[32px] font-bold'>RP{printTotalPurchase().toLocaleString('id')},-</p>
+                                <p className='text-hijauBtn text-[32px] font-bold'>Rp{printTotalPurchase().toLocaleString('id')},-</p>
                             </div>
                         </div>
 
-                        {/* <button onClick={btnOrder} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
+                        <button onClick={btnOrder} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
                             Order
-                        </button> */}
+                        </button>
 
                     </div>
                 </div>
