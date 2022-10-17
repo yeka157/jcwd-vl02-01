@@ -28,6 +28,7 @@ export default function ProductListPage() {
   const pathname = useLocation();
 
   const itemsPerPage = 12;
+  console.log(totalData);
 
   const getCategory = async () => {
     let getData = await Axios.get(API_URL + "/category/");

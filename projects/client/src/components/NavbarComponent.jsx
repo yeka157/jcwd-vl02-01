@@ -33,7 +33,7 @@ export default function Navbar(props) {
   }
 
   return (
-    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/prescription' || pathName === '/profile' || pathName === '/cart'  || pathName === '/checkout'|| pathName === '/login' || pathName === '/register' || pathName.includes('/product') ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
+    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/transaction_list'|| pathName === '/prescription' || pathName === '/profile' || pathName === '/cart'  || pathName === '/checkout'|| pathName === '/login' || pathName === '/register' || pathName.includes('/product') ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
 
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
@@ -52,7 +52,7 @@ export default function Navbar(props) {
               </MenuButton>
               <MenuList>
                 <MenuItem onClick={()=> {navigate('/profile')}} icon={<CgProfile/>}>Profile</MenuItem>
-                <MenuItem onClick={()=> {navigate('/cart')}} icon={<GoChecklist/>}>Transaction List</MenuItem>
+                <MenuItem onClick={()=> {navigate('/transaction_list')}} icon={<GoChecklist/>}>Transaction List</MenuItem>
                 <MenuItem icon={<RiLogoutBoxLine/>} onClick={btnLogout}>Logout</MenuItem>
               </MenuList>
             </Menu>
