@@ -122,13 +122,11 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 				product_usage: '',
 				default_unit: '',
 				product_stock: 0,
+				product_netto: 0,
+				product_conversion: '',
 			});
 		}
 	}, [isOpenAddProduct]);
-
-	// useEffect(() => {
-	// 	getProductData();
-	// }, [currentPage]);
 
 	return (
 		<div>
@@ -418,20 +416,12 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 									form.product_description &&
 									form.product_usage &&
 									form.default_unit &&
-									form.product_stock
+									form.product_stock &&
+									form.product_netto &&
+									form.product_conversion
 								) {
 									btnAddProduct();
-									setForm({
-										category_id: 0,
-										category_name: '',
-										product_name: '',
-										product_price: 0,
-										product_image: '',
-										product_description: '',
-										product_usage: '',
-										default_unit: '',
-										product_stock: 0,
-									});
+									
 									
 									onCloseAddProduct();
 									

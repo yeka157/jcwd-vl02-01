@@ -368,8 +368,8 @@ export default function EditProductComponent({
 
 								{selectedForm === 'stock' && !checkedDeleteStock && (
 									<>
-										<h1 className="font-semibold text-gray text-xs">Product Stock:</h1>
-										<NumberInput size="sm" min={0} className="text-borderHijau my-2">
+										<h1 className="font-semibold text-gray text-xs">Product Stock ({productData[selectedProductIndex]?.default_unit}) :</h1>
+										<NumberInput size="sm" min={0} className="text-borderHijau mt-2">
 											<NumberInputField
 												borderRadius="0"
 												placeholder={productStock[0]?.product_stock ? productStock[0]?.product_stock : 0}

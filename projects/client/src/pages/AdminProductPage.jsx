@@ -485,25 +485,7 @@ export default function AdminProductPage() {
 							</MenuItem>
 						</MenuList>
 					</Menu>
-					{/* <Button
-						className={
-							filters.category_name || filters.product_name || filters.sort || filters.order
-								? `mr-10 text-white bg-borderHijau`
-								: `mr-10 text-white bg-borderHijau disabled cursor-not-allowed hover:disabled`
-						}
-						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
-						style={{ borderColor: '#025d67' }}
-						borderRadius={'0'}
-						color="text-gray-500"
-						variant="outline"
-						size={'sm'}
-						onClick={() => {
-							setCurrentPage(prev => prev = 1);
-							getProductData();
-						}}
-					>
-						Search
-					</Button> */}
+					
 					<Button
 						style={{ borderColor: 'gray' }}
 						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}

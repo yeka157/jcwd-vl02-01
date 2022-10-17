@@ -26,12 +26,20 @@ import {
 	MenuItem,
 	Tooltip,
 	useToast,
-  Badge
+	Badge,
+	Input,
+	NumberInput,
+	NumberInputField,
+	NumberInputStepper,
+	NumberIncrementStepper,
+	NumberDecrementStepper,
+	Checkbox,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API_URL } from '../helper';
 import { HiOutlineChevronDown } from 'react-icons/hi';
 import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
+import { BsCalendar2Event } from 'react-icons/bs';
 import Pagination from '../components/Pagination';
 import SearchBar from '../components/SearchBar';
 import AddProductComponent from '../components/AddProductComponent';
@@ -41,6 +49,7 @@ export default function AdminTransactionPage() {
 	// HOOKS
 	const { isOpen: isOpenDeleteConfirmation, onOpen: onOpenDeleteConfirmation, onClose: onCloseDeleteConfirmation } = useDisclosure();
 	const { isOpen: isOpenAddProduct, onOpen: onOpenAddProduct, onClose: onCloseAddProduct } = useDisclosure();
+	const { isOpen: isOpenSelectDate, onOpen: onOpenSelectDate, onClose: onCloseSelectDate } = useDisclosure();
 	const { isOpen: isOpenEditProduct, onOpen: onOpenEditProduct, onClose: onCloseEditProduct } = useDisclosure();
 	const { isOpen: isOpenProductDetails, onOpen: onOpenProductDetails, onClose: onCloseProductDetails } = useDisclosure();
 	const [productData, setProductData] = useState([]);
@@ -51,6 +60,7 @@ export default function AdminTransactionPage() {
 	const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 	const [filters, setFilters] = useState({ product_name: '', category_name: '', sort: '', order: '' });
 	const [currentPage, setCurrentPage] = useState(1);
+	const [selectedForm, setSelectedForm] = useState('ingredients');
 
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
@@ -126,53 +136,6 @@ export default function AdminTransactionPage() {
 		}
 	};
 
-	const modalDeleteConfirmation = (
-		<Modal className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenDeleteConfirmation} onClose={onCloseDeleteConfirmation} isCentered>
-			<ModalOverlay />
-			<ModalContent>
-				<ModalHeader fontSize="md">Delete confirmation</ModalHeader>
-				<ModalCloseButton />
-				<ModalBody pb={2}>
-					<h1>
-						Delete <span className="font-bold">{selectedProduct}</span> from product list?
-					</h1>
-				</ModalBody>
-
-				<ModalFooter>
-					<Button
-						size="sm"
-						colorScheme="red"
-						mr={3}
-						onClick={async () => {
-							try {
-								let result = await axios.delete(API_URL + '/product/delete_product/' + productData[selectedProductIndex].product_id);
-								if (result.data.success) {
-									getProductData();
-									displayProductData();
-									toast({
-										size: 'xs',
-										title: `${selectedProduct} has been deleted from product list!`,
-										position: 'top-right',
-										status: 'success',
-										isClosable: true,
-									});
-								}
-								onCloseDeleteConfirmation();
-							} catch (error) {
-								console.log(error);
-							}
-						}}
-					>
-						Delete
-					</Button>
-					<Button size="sm" onClick={onCloseDeleteConfirmation}>
-						Cancel
-					</Button>
-				</ModalFooter>
-			</ModalContent>
-		</Modal>
-	);
-
 	const displayProductData = () => {
 		const productTable = productData.map((val, idx) => {
 			return (
@@ -244,7 +207,7 @@ export default function AdminTransactionPage() {
 					</li>
 				);
 			}
-			return <h1>Out of stock</h1>
+			return <h1>Out of stock</h1>;
 		});
 	};
 
@@ -257,67 +220,324 @@ export default function AdminTransactionPage() {
 		}
 	};
 
-	const modalProductDetails = (
-		<Modal isCentered size={'xl'} className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenProductDetails} onClose={onCloseProductDetails}>
+	// MODAL INPUT PRODUCT PRESCRIPTION
+	const modalSelectDate = (
+		<Modal isCentered size={'lg'} className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenSelectDate} onClose={onCloseSelectDate}>
 			<ModalOverlay />
 			<ModalContent>
-				<ModalHeader fontSize="md" className="text-center font-bold">
-					{productData[selectedProductIndex]?.product_name}
+				<ModalHeader fontSize="md" className="font-bold">
+					Input Custom Order
 				</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody pb={2}>
-					<div className="px-[20px]">
-						<div className="justify-center items-center flex mt-2">
-							<img
-								className="max-w-[150px]"
-								src={
-									productData[selectedProductIndex]?.product_image.includes('http')
-										? productData[selectedProductIndex]?.product_image
-										: `http://localhost:8000/${productData[selectedProductIndex]?.product_image}`
-								}
-								alt=""
-							/>
-						</div>
-						<h1 className="text-xs font-bold mt-[20px] mb-[5px]">Price</h1>
-						<p className="text-xs text-justify">
-							Rp {productData[selectedProductIndex]?.product_price.toLocaleString('id')} per {productData[selectedProductIndex]?.default_unit}
-						</p>
-						<hr className="my-2" />
-						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Description</h1>
-						<p className="text-xs text-justify">{productData[selectedProductIndex]?.product_description}</p>
-						<hr className="my-2" />
-						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Usage</h1>
-						<p className="text-xs text-justify">{productData[selectedProductIndex]?.product_usage}</p>
-						<hr className="my-2" />
-						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Category</h1>
-						<p className="text-xs text-justify">{productData[selectedProductIndex]?.category_name}</p>
-						<hr className="my-2" />
-						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Default Unit</h1>
-						<p className="text-xs text-justify">{productData[selectedProductIndex]?.default_unit}</p>
-						<hr className="my-2" />
-						{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && (
-							<>
-								<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Conversion Unit</h1>
-								<p className="text-xs text-justify">
-									{productStock[0]?.product_netto} {productStock[0]?.product_conversion} per {productData[selectedProductIndex]?.default_unit}
-								</p>
-								<hr className="my-2" />
-							</>
-						)}
-						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Stock</h1>
-						{/* <ol className="text-xs text-justify">{displayStockData()}</ol> */}
-						<ol className="text-xs text-justify">{productStock?.length > 0 ? displayStockData() : 'Out of stock'}</ol>
+					<div className="flex justify-center mb-5">
+						<h1
+							className={`inline text-sm text-center px-10 pb-2 font-semibold ${selectedForm === 'ingredients' ? 'text-borderHijau border-b-2 border-borderHijau' : 'text-gray-400 cursor-pointer'}`}
+							onClick={() => {
+								setSelectedForm((prev) => (prev = 'ingredients'));
+							}}
+						>
+							Ingredients
+						</h1>
+						<h1
+							className={`inline text-sm text-center px-10 pb-2 font-semibold ${selectedForm === 'payment' ? 'text-borderHijau border-b-2 border-borderHijau' : 'text-gray-400 cursor-pointer'}`}
+							onClick={() => {
+								setSelectedForm((prev) => (prev = 'payment'));
+							}}
+						>
+							Details
+						</h1>
+					</div>
+
+					<Box className='border !border-gray-300 h-[100px] mb-2 overflow-y-scroll'>
+						<Table>
+							<Tbody>
+								<Tr>
+									<Td>
+										<h1 className='text-xs ml-2'>1. Zendalat 50 mg - 2 Tablet </h1>
+									</Td>
+								</Tr>
+								<Tr>
+									<Td>
+										<h1 className='text-xs ml-2'>1. Zendalat 50 mg - 2 Tablet </h1>
+									</Td>
+								</Tr>
+								<Tr>
+									<Td>
+										<h1 className='text-xs ml-2'>1. Zendalat 50 mg - 2 Tablet </h1>
+									</Td>
+								</Tr>
+								<Tr>
+									<Td>
+										<h1 className='text-xs ml-2'>1. Zendalat 50 mg - 2 Tablet </h1>
+									</Td>
+								</Tr>
+							</Tbody>
+						</Table>
+					</Box>
+
+					<Input
+						required
+						className="mt-2 mb-2 inline mr-3"
+						borderRadius="0"
+						size="sm"
+						ref={initialRef}
+						placeholder={'Search Product'}
+						_focusVisible={{ outline: '2px solid #1F6C75' }}
+						_placeholder={{ color: 'inherit' }}
+						color="gray"
+						onChange={(e) => ''}
+					/>
+
+					<div className="flex">
+						{/* <Checkbox
+              _focusVisible={{ outline: '2px solid #1F6C75' }}
+              _placeholder={{ color: 'inherit' }}
+              colorScheme="teal"
+              color={'gray'}
+              className="my-2 mr-3"
+              isChecked={false}
+              onChange={(e) => ''}
+            >
+              <p className="text-gray text-sm">
+                {productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
+                  ? 'Edit conversion unit'
+                  : 'Create new conversion unit'}
+              </p>
+            </Checkbox> */}
+
+						<Input
+							required
+							isDisabled
+							className="my-2 inline mr-3 !w-[40%]"
+							borderRadius="0"
+							size="sm"
+							ref={initialRef}
+							placeholder={'Product name'}
+							_focusVisible={{ outline: '2px solid #1F6C75' }}
+							_placeholder={{ color: 'inherit' }}
+							color="black"
+							onChange={(e) => ''}
+						/>
+
+						<NumberInput size="sm" min={0} className="text-borderHijau my-2 !w-[25%] mr-3">
+							<NumberInputField borderRadius="0" placeholder={'Stock'} color="gray" _focusVisible={{ outline: '2px solid #1F6C75' }} _placeholder={{ color: 'inherit' }} onChange={(e) => ''} />
+							<NumberInputStepper>
+								<NumberIncrementStepper />
+								<NumberDecrementStepper />
+							</NumberInputStepper>
+						</NumberInput>
+
+						<Menu>
+							<MenuButton
+								className="my-2 w-[35%] border-[1px] border-gray text-xs mr-3"
+								color={'gray'}
+								bgColor={'white'}
+								style={{ borderRadius: 0 }}
+								as={Button}
+								rightIcon={<HiOutlineChevronDown />}
+								size={'sm'}
+							>
+								{/* {form.category_name ? form.category_name : productData[selectedProductIndex]?.category_name} */}
+							</MenuButton>
+							<MenuList>
+								<MenuItem
+									className="text-xs"
+									color={'gray'}
+									onClick={() => {
+										'';
+									}}
+								>
+									Strip
+								</MenuItem>
+
+								<MenuItem
+									className="text-xs"
+									color={'gray'}
+									onClick={() => {
+										'';
+									}}
+								>
+									Tablet
+								</MenuItem>
+								{/* {categoryData.map((val, idx) => {
+                  return (
+                    <MenuItem
+                      key={idx}
+                      className="text-xs"
+                      color={'gray'}
+                      onClick={() => {
+                        setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
+                      }}
+                    >
+                      {val.category_name}
+                    </MenuItem>
+                  );
+                })} */}
+							</MenuList>
+						</Menu>
+						<Button className="my-2" colorScheme={'teal'} size="sm">
+							+
+						</Button>
+					</div>
+
+					<div className="flex">
+						{/* <Checkbox
+              _focusVisible={{ outline: '2px solid #1F6C75' }}
+              _placeholder={{ color: 'inherit' }}
+              colorScheme="teal"
+              color={'gray'}
+              className="my-2 mr-3"
+              isChecked={false}
+              onChange={(e) => ''}
+            >
+              <p className="text-gray text-sm">
+                {productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
+                  ? 'Edit conversion unit'
+                  : 'Create new conversion unit'}
+              </p>
+            </Checkbox> */}
+
+						<Input
+							required
+							isDisabled
+							className="my-2 inline mr-3 !w-[40%]"
+							borderRadius="0"
+							size="sm"
+							ref={initialRef}
+							placeholder={'Product name'}
+							_focusVisible={{ outline: '2px solid #1F6C75' }}
+							_placeholder={{ color: 'inherit' }}
+							color="black"
+							onChange={(e) => ''}
+						/>
+
+						<NumberInput size="sm" min={0} className="text-borderHijau my-2 !w-[25%] mr-3">
+							<NumberInputField borderRadius="0" placeholder={'Stock'} color="gray" _focusVisible={{ outline: '2px solid #1F6C75' }} _placeholder={{ color: 'inherit' }} onChange={(e) => ''} />
+							<NumberInputStepper>
+								<NumberIncrementStepper />
+								<NumberDecrementStepper />
+							</NumberInputStepper>
+						</NumberInput>
+
+						<Menu>
+							<MenuButton
+								className="my-2 w-[35%] border-[1px] border-gray text-xs mr-3"
+								color={'gray'}
+								bgColor={'white'}
+								style={{ borderRadius: 0 }}
+								as={Button}
+								rightIcon={<HiOutlineChevronDown />}
+								size={'sm'}
+							>
+								{/* {form.category_name ? form.category_name : productData[selectedProductIndex]?.category_name} */}
+							</MenuButton>
+							<MenuList>
+								<MenuItem
+									className="text-xs"
+									color={'gray'}
+									onClick={() => {
+										'';
+									}}
+								>
+									Strip
+								</MenuItem>
+
+								<MenuItem
+									className="text-xs"
+									color={'gray'}
+									onClick={() => {
+										'';
+									}}
+								>
+									Tablet
+								</MenuItem>
+								{/* {categoryData.map((val, idx) => {
+                  return (
+                    <MenuItem
+                      key={idx}
+                      className="text-xs"
+                      color={'gray'}
+                      onClick={() => {
+                        setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
+                      }}
+                    >
+                      {val.category_name}
+                    </MenuItem>
+                  );
+                })} */}
+							</MenuList>
+						</Menu>
+						<Button className="my-2" colorScheme={'teal'} size="sm">
+							+
+						</Button>
 					</div>
 				</ModalBody>
 
 				<ModalFooter>
-					<Button size="sm" onClick={onCloseProductDetails}>
+					<Button className="mr-3" colorScheme={'teal'} size="sm" onClick={onCloseSelectDate}>
+						Confirm Order
+					</Button>
+					<Button size="sm" onClick={onCloseSelectDate}>
 						Close
 					</Button>
 				</ModalFooter>
 			</ModalContent>
 		</Modal>
 	);
+
+	// const modalSelectDate = (
+	// 	<Modal isCentered size={'sm'} className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenSelectDate} onClose={onCloseSelectDate}>
+	// 		<ModalOverlay />
+	// 		<ModalContent>
+	// 			<ModalHeader fontSize="md" className="font-bold">
+	// 				Filter by date
+	// 			</ModalHeader>
+	// 			<ModalCloseButton />
+	// 			<ModalBody pb={2}>
+	// 				<div className="px-[20px]">
+	//           <div className='inline'>
+	//             <h1 className="font-semibold text-gray text-sm px-2 !border-r-0 my-2"
+	//             >
+	//               Start Date:
+	//             </h1>
+	//             <Input
+	//               style={{ borderRadius: 0}}
+	//               size="sm"
+	//               placeholder='start date'
+	//               type="date"
+	//               _focusVisible={{ outline: 'none' }}
+	//               _placeholder={{ color: 'inherit' }}
+	//             />
+
+	//             <h1 className="font-semibold text-gray text-sm px-2 !border-r-0 my-2"
+	//             >
+	//               End Date:
+	//             </h1>
+	//             <Input
+	//               style={{ borderRadius: 0}}
+	//               size="sm"
+	//               placeholder='start date'
+	//               type="date"
+	//               _focusVisible={{ outline: 'none' }}
+	//               _placeholder={{ color: 'inherit' }}
+	//             />
+	//             <br className='md:hidden lg:hidden'/>
+	//           </div>
+	//         </div>
+	// 			</ModalBody>
+
+	// 			<ModalFooter>
+	// 				<Button className='mr-3' colorScheme={'teal'} size="sm" onClick={onCloseSelectDate}>
+	// 					Search
+	// 				</Button>
+	// 				<Button size="sm" onClick={onCloseSelectDate}>
+	// 					Close
+	// 				</Button>
+	// 			</ModalFooter>
+	// 		</ModalContent>
+	// 	</Modal>
+	// );
 
 	const resetFilter = () => {
 		setFilters((prev) => (prev = { product_name: '', category_name: '', sort: '', order: '' }));
@@ -347,8 +567,7 @@ export default function AdminTransactionPage() {
 
 	return (
 		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
-			{modalDeleteConfirmation}
-			{modalProductDetails}
+			{modalSelectDate}
 
 			{/* {initialRef, finalRef, isOpenAddProduct, onCloseAddProduct, onCloseAddProduct} */}
 			<AddProductComponent
@@ -395,7 +614,7 @@ export default function AdminTransactionPage() {
 				</Breadcrumb>
 			</div>
 
-			<SearchBar placeholder={'Search by product name'} filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage} getProductData={getProductData} />
+			<SearchBar placeholder={'Search by Invoice ID'} filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage} getProductData={getProductData} />
 
 			<div className={`container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end`}>
 				<div>
@@ -481,25 +700,12 @@ export default function AdminTransactionPage() {
 							</MenuItem>
 						</MenuList>
 					</Menu>
-					{/* <Button
-						className={
-							filters.category_name || filters.product_name || filters.sort || filters.order
-								? `mr-10 text-white bg-borderHijau`
-								: `mr-10 text-white bg-borderHijau disabled cursor-not-allowed hover:disabled`
-						}
-						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
-						style={{ borderColor: '#025d67' }}
-						borderRadius={'0'}
-						color="text-gray-500"
-						variant="outline"
-						size={'sm'}
-						onClick={() => {
-							setCurrentPage(prev => prev = 1);
-							getProductData();
-						}}
-					>
-						Search
-					</Button> */}
+
+					<Button className="mr-3" style={{ borderColor: 'gray' }} borderRadius={'0'} color="gray" variant="outline" size={'sm'} onClick={onOpenSelectDate}>
+						Date
+						<BsCalendar2Event className="ml-2" />
+					</Button>
+
 					<Button
 						style={{ borderColor: 'gray' }}
 						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
@@ -531,26 +737,26 @@ export default function AdminTransactionPage() {
 								<Th>Status</Th>
 								<Th>Action</Th>
 							</Tr>
-              <Tr >
-					      <Td className="text-[rgb(67,67,67)]">1</Td>
-					      <Td className="text-[rgb(67,67,67)]">01 May 2022</Td>
-					      <Td className="text-[rgb(67,67,67)]">INV-ABC-123</Td>
-					      <Td className="text-[rgb(67,67,67)]">Rp 160.000</Td>
-					      <Td className="text-[rgb(67,67,67)]">
-                  <Badge colorScheme='green'>Dikirim</Badge>
-                </Td>
-					      <Td className="text-[rgb(67,67,67)]">Action</Td>
-              </Tr>
-              <Tr >
-					      <Td className="text-[rgb(67,67,67)]">2</Td>
-					      <Td className="text-[rgb(67,67,67)]">02 May 2022</Td>
-					      <Td className="text-[rgb(67,67,67)]">INV-ABC-321</Td>
-					      <Td className="text-[rgb(67,67,67)]">Rp 160.000</Td>
-                <Td className="text-[rgb(67,67,67)]">
-                  <Badge colorScheme='green'>Dikirim</Badge>
-                </Td>
-					      <Td className="text-[rgb(67,67,67)]">Action</Td>
-              </Tr>
+							<Tr>
+								<Td className="text-[rgb(67,67,67)]">1</Td>
+								<Td className="text-[rgb(67,67,67)]">01 May 2022</Td>
+								<Td className="text-[rgb(67,67,67)]">INV-ABC-123</Td>
+								<Td className="text-[rgb(67,67,67)]">Rp 160.000</Td>
+								<Td className="text-[rgb(67,67,67)]">
+									<Badge colorScheme="green">Dikirim</Badge>
+								</Td>
+								<Td className="text-[rgb(67,67,67)]">Action</Td>
+							</Tr>
+							<Tr>
+								<Td className="text-[rgb(67,67,67)]">2</Td>
+								<Td className="text-[rgb(67,67,67)]">02 May 2022</Td>
+								<Td className="text-[rgb(67,67,67)]">INV-ABC-321</Td>
+								<Td className="text-[rgb(67,67,67)]">Rp 160.000</Td>
+								<Td className="text-[rgb(67,67,67)]">
+									<Badge colorScheme="green">Dikirim</Badge>
+								</Td>
+								<Td className="text-[rgb(67,67,67)]">Action</Td>
+							</Tr>
 						</Thead>
 						<Tbody>
 							{/* DISPLAY DATA */}
