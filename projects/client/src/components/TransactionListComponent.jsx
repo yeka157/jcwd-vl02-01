@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { FiShoppingBag } from "react-icons/fi";
 import { RiErrorWarningLine } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 const TransactionListComponent = (props) => {
 
+    const navigate = useNavigate();
 
     return (
         <div className="my-3 border shadow rounded w-3/4 mx-auto p-6 bg-white ">
@@ -14,7 +16,12 @@ const TransactionListComponent = (props) => {
                     </div>
 
                     <div className="flex items-center mx-2">
-                        <p>{props.getData.order_date}</p>
+                        <p>{new Date(props.getData.order_date).toLocaleDateString("en-GB", {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        })}</p>
                     </div>
 
                     <div className="flex items-center mx-2">
@@ -88,7 +95,7 @@ const TransactionListComponent = (props) => {
             </div>
 
             <div className="flex justify-end pr-6">
-                <p className=' pr-4 text-[20px] font-medium text-hijauBtn cursor-pointer'>See details</p>
+                <p className=' pr-4 text-[20px] font-medium text-hijauBtn cursor-pointer' onClick={()=> navigate(`/transaction_detail?transaction_id=${props.getData.transaction_id}`, { state : props.getData})}>See details</p>
             </div>
         </div>
     )

@@ -38,9 +38,6 @@ export default function TransactionListPage() {
 
     const { isOpen, onOpen, onClose } = useDisclosure();
 
-    console.log('current page:', currentPage);
-    console.log('total data:', totalData);
-    console.log('ini filters:', filters);
 
     const itemsPerPage = 4;
 
@@ -237,7 +234,7 @@ export default function TransactionListPage() {
                                     </div>
                                     :
                                     <button
-                                        className="border p-1 px-4 w-[211.75px] font-medium h-[34px] text-[15px] border border-borderHijau hover:bg-hijauBtn hover:text-white"
+                                        className="p-1 px-4 w-[211.75px] font-medium h-[34px] text-[15px] border border-borderHijau hover:bg-hijauBtn hover:text-white"
                                         onClick={onOpen}
                                     >
                                         <div className="flex justify-center">
@@ -257,6 +254,17 @@ export default function TransactionListPage() {
                                     {filters.transaction_status === '' ? 'Transaction Status' : `${filters.transaction_status}`}
                                 </MenuButton>
                                 <MenuList>
+
+                                    <MenuItem
+                                        className='text-base'
+                                        onClick={() => {
+                                            setFilters((prev) => ({ ...prev, transaction_status: 'Awaiting Admin Confirmation' }))
+                                            setCurrentPage(prev => prev = 1);
+                                        }}
+                                    >
+                                        Awaiting Admin Confirmation
+                                    </MenuItem>
+
                                     <MenuItem
                                         className='text-base'
                                         onClick={() => {
@@ -372,7 +380,7 @@ export default function TransactionListPage() {
                         </div>
 
                         <button
-                            className="border p-1 px-4 w-[145.75px] font-medium h-[34px] text-[15px] border border-borderHijau hover:bg-hijauBtn hover:text-white"
+                            className="border p-1 px-4 w-[145.75px] font-medium h-[34px] text-[15px] border-borderHijau hover:bg-hijauBtn hover:text-white"
                             onClick={resetFilter}
                         >
                             Reset

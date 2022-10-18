@@ -62,10 +62,11 @@ module.exports = {
                     item.product_name,
                     item.product_image,
                     item.product_price,
-                    item.product_description
+                    item.product_description,
+                    item.default_unit
                 ])
 
-                let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description) VALUES ?`
+                let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description, product_unit) VALUES ?`
                 let resDetail = await dbQuery(transDetailQuery, [detailValues]);
 
                 // Add to reports
@@ -74,14 +75,13 @@ module.exports = {
                     item.product_id,
                     item.product_name,
                     item.product_image,
-                    item.product_price,
                     item.default_unit,
                     item.quantity,
                     'Selling',
                     'Substraction'
                 ])
 
-                let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_price, product_unit, quantity, type, note) VALUES ?`
+                let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note) VALUES ?`
                 let resReports = await dbQuery(reportQuery, [reportValues]);
 
                 // Delete from cart
@@ -106,7 +106,7 @@ module.exports = {
 
             res.status(200).send({
                 success: true,
-                massage: 'Stocl update success'
+                massage: 'Stock update success'
             })
 
         } catch (error) {
@@ -178,6 +178,26 @@ module.exports = {
                 success: true,
                 total_data: count[0].count,
                 massage: 'Get data success'
+            })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    getTransactionDetail: async (req, res) => {
+        try {
+
+            let resData = await dbQuery(`SELECT * from transactions
+            WHERE transaction_id = ${req.params.transaction_id}`);
+
+            let transDetail = await dbQuery(`SELECT * from transaction_detail
+            WHERE transaction_id = ${req.params.transaction_id}`)
+
+            res.status(200).send({
+                ...resData[0],
+                detail: transDetail,
+                success: true
             })
 
         } catch (error) {
