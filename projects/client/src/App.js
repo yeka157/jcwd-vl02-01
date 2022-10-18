@@ -9,6 +9,7 @@ import VerificationPage from './pages/VerificationPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminCategoryPage from './pages/AdminCategoryPage';
 import AdminProductPage from './pages/AdminProductPage';
+import AdminTransactionPage from './pages/AdminTransactionPage';
 import Cookies from 'js-cookie';
 import { userLogin, getUser } from './slices/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -95,7 +96,7 @@ function App() {
 
         {
           user.user_id ?
-            user.role == 'CUSTOMER' ?
+            user.role === 'CUSTOMER' ?
               <>
                 {/* Kevin - APKG1-13 - Profile Page */}
                 <Route path='/profile' element={<ProfilePage />} />
@@ -115,13 +116,14 @@ function App() {
         }
 
         {
-          user.role != 'CUSTOMER' ?
+          user.role !== 'CUSTOMER' ?
             <>
               {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
               {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
               <Route path='/admin' element={<AdminDashboardPage />} />
               <Route path='/admin/category' element={<AdminCategoryPage />} />
               <Route path="/admin/product" element={<AdminProductPage />} />
+              <Route path="/admin/transaction" element={<AdminTransactionPage />} />
             </>
             :
             <Route path='/*' element={<NotFoundPage />} />

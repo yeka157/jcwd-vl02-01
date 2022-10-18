@@ -222,8 +222,8 @@ export default function TransactionListPage() {
                         <div>
                             {
                                 filters.from && filters.to ?
-                                    <div className="flex h-[34px] justify-between relative flex-auto w-[211.75px] block px-3 py-1.5 text-sm font-normal text-gray-700 bg-bgWhite bg-clip-padding border border-solid border-gray-500 transition ease-in-out m-0 focus:text-gray-700 focus:bg-bgWhite focus:border-borderHijau focus:outline-none">
-                                        <p className="text-[14px] "> {filters.from + ' to ' + filters.to} </p>
+                                    <div className="flex h-[34px] justify-between relative flex-auto w-[211.75px] px-3 py-1.5 text-sm font-normal text-gray-700 bg-bgWhite bg-clip-padding border border-solid border-gray-500 transition ease-in-out m-0 focus:text-gray-700 focus:bg-bgWhite focus:border-borderHijau focus:outline-none">
+                                        <p className="text-[14px] "> {filters.from + ' to ' + filters.to}</p>
                                         <div
                                             className="flex h-[34px] items-center text-[16px] cursor-pointer"
                                             onClick={() => {
@@ -237,7 +237,7 @@ export default function TransactionListPage() {
                                     </div>
                                     :
                                     <button
-                                        className="border p-1 px-4 w-[211.75px] font-medium h-[34px] text-[15px] border border-borderHijau hover:bg-hijauBtn hover:text-white"
+                                        className="border p-1 px-4 w-[211.75px] font-medium h-[34px] text-[15px] border-borderHijau hover:bg-hijauBtn hover:text-white"
                                         onClick={onOpen}
                                     >
                                         <div className="flex justify-center">
@@ -372,7 +372,7 @@ export default function TransactionListPage() {
                         </div>
 
                         <button
-                            className="border p-1 px-4 w-[145.75px] font-medium h-[34px] text-[15px] border border-borderHijau hover:bg-hijauBtn hover:text-white"
+                            className="border p-1 px-4 w-[145.75px] font-medium h-[34px] text-[15px] border-borderHijau hover:bg-hijauBtn hover:text-white"
                             onClick={resetFilter}
                         >
                             Reset

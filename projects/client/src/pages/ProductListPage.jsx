@@ -28,7 +28,6 @@ export default function ProductListPage() {
   const pathname = useLocation();
 
   const itemsPerPage = 12;
-  console.log(totalData);
 
   const getCategory = async () => {
     let getData = await Axios.get(API_URL + "/category/");
@@ -104,7 +103,6 @@ export default function ProductListPage() {
 
   React.useEffect(() => {
     if (filters.category_name || filters.product_name) {
-      console.log(filters);
       setTotalData((prev) => (prev= productData.length));
     }
   }, [productData, filters.category_name, filters.product_name]);

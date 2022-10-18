@@ -35,6 +35,8 @@ import Pagination from '../components/Pagination';
 import SearchBar from '../components/SearchBar';
 import AddProductComponent from '../components/AddProductComponent';
 import EditProductComponent from '../components/EditProductComponent';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminProductPage() {
 	// HOOKS
@@ -50,16 +52,15 @@ export default function AdminProductPage() {
 	const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 	const [filters, setFilters] = useState({ product_name: '', category_name: '', sort: '', order: '' });
 	const [currentPage, setCurrentPage] = useState(1);
-
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
-
 	const id = useId();
-
 	const toast = useToast();
-
+	const navigate = useNavigate();
+	
 	// VAR
 	const itemsPerPage = 10;
+	const token = Cookies.get('sehatToken');
 
 	const getProductData = async () => {
 		try {
@@ -144,8 +145,13 @@ export default function AdminProductPage() {
 						mr={3}
 						onClick={async () => {
 							try {
-								let result = await axios.delete(API_URL + '/product/delete_product/' + productData[selectedProductIndex].product_id);
+								let result = await axios.delete(API_URL + '/product/delete_product/' + productData[selectedProductIndex].product_id, {
+									headers: {
+										'Authorization': `Bearer ${token}`
+									}
+								});
 								if (result.data.success) {
+									setCurrentPage(prev => prev = 10);
 									getProductData();
 									displayProductData();
 									toast({
@@ -178,7 +184,7 @@ export default function AdminProductPage() {
 				<Tr key={id + idx}>
 					<Td className="text-[rgb(67,67,67)]">{itemsPerPage * (currentPage - 1) + (idx + 1)}.</Td>
 					<Td className="text-[rgb(67,67,67)]">{val.product_name}</Td>
-					<Td className="text-[rgb(67,67,67)]">Rp {val.product_price.toLocaleString('id')}</Td>
+					<Td className="text-[rgb(67,67,67)]">Rp{val.product_price.toLocaleString('id')},-</Td>
 					<Td className="text-[rgb(67,67,67)]">{val.category_name}</Td>
 					<Td className="text-[rgb(67,67,67)]">
 						<h1
@@ -279,7 +285,7 @@ export default function AdminProductPage() {
 						</div>
 						<h1 className="text-xs font-bold mt-[20px] mb-[5px]">Price</h1>
 						<p className="text-xs text-justify">
-							Rp {productData[selectedProductIndex]?.product_price.toLocaleString('id')} per {productData[selectedProductIndex]?.default_unit}
+							Rp{productData[selectedProductIndex]?.product_price.toLocaleString('id')} per {productData[selectedProductIndex]?.default_unit}
 						</p>
 						<hr className="my-2" />
 						<h1 className="text-xs font-bold mt-[10px] mb-[5px]">Description</h1>
@@ -361,7 +367,6 @@ export default function AdminProductPage() {
 				finalRef={finalRef}
 				isOpenAddProduct={isOpenAddProduct}
 				onCloseAddProduct={onCloseAddProduct}
-				currentPage={currentPage}
 			/>
 			<EditProductComponent
 				productStock={productStock}
@@ -377,8 +382,8 @@ export default function AdminProductPage() {
 			/>
 
 			<div className="container mx-auto mt-[2.5vh]">
-				<h1 className="font-bold text-lg text-hijauBtn text-center">
-					SEHATBOS.COM <span className="font-normal">| DASHBOARD</span>
+				<h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => { navigate('/admin') }}>
+					SEHATBOS.COM <span className="font-normal">| PRODUCT</span>
 				</h1>
 			</div>
 
@@ -486,25 +491,7 @@ export default function AdminProductPage() {
 							</MenuItem>
 						</MenuList>
 					</Menu>
-					{/* <Button
-						className={
-							filters.category_name || filters.product_name || filters.sort || filters.order
-								? `mr-10 text-white bg-borderHijau`
-								: `mr-10 text-white bg-borderHijau disabled cursor-not-allowed hover:disabled`
-						}
-						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
-						style={{ borderColor: '#025d67' }}
-						borderRadius={'0'}
-						color="text-gray-500"
-						variant="outline"
-						size={'sm'}
-						onClick={() => {
-							setCurrentPage(prev => prev = 1);
-							getProductData();
-						}}
-					>
-						Search
-					</Button> */}
+					
 					<Button
 						style={{ borderColor: 'gray' }}
 						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
