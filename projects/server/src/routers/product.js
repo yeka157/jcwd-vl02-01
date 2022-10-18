@@ -1,6 +1,6 @@
 const express = require('express');
 const route = express.Router();
-const { countProduct, getProduct, addProduct, updateProduct, deleteProduct, getProductStock, updateProductStock, addProductStock, deleteProductStock } = require('../controllers/product');
+const { countProduct, getProduct, addProduct, updateProduct, deleteProduct, getProductStock, updateProductStock, addProductStock, deleteProductStock, selectProduct, selectRandomProduct } = require('../controllers/product');
 const { uploader } = require('../config/uploader');
 const { readToken } = require('../config/encrypt');
 
@@ -9,6 +9,8 @@ const uploadProductImage = uploader('/imgProduct', 'IMGPRDCT').array('product_im
 route.get('/', getProduct);
 route.get('/count', countProduct);
 route.get('/stock/:id', getProductStock);
+route.get('/select/:id', selectProduct);
+route.get('/random/:id', selectRandomProduct);
 
 route.post('/add_product', readToken, uploadProductImage, addProduct);
 route.post('/add_stock', readToken, addProductStock);

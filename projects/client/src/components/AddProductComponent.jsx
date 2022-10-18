@@ -28,8 +28,10 @@ import { AiOutlinePaperClip } from 'react-icons/ai';
 import { HiOutlineChevronDown } from 'react-icons/hi';
 import axios from 'axios';
 import { API_URL } from '../helper';
+import Cookies from 'js-cookie';
 
 export default function AddProductComponent({ initialRef, finalRef, isOpenAddProduct, onCloseAddProduct, categoryData, getProductData, productData, setCurrentPage, totalData, itemsPerPage }) {
+	// HOOKS
 	const [form, setForm] = useState({
 		category_id: 0,
 		category_name: '',
@@ -43,16 +45,13 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 		product_netto: 0,
 		product_conversion: '',
 	});
-
-	const default_unit = ['Strip','Bottle', 'Sachet'];
-	const conversion_unit = ['Tablet', 'Kapsul', 'Milliliter'];
-
 	const [selectedForm, setSelectedForm] = useState('details');
-
 	const toast = useToast();
 
-	const totalPage = Math.ceil(totalData / itemsPerPage);
-
+	// VAR
+	const default_unit = ['Strip', 'Bottle', 'Sachet'];
+	const conversion_unit = ['Tablet', 'Kapsul', 'Milliliter'];
+	const token = Cookies.get('sehatToken');
 
 	const btnAddProduct = async () => {
 		let message = '';
@@ -76,12 +75,17 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 
 			formData.append('product_image', form.product_image);
 
-			let res = await axios.post(`${API_URL}/product/add_product`, formData);
+			let res = await axios.post(`${API_URL}/product/add_product`, formData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+
 			message = res.data.message;
 
 			if (res.data.success) {
 				getProductData();
-				setCurrentPage((prev) => prev = 1);
+				setCurrentPage((prev) => (prev = 1));
 				toast({
 					size: 'xs',
 					title: `${form.product_name} has been added to product list!`,
@@ -125,6 +129,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 				product_netto: 0,
 				product_conversion: '',
 			});
+			setSelectedForm((prev) => (prev = 'details'));
 		}
 	}, [isOpenAddProduct]);
 
@@ -158,132 +163,128 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 								</h1>
 							</div>
 
-							{
-								selectedForm === 'details' && (
-									<>
-										<Input
-											required
-											className="text-borderHijau my-2"
+							{selectedForm === 'details' && (
+								<>
+									<Input
+										required
+										className="text-borderHijau my-2"
+										borderRadius="0"
+										size="sm"
+										ref={initialRef}
+										placeholder="Product name"
+										_focusVisible={{ outline: '2px solid #1F6C75' }}
+										_placeholder={{ color: 'inherit' }}
+										color="gray"
+										onChange={(e) => setForm((prev) => ({ ...prev, product_name: e.target.value }))}
+									/>
+
+									<Menu>
+										<MenuButton
+											className="my-2 w-[100%] border-[1px] border-gray text-xs"
+											color={'gray'}
+											bgColor={'white'}
+											style={{ borderRadius: 0 }}
+											as={Button}
+											rightIcon={<HiOutlineChevronDown />}
+											size={'sm'}
+										>
+											{form.category_name === '' ? 'Product category' : form.category_name}
+										</MenuButton>
+										<MenuList>
+											{categoryData.map((val, idx) => {
+												return (
+													<MenuItem
+														key={idx}
+														className="text-xs"
+														color={'gray'}
+														onClick={() => {
+															setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
+														}}
+													>
+														{val.category_name}
+													</MenuItem>
+												);
+											})}
+										</MenuList>
+									</Menu>
+
+									<NumberInput size="sm" min={1} className="text-borderHijau my-2">
+										<NumberInputField
 											borderRadius="0"
-											size="sm"
-											ref={initialRef}
-											placeholder="Product name"
+											placeholder="Product price"
+											color="gray"
 											_focusVisible={{ outline: '2px solid #1F6C75' }}
 											_placeholder={{ color: 'inherit' }}
-											color="gray"
-											onChange={(e) => setForm((prev) => ({ ...prev, product_name: e.target.value }))}
+											onChange={(e) => setForm((prev) => ({ ...prev, product_price: parseInt(e.target.value) }))}
 										/>
+									</NumberInput>
 
-										<Menu>
-											<MenuButton
-												className="my-2 w-[100%] border-[1px] border-gray text-xs"
-												color={'gray'}
-												bgColor={'white'}
-												style={{ borderRadius: 0 }}
-												as={Button}
-												rightIcon={<HiOutlineChevronDown />}
-												size={'sm'}
-											>
-												{form.category_name === '' ? 'Product category' : form.category_name}
-											</MenuButton>
-											<MenuList>
-												{categoryData.map((val, idx) => {
-													return (
-														<MenuItem
-															key={idx}
-															className="text-xs"
-															color={'gray'}
-															onClick={() => {
-																setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
-															}}
-														>
-															{val.category_name}
-														</MenuItem>
-													);
-												})}
-											</MenuList>
-										</Menu>
+									<Textarea
+										required
+										className="text-borderHijau my-2 max-h-[75px]"
+										borderRadius="0"
+										size="sm"
+										placeholder="Product description"
+										_focusVisible={{ outline: '2px solid #1F6C75' }}
+										_placeholder={{ color: 'inherit' }}
+										color="gray"
+										onChange={(e) => setForm((prev) => ({ ...prev, product_description: e.target.value }))}
+									/>
 
-										<NumberInput size="sm" min={1} className="text-borderHijau my-2">
-											<NumberInputField
-												borderRadius="0"
-												placeholder="Product price"
-												color="gray"
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												onChange={(e) => setForm((prev) => ({ ...prev, product_price: parseInt(e.target.value) }))}
+									<Textarea
+										required
+										className="text-borderHijau my-2 max-h-[75px]"
+										borderRadius="0"
+										size="sm"
+										placeholder="Product usage"
+										_focusVisible={{ outline: '2px solid #1F6C75' }}
+										_placeholder={{ color: 'inherit' }}
+										color="gray"
+										onChange={(e) => setForm((prev) => ({ ...prev, product_usage: e.target.value }))}
+									/>
+
+									<Box borderWidth="1px" overflow="hidden" className="text-center p-3 my-2">
+										<div className="wrapper">
+											<input
+												type="file"
+												id="file-input"
+												onChange={(e) => {
+													const file = e.target?.files[0];
+													setForm((prev) => ({ ...prev, product_image: file }));
+												}}
 											/>
-										</NumberInput>
+											<label htmlFor="file-input">
+												<AiOutlinePaperClip size={17} className="inline" color="gray" />
+												<h1 className="inline ml-1 font-semibold text-sm text-gray-500"></h1>
+												{form.product_image ? (
+													<p className="inline ml-1 font-semibold text-sm text-gray-500">{form.product_image.name}</p>
+												) : (
+													<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Product Image</p>
+												)}
+											</label>
+										</div>
+									</Box>
+								</>
+							)}
 
-										<Textarea
-											required
-											className="text-borderHijau my-2 max-h-[75px]"
+							{selectedForm === 'stock' && (
+								<>
+									<NumberInput size="sm" min={1} className="text-borderHijau my-2">
+										<NumberInputField
 											borderRadius="0"
-											size="sm"
-											placeholder="Product description"
+											placeholder="Stock"
+											color="gray"
 											_focusVisible={{ outline: '2px solid #1F6C75' }}
 											_placeholder={{ color: 'inherit' }}
-											color="gray"
-											onChange={(e) => setForm((prev) => ({ ...prev, product_description: e.target.value }))}
+											onChange={(e) => setForm((prev) => ({ ...prev, product_stock: parseInt(e.target.value) }))}
 										/>
+										<NumberInputStepper>
+											<NumberIncrementStepper />
+											<NumberDecrementStepper />
+										</NumberInputStepper>
+									</NumberInput>
 
-										<Textarea
-											required
-											className="text-borderHijau my-2 max-h-[75px]"
-											borderRadius="0"
-											size="sm"
-											placeholder="Product usage"
-											_focusVisible={{ outline: '2px solid #1F6C75' }}
-											_placeholder={{ color: 'inherit' }}
-											color="gray"
-											onChange={(e) => setForm((prev) => ({ ...prev, product_usage: e.target.value }))}
-										/>
-
-										<Box borderWidth="1px" overflow="hidden" className="text-center p-3 my-2">
-											<div className="wrapper">
-												<input
-													type="file"
-													id="file-input"
-													onChange={(e) => {
-														const file = e.target?.files[0];
-														setForm((prev) => ({ ...prev, product_image: file }));
-													}}
-												/>
-												<label htmlFor="file-input">
-													<AiOutlinePaperClip size={17} className="inline" color="gray" />
-													<h1 className="inline ml-1 font-semibold text-sm text-gray-500"></h1>
-													{form.product_image ? (
-														<p className="inline ml-1 font-semibold text-sm text-gray-500">{form.product_image.name}</p>
-													) : (
-														<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Product Image</p>
-													)}
-												</label>
-											</div>
-										</Box>
-									</>
-								)
-							}
-
-							{
-								selectedForm === 'stock' && (
-									<>
-									
-										<NumberInput size="sm" min={1} className="text-borderHijau my-2">
-											<NumberInputField
-												borderRadius="0"
-												placeholder="Stock"
-												color="gray"
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												onChange={(e) => setForm((prev) => ({ ...prev, product_stock: parseInt(e.target.value) }))}
-											/>
-											<NumberInputStepper>
-												<NumberIncrementStepper />
-												<NumberDecrementStepper />
-											</NumberInputStepper>
-										</NumberInput>
-
-										{/* <Input
+									{/* <Input
 											required
 											className="text-borderHijau my-2 inline"
 											borderRadius="0"
@@ -295,54 +296,54 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 											onChange={(e) => setForm((prev) => ({ ...prev, default_unit: e.target.value }))}
 										/> */}
 
-										<Menu>
-											<MenuButton
-												className="my-2 w-[100%] border-[1px] border-gray text-xs"
-												color={'gray'}
-												bgColor={'white'}
-												style={{ borderRadius: 0 }}
-												as={Button}
-												rightIcon={<HiOutlineChevronDown />}
-												size={'sm'}
-											>
-												{!form.default_unit ? 'Default unit' : form.default_unit}
-											</MenuButton>
-											<MenuList>
-												{default_unit.map((val, idx) => {
-													if (val !== form.product_conversion) {
-														return (
-															<MenuItem
-																key={idx}
-																className="text-xs"
-																color={'gray'}
-																onClick={() => {
-																	setForm((prev) => ({ ...prev, default_unit: val}));
-																}}
-															>
-																{val}
-															</MenuItem>
-														);
-													}
-												})}
-											</MenuList>
-										</Menu>
+									<Menu>
+										<MenuButton
+											className="my-2 w-[100%] border-[1px] border-gray text-xs"
+											color={'gray'}
+											bgColor={'white'}
+											style={{ borderRadius: 0 }}
+											as={Button}
+											rightIcon={<HiOutlineChevronDown />}
+											size={'sm'}
+										>
+											{!form.default_unit ? 'Default unit' : form.default_unit}
+										</MenuButton>
+										<MenuList>
+											{default_unit.map((val, idx) => {
+												if (val !== form.product_conversion) {
+													return (
+														<MenuItem
+															key={idx}
+															className="text-xs"
+															color={'gray'}
+															onClick={() => {
+																setForm((prev) => ({ ...prev, default_unit: val }));
+															}}
+														>
+															{val}
+														</MenuItem>
+													);
+												}
+											})}
+										</MenuList>
+									</Menu>
 
-										<NumberInput size="sm" min={0} className="text-borderHijau my-2">
-											<NumberInputField
-												borderRadius="0"
-												placeholder={'Product netto'}
-												color="gray"
-												_focusVisible={{ outline: '2px solid #1F6C75' }}
-												_placeholder={{ color: 'inherit' }}
-												onChange={(e) => setForm((prev) => ({ ...prev, product_netto: parseInt(e.target.value) }))}
-											/>
-											<NumberInputStepper>
-												<NumberIncrementStepper />
-												<NumberDecrementStepper />
-											</NumberInputStepper>
-										</NumberInput>
+									<NumberInput size="sm" min={0} className="text-borderHijau my-2">
+										<NumberInputField
+											borderRadius="0"
+											placeholder={'Product netto'}
+											color="gray"
+											_focusVisible={{ outline: '2px solid #1F6C75' }}
+											_placeholder={{ color: 'inherit' }}
+											onChange={(e) => setForm((prev) => ({ ...prev, product_netto: parseInt(e.target.value) }))}
+										/>
+										<NumberInputStepper>
+											<NumberIncrementStepper />
+											<NumberDecrementStepper />
+										</NumberInputStepper>
+									</NumberInput>
 
-										{/* <Input
+									{/* <Input
 											required
 											className="text-borderHijau my-2"
 											borderRadius="0"
@@ -355,40 +356,39 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 											onChange={(e) => setForm((prev) => ({ ...prev, product_conversion: e.target.value }))}
 										/> */}
 
-										<Menu>
-											<MenuButton
-												className="my-2 w-[100%] border-[1px] border-gray text-xs"
-												color={'gray'}
-												bgColor={'white'}
-												style={{ borderRadius: 0 }}
-												as={Button}
-												rightIcon={<HiOutlineChevronDown />}
-												size={'sm'}
-											>
-												{!form.product_conversion ? 'Product conversion' : form.product_conversion}
-											</MenuButton>
-											<MenuList>
-												{conversion_unit.map((val, idx) => {
-													if (val !== form.default_unit) {
-														return (
-															<MenuItem
-																key={idx}
-																className="text-xs"
-																color={'gray'}
-																onClick={() => {
-																	setForm((prev) => ({ ...prev, product_conversion: val}));
-																}}
-															>
-																{val}
-															</MenuItem>
-														);
-													}
-												})}
-											</MenuList>
-										</Menu>
-									</>
-								)
-							}
+									<Menu>
+										<MenuButton
+											className="my-2 w-[100%] border-[1px] border-gray text-xs"
+											color={'gray'}
+											bgColor={'white'}
+											style={{ borderRadius: 0 }}
+											as={Button}
+											rightIcon={<HiOutlineChevronDown />}
+											size={'sm'}
+										>
+											{!form.product_conversion ? 'Product conversion' : form.product_conversion}
+										</MenuButton>
+										<MenuList>
+											{conversion_unit.map((val, idx) => {
+												if (val !== form.default_unit) {
+													return (
+														<MenuItem
+															key={idx}
+															className="text-xs"
+															color={'gray'}
+															onClick={() => {
+																setForm((prev) => ({ ...prev, product_conversion: val }));
+															}}
+														>
+															{val}
+														</MenuItem>
+													);
+												}
+											})}
+										</MenuList>
+									</Menu>
+								</>
+							)}
 
 							{/* <h1 className="text-xs font-bold mt-[10px] mb-[5px]">Stock</h1>
 							<NumberInput placeholder='stock' min={1}> 
@@ -421,10 +421,8 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 									form.product_conversion
 								) {
 									btnAddProduct();
-									
-									
+
 									onCloseAddProduct();
-									
 								} else {
 									toast({
 										size: 'xs',

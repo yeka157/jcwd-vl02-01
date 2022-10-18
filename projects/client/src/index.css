@@ -10,6 +10,9 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Chewy&family=Comfortaa:wght@700&family=Newsreader:opsz@6..72&family=Open+Sans:wght@300&family=Oswald:wght@500&family=Roboto:ital,wght@0,100;1,100&display=swap');
 
+html {
+  background-color : #F0F5F6;
+}
 
 #register-tagline{
     position: relative;

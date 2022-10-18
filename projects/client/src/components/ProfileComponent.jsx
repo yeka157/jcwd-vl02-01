@@ -168,9 +168,6 @@ export default function ProfileComponent(props) {
 		}
 	}, [email, props.email, usersData]);
 
-	React.useEffect(() => {
-		getData();
-	}, []);
 
 	const getData = async () => {
 		try {
@@ -236,195 +233,244 @@ export default function ProfileComponent(props) {
 	};
 
 	const btnSaveImage = async () => {
-		try {
-			let token = Cookies.get('sehatToken');
-			let formData = new FormData();
-			formData.append('images', images);
-			let res = await Axios.patch(API_URL + '/user/update_picture', formData, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-			if (res.data.success) {
-				toast({
-					title: 'Profile Picture Updated',
-					status: 'success',
-					duration: 3000,
-					isClosable: true,
-				});
-				let getData = await Axios.get(API_URL + '/auth/keep_login', {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				if (getData.data.success) {
-					delete getData.data.token;
-					dispatch(userLogin(getData.data.dataUser));
-					setOpen(false);
-				}
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	};
+    try {
+      let token = Cookies.get('sehatToken');
+      let formData = new FormData();
+      formData.append('images', images);
 
-	return (
-		<div className="mx-28 my-16 w-full">
-			<div className="flex justify-between space-x-10">
-				<div className="flex space-x-10 grow">
-					<div className="rounded-full border w-32 h-32 flex items-center justify-center border-black">
-						<img
-							src={props.picture ? 'http://localhost:8000' + props.picture : './default.jpg'}
-							alt=""
-							className="p-1 cursor-pointer hover:brightness-90 rounded-full"
-							onClick={() => {
-								setOpen(true);
-							}}
-						/>
-						<Modal
-							isOpen={open}
-							onClose={() => {
-								setOpen(false);
-							}}
-						>
-							<ModalOverlay />
-							<ModalContent>
-								<ModalHeader>Change Profile Picture</ModalHeader>
-								<ModalCloseButton />
-								<ModalBody pb={6}>
-									<FormControl>
-										<FormLabel>Profile Picture</FormLabel>
-										<div className="border p-2">
-											<Input type="file" hidden ref={filePickerRef} onChange={addImage} />
-											<Button onClick={() => filePickerRef.current.click()}>Browse</Button>
-											{selectedImg && (
-												<div className="relative">
-													<HiXCircle
-														className="h-6 w-auto border m-1 p-1 border-white text-black absolute cursor-pointer font-bold rounded-full"
-														onClick={() => {
-															setSelectedImg(null);
-															setImages('');
-														}}
-													/>
-													<img src={selectedImg} alt="profile-img" className="mt-2" />
-												</div>
-											)}
-										</div>
-									</FormControl>
-								</ModalBody>
-								<ModalFooter className="space-x-3">
-									<Button colorScheme="teal" onClick={btnSaveImage}>
-										Save
-									</Button>
-									<Button
-										onClick={() => {
-											setOpen(false);
-										}}
-									>
-										Cancel
-									</Button>
-								</ModalFooter>
-							</ModalContent>
-						</Modal>
-					</div>
-					<div className="space-y-10 grow">
-						<div className="space-y-7">
-							<div>
-								<h1 className="text-sm">Username</h1>
-								<h1 className="text-gray-500">@{props.username}</h1>
-							</div>
-							<div>
-								<h1 className="text-sm">Full Name</h1>
-								<h1 className="text-gray-500">{props.name ? props.name : props.username}</h1>
-							</div>
-							<div>
-								<h1 className="text-sm">Birth date</h1>
-								<h1 className="text-gray-500">
-									{props.birth
-										? new Date(props.birth).toLocaleDateString('en-GB', {
-												weekday: 'long',
-												day: 'numeric',
-												month: 'long',
-												year: 'numeric',
-										  })
-										: '-'}
-								</h1>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div className="space-y-4 flex flex-col">
-					<div className="space-x-8">
-						{props.status === 'VERIFIED' ? (
-							<></>
-						) : (
-							<ButtonComponent text="Verify" py="2" px="8" brightness="90" class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium" onclick={btnVerifyRequest} />
-						)}
-						<ButtonComponent text="Edit Profile" py="2" px="8" brightness="90" class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium" onclick={onOpen} />
-						<Modal isOpen={isOpen} onClose={onClose}>
-							<ModalOverlay />
-							<ModalContent>
-								<ModalHeader>Edit Your Profile</ModalHeader>
-								<ModalCloseButton />
-								<ModalBody pb={6}>
-									<FormControl>
-										<FormLabel>Full Name</FormLabel>
-										<Input placeholder="Full Name" type="text" onChange={(e) => setFullName(e.target.value)} defaultValue={props.name} />
-									</FormControl>
-									<FormControl>
-										<FormLabel>Email</FormLabel>
-										<Input placeholder="Email" type="email" onChange={(e) => setEmail(e.target.value)} defaultValue={props.email} />
-										<h1 className={`text-sm mb-2 mx-2 ${emailClass}`}>{emailMsg}</h1>
-									</FormControl>
-									<FormControl>
-										<FormLabel>Birth date</FormLabel>
-										<Input type="date" min="1922-01-01" max="2022-09-29" onChange={(e) => setBirthDate(e.target.value)} defaultValue={props.birth} />
-									</FormControl>
-									<FormControl>
-										<FormLabel>Gender</FormLabel>
-										<Select placeholder="Select Gender" onChange={(e) => setGender(e.target.value)} defaultValue={props.gender}>
-											<option value="Male">Male</option>
-											<option value="Female">Female</option>
-											<option value="Prefer not to say">Prefer not to say</option>
-										</Select>
-									</FormControl>
-								</ModalBody>
-								<ModalFooter className="space-x-3">
-									<Button colorScheme="teal" onClick={btnSave}>
-										Save
-									</Button>
-									<Button onClick={onClose}>Cancel</Button>
-								</ModalFooter>
-							</ModalContent>
-						</Modal>
-						<ButtonComponent
-							text="Change Password"
-							py="2"
-							px="8"
-							brightness="90"
-							class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium"
-							onclick={btnChangePasswordRequest}
-						/>
-					</div>
-					<div className="py-4 space-y-7">
-						<div className="flex space-x-5 items-center justify-start">
-							<div>
-								<h1 className="text-sm">Email</h1>
-								<h1 className="text-gray-500">{props.email}</h1>
-							</div>
-							<div>
-								<h1 className="text-sm">Gender</h1>
-								<h1 className="text-gray-500">{props.gender ? props.gender : '-'}</h1>
-							</div>
-						</div>
-						<div className="mt-7">
-							<h1 className="text-sm">Phone Number</h1>
-							<h1 className="text-gray-500">(+62){props.phone}</h1>
-						</div>
-					</div>
-				</div>
-			</div>
-			<AddressComponent user={props.iduser} />
-		</div>
-	);
+      console.log(formData);
+
+      let res = await Axios.patch(API_URL + '/user/update_picture', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.data.success) {
+        toast({
+          title: 'Profile Picture Updated',
+          status: 'success',
+          duration: 3000,
+          isClosable: true
+        })
+        let getData = await Axios.get(API_URL + '/auth/keep_login', {
+          headers : {
+            'Authorization' : `Bearer ${token}`
+          }
+        })
+        if (getData.data.success) {
+          delete getData.data.token;
+          dispatch(userLogin(getData.data.dataUser));
+          setOpen(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return (
+    <div className="mx-28 my-16 w-full">
+      <div className="flex justify-between space-x-10">
+        <div className="flex space-x-10 grow">
+          <div className="rounded-full border w-32 h-32 flex items-center justify-center border-black">
+            <img
+              src={props.picture ? 'http://localhost:8000' + props.picture : './default.jpg'}
+              alt=""
+              className="p-1 cursor-pointer hover:brightness-90 rounded-full"
+              onClick={() => {
+                setOpen(true);
+              }}
+            />
+            <Modal
+              isOpen={open}
+              onClose={() => {
+                setOpen(false);
+              }}
+            >
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Change Profile Picture</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb={6}>
+                  <FormControl>
+                    <FormLabel>Profile Picture</FormLabel>
+                    <div className="border p-2">
+                      <Input
+                        type="file"
+                        hidden
+                        ref={filePickerRef}
+                        onChange={addImage}
+                      />
+                      <Button onClick={() => filePickerRef.current.click()}>
+                        Browse
+                      </Button>
+                      {selectedImg && (
+                        <div className="relative">
+                          <HiXCircle
+                            className="h-6 w-auto border m-1 p-1 border-white text-black absolute cursor-pointer font-bold rounded-full"
+                            onClick={() => {
+                              setSelectedImg(null);
+                              setImages("");
+                            }}
+                          />
+                          <img
+                            src={selectedImg}
+                            alt="profile-img"
+                            className="mt-2"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                </ModalBody>
+                <ModalFooter className="space-x-3">
+                  <Button colorScheme="teal" onClick={btnSaveImage}>Save</Button>
+                  <Button
+                    onClick={() => {
+                      setOpen(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+          </div>
+          <div className="space-y-10 grow">
+            <div className="space-y-7">
+              <div>
+                <h1 className="text-sm">Username</h1>
+                <h1 className="text-gray-500">@{props.username}</h1>
+              </div>
+              <div>
+                <h1 className="text-sm">Full Name</h1>
+                <h1 className="text-gray-500">
+                  {props.name ? props.name : props.username}
+                </h1>
+              </div>
+              <div>
+                <h1 className="text-sm">Birth date</h1>
+                <h1 className="text-gray-500">{props.birth ? new Date(props.birth).toLocaleDateString("en-GB", {
+                  weekday : 'long',
+                  day : 'numeric',
+                  month : 'long',
+                  year : 'numeric'
+                  }) : '-'}
+                </h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-4 flex flex-col">
+          <div className="space-x-8">
+            {props.status === "VERIFIED" ? (
+              <></>
+            ) : (
+              <ButtonComponent
+                text="Verify"
+                py="2"
+                px="8"
+                brightness="90"
+                class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium"
+                onclick={btnVerifyRequest}
+              />
+            )}
+            <ButtonComponent
+              text="Edit Profile"
+              py="2"
+              px="8"
+              brightness="90"
+              class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium"
+              onclick={onOpen}
+            />
+            <Modal isOpen={isOpen} onClose={onClose}>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Edit Your Profile</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody pb={6}>
+                  <FormControl>
+                    <FormLabel>Full Name</FormLabel>
+                    <Input
+                      placeholder="Full Name"
+                      type="text"
+                      onChange={(e) => setFullName(e.target.value)}
+                      defaultValue={props.name}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Email</FormLabel>
+                    <Input
+                      placeholder="Email"
+                      type="email"
+                      onChange={(e) => setEmail(e.target.value)}
+                      defaultValue={props.email}
+                    />
+                    <h1 className={`text-sm mb-2 mx-2 ${emailClass}`}>
+                      {emailMsg}
+                    </h1>
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Birth date</FormLabel>
+                    <Input
+                      type="date"
+                      min="1922-01-01"
+                      max="2022-09-29"
+                      onChange={(e) => setBirthDate(e.target.value)}
+                      defaultValue={props.birth}
+                    />
+                  </FormControl>
+                  <FormControl>
+                    <FormLabel>Gender</FormLabel>
+                    <Select
+                      placeholder="Select Gender"
+                      onChange={(e) => setGender(e.target.value)}
+                      defaultValue={props.gender}
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
+                    </Select>
+                  </FormControl>
+                </ModalBody>
+                <ModalFooter className="space-x-3">
+                  <Button colorScheme="teal" onClick={btnSave}>
+                    Save
+                  </Button>
+                  <Button onClick={onClose}>Cancel</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+            <ButtonComponent
+              text="Change Password"
+              py="2"
+              px="8"
+              brightness="90"
+              class="border-hijauBtn border rounded-full hover:bg-hijauBtn hover:text-white font-medium"
+              onclick={btnChangePasswordRequest}
+            />
+          </div>
+          <div className="py-4 space-y-7">
+            <div className="flex space-x-5 items-center justify-start">
+              <div>
+                <h1 className="text-sm">Email</h1>
+                <h1 className="text-gray-500">{props.email}</h1>
+              </div>
+              <div>
+                <h1 className="text-sm">Gender</h1>
+                <h1 className="text-gray-500">
+                  {props.gender ? props.gender : "-"}
+                </h1>
+              </div>
+            </div>
+            <div className="mt-7">
+              <h1 className="text-sm">Phone Number</h1>
+              <h1 className="text-gray-500">(+62){props.phone}</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <AddressComponent user={props.iduser} />
+    </div>
+  );
 }

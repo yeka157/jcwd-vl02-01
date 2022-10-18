@@ -25,10 +25,11 @@ import {
 	useDisclosure,
 	useToast,
 } from '@chakra-ui/react';
-import { MdCategory } from 'react-icons/md';
 import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
 import axios from 'axios';
 import { API_URL } from '../helper';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminCategoryPage() {
 	// HOOKS
@@ -40,15 +41,14 @@ export default function AdminCategoryPage() {
 	const [selectedCategory, setSelectedCategory] = useState('');
 	const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(-1);
 	const [newCategory, setNewCategory] = useState('')
-
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
-
 	const id = useId();
-
 	const toast = useToast();
+	const navigate = useNavigate();
 
 	// VAR
+	const token = Cookies.get('sehatToken');
 
 	const getCategoryData = async () => {
 		try {
@@ -62,7 +62,11 @@ export default function AdminCategoryPage() {
 	const btnAddCategory = async (inputCategory) => {
 		try {
 			const category_name = inputCategory;
-			const result = await axios.post(API_URL + '/category/add_category', { category_name });
+			const result = await axios.post(API_URL + '/category/add_category', { category_name }, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 			if (result.data.success) {
 				setInputCategory((prev) => (prev = ''));
 				toast({
@@ -95,7 +99,11 @@ export default function AdminCategoryPage() {
 	};
 
 	const btnEditCategory = async (category_id, new_category) => {
-		let result = await axios.patch(API_URL + '/category/edit_category/' + category_id, { new_category });
+		let result = await axios.patch(API_URL + '/category/edit_category/' + category_id, { new_category }, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
 		if (result.data.success) {
 			getCategoryData();
 			displayCategoryData();
@@ -110,7 +118,11 @@ export default function AdminCategoryPage() {
 	};
 
 	const btnDeleteCategory = async (category_id) => {
-		let result = await axios.delete(API_URL + '/category/delete_category/' + category_id);
+		let result = await axios.delete(API_URL + '/category/delete_category/' + category_id, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
 		if (result.data.success) {
 			getCategoryData();
 			displayCategoryData();
@@ -287,8 +299,8 @@ export default function AdminCategoryPage() {
 	return (
 		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
 			<div className="container mx-auto mt-[2.5vh]">
-				<h1 className="font-bold text-lg text-hijauBtn text-center">
-					SEHATBOS.COM <span className="font-normal">| DASHBOARD</span>
+				<h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => { navigate('/admin') }}>
+					SEHATBOS.COM <span className="font-normal">| CATEGORY</span>
 				</h1>
 			</div>
 

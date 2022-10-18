@@ -23,10 +23,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src/template'),
                 extName: '.handlebars',
             }
 
@@ -100,10 +100,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src//template'),
                 extName: '.handlebars',
             }
 
@@ -211,10 +211,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src/template'),
                 extName: '.handlebars',
             }
 
@@ -275,10 +275,10 @@ module.exports = {
             const handlebarOptions = {
                 viewEngine: {
                     extName: '.handlebars',
-                    partialsDir: path.resolve('./template'),
+                    partialsDir: path.resolve('./src/template'),
                     defaultLayout: false,
                 },
-                viewPath: path.resolve('./template'),
+                viewPath: path.resolve('./src/template'),
                 extName: '.handlebars',
             }
 
@@ -350,27 +350,6 @@ module.exports = {
                 success: false,
                 massage: 'Request failed'
             })
-        }
-    },
-    logout: async (req, res) => {
-        try {  
-            let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender, profile_picture from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
-
-            console.log('ini resUser', resUser);
-
-            if (resUser.length > 0 ) {
-                res.status(200).send({
-                    success: true,
-                    message: 'Logout success'
-                });
-            }
-            
-        } catch (error) {
-            console.log(eorr);
-            res.status(500).send({
-                success: false,
-                message: 'Logout fail',
-            });
         }
     }
 };

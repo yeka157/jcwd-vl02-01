@@ -4,7 +4,7 @@ import axios from 'axios';
 import { API_URL } from '../helper';
 import PasswordForm from '../components/PasswordFormComponent';
 import { FaUserSlash } from "react-icons/fa";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlineKey } from "react-icons/ai";
 import { Spinner, useToast, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
@@ -32,6 +32,7 @@ const ChangePassword = () => {
     const params = useParams();
     const resetCookie = Cookies.get('resetToken');
     const toast = useToast();
+    const navigate= useNavigate()
 
     useEffect(() => {
         const passwordChecker = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$/;
@@ -97,6 +98,7 @@ const ChangePassword = () => {
                     setConfirmPassword('');
                     setSpinner(false);
                     setDisableBtn(false)
+                    navigate('/')
                     toast({
                         title: 'Reset Password success',
                         description: "Now you can login with new passwword",
@@ -196,9 +198,7 @@ const ChangePassword = () => {
                                 <button onClick={() => { setSpinner(true); setDisableBtn(true); setTimeout(btnSubmit, 2000) }} disabled={disableBtn} class={`w-[312px] text-[16px] mt-[24px] bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Submit'}
                                 </button>
-                                <p className="text-[12px] pt-2">
-                                    <a className="text-blue-500 font-bold" href="/login">Login</a>
-                                </p>
+                                
                             </div>
                         </div>
                     </div>

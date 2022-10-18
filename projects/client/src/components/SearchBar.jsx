@@ -10,7 +10,7 @@ export default function SearchBar({setFilters, inputValue, filters, setCurrentPa
               style={{borderRadius: 0}}
               value={inputValue}
               type="search" 
-              className="form-control relative flex-auto w-[300px] block px-3 py-1.5 text-sm font-normal text-gray-700 bg-bgWhite bg-clip-padding border border-solid border-gray-500 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-bgWhite focus:border-borderHijau focus:outline-none" 
+              className="form-control relative flex-auto w-[200px] block px-3 py-1.5 text-sm font-normal text-gray-700 bg-bgWhite bg-clip-padding border border-solid border-gray-500 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-bgWhite focus:border-borderHijau focus:outline-none" 
               placeholder={placeholder ? placeholder : 'Search by product name'}
               aria-label="Search" 
               aria-describedby="button-addon3" 

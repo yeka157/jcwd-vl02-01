@@ -29,6 +29,7 @@ import { AiOutlinePaperClip } from 'react-icons/ai';
 import { HiOutlineChevronDown } from 'react-icons/hi';
 import axios from 'axios';
 import { API_URL } from '../helper';
+import Cookies from 'js-cookie';
 
 export default function EditProductComponent({
 	initialRef,
@@ -55,12 +56,11 @@ export default function EditProductComponent({
 		product_netto: 0,
 		product_conversion: '',
 	});
-
 	const [selectedForm, setSelectedForm] = useState('details');
 	const [checkedItems, setCheckedItems] = useState(false);
 	const [checkedDeleteStock, setCheckedDeleteStock] = useState(false);
-
 	const toast = useToast();
+	const token = Cookies.get('sehatToken');
 
 	const btnEditProduct = async () => {
 		try {
@@ -83,11 +83,19 @@ export default function EditProductComponent({
 
 			formData.append('data', JSON.stringify(inputData));
 
-			let updateProduct = await axios.patch(`${API_URL}/product/update_product/${productData[selectedProductIndex]?.product_id}`, formData);
+			let updateProduct = await axios.patch(`${API_URL}/product/update_product/${productData[selectedProductIndex]?.product_id}`, formData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (updateProduct.data.success) {
 				if (checkedDeleteStock) {
-					let deleteStock = await axios.delete(`${API_URL}/product/delete_stock/${productData[selectedProductIndex]?.product_id}`);
+					let deleteStock = await axios.delete(`${API_URL}/product/delete_stock/${productData[selectedProductIndex]?.product_id}`, {
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					});
 					if (deleteStock.data.success) {
 						getProductData();
 						toast({
@@ -109,13 +117,21 @@ export default function EditProductComponent({
 				}
 
 				if (productStock?.length > 0 && !checkedDeleteStock) {
-					let updateStock = await axios.patch(`${API_URL}/product/update_stock/${productStock[0].stock_id}`, {
-						product_id: productData[selectedProductIndex]?.product_id,
-						product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
-						product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
-						product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto,
-						product_conversion: form.product_conversion && form.product_conversion !== '-' ? form.product_conversion : productData[selectedProductIndex]?.product_conversion,
-					});
+					let updateStock = await axios.patch(
+						`${API_URL}/product/update_stock/${productStock[0].stock_id}`,
+						{
+							product_id: productData[selectedProductIndex]?.product_id,
+							product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
+							product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
+							product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto,
+							product_conversion: form.product_conversion && form.product_conversion !== '-' ? form.product_conversion : productData[selectedProductIndex]?.product_conversion,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						}
+					);
 
 					if (updateStock.data.success) {
 						getProductData();
@@ -138,13 +154,26 @@ export default function EditProductComponent({
 				}
 
 				if (productStock?.length === 0 && !checkedDeleteStock) {
-					let addStock = await axios.post(`${API_URL}/product/add_stock`, {
-						product_id: productData[selectedProductIndex]?.product_id,
-						product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
-						product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
-						product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto ? productData[selectedProductIndex]?.product_netto : 0,
-						product_conversion: form.product_conversion && form.product_conversion !== '-' ? form.product_conversion : productData[selectedProductIndex]?.product_conversion ? productData[selectedProductIndex]?.product_conversion : '-',
-					});
+					let addStock = await axios.post(
+						`${API_URL}/product/add_stock`,
+						{
+							product_id: productData[selectedProductIndex]?.product_id,
+							product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
+							product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
+							product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto ? productData[selectedProductIndex]?.product_netto : 0,
+							product_conversion:
+								form.product_conversion && form.product_conversion !== '-'
+									? form.product_conversion
+									: productData[selectedProductIndex]?.product_conversion
+									? productData[selectedProductIndex]?.product_conversion
+									: '-',
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						}
+					);
 
 					if (addStock.data.success) {
 						getProductData();
