@@ -12,5 +12,6 @@ route.patch('/substract_stock/:stock_id', transactionController.substractStock);
 route.get('/get_transaction', readToken, transactionController.getTransactions);
 route.get('/count', readToken, transactionController.countTransactionLIst);
 route.get('/transaction_detail/:transaction_id', transactionController.getTransactionDetail);
+route.patch('/update_status/:transaction_id', transactionController.updateStatus);
 
 module.exports = route;

@@ -30,6 +30,7 @@ const TransactionDetailPage = () => {
     const [images, setImages] = useState('');
     const [selectedImg, setSelectedImg] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [action, setAction] = useState('');
 
     const { isOpen: cancelConfirmation, onOpen: onOpenCancelModal, onClose: onCancelModal } = useDisclosure()
     const { isOpen: orderConfirmation, onOpen: onOrder, onClose: onCloseOrder } = useDisclosure()
@@ -39,7 +40,7 @@ const TransactionDetailPage = () => {
     const user = useSelector(getUser);
     const filePickerRef = useRef(null);
 
-    const { address_detail, district, city, province, delivery_charge, delivery_option, doctor_prescription, invoice, order_date, detail, transaction_status, total_purchase } = transactionData;
+    const { transaction_id, address_detail, district, city, province, delivery_charge, delivery_option, doctor_prescription, invoice, order_date, detail, transaction_status, total_purchase } = transactionData;
 
     const getData = async () => {
         try {
@@ -99,6 +100,59 @@ const TransactionDetailPage = () => {
         getData();
     }, []);
 
+    const updateStatus = async () => {
+        try {
+            const status = ['Awaiting Payment', 'Awaiting Payment Confirmation', 'Cancelled', 'Shipped', 'Order Confirmed'];
+
+            let idx = status.findIndex(val => val === transaction_status);
+            let newStatus = '';
+
+            if (action === 'Cancel') {
+                newStatus = status[idx + 2]
+            } else {
+                newStatus = status[idx + 1]
+            }
+
+            let res = await axios.patch(`${API_URL}/transaction/update_status/${transaction_id}`, { newStatus });
+
+            if (res.data.success) {
+                if (action === 'Cancel') {
+                    onCancelModal()
+                    toast({
+                        title: 'Order succesfully cancelled',
+                        position: 'bottom',
+                        status: 'success',
+                        duration: 3000,
+                        isClosable: true,
+                    });
+                } else if (action === 'Payment') {
+                    onClosePayment();
+                    toast({
+                        title: 'Payment proof succesfully uploaded',
+                        position: 'bottom',
+                        status: 'success',
+                        duration: 3000,
+                        isClosable: true,
+                    });
+                } else {
+                    onCloseOrder()
+                    toast({
+                        title: 'Order succesfully confirmed',
+                        position: 'bottom',
+                        status: 'success',
+                        duration: 3000,
+                        isClosable: true,
+                    });
+                }
+                setAction('');
+                getData();
+
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     const cancelModal = (
         <Modal isOpen={cancelConfirmation} onClose={onCancelModal}>
@@ -113,10 +167,10 @@ const TransactionDetailPage = () => {
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button colorScheme='red' mr={3} >
-                        Delete
+                    <Button onClick={updateStatus} colorScheme='red' mr={3} >
+                        Cancel order
                     </Button>
-                    <Button variant='ghost' onClick={onCancelModal}>Cancel</Button>
+                    <Button variant='ghost' onClick={onCancelModal}>No</Button>
                 </ModalFooter>
             </ModalContent>
         </Modal>
@@ -135,7 +189,7 @@ const TransactionDetailPage = () => {
                 </ModalBody>
 
                 <ModalFooter>
-                    <Button colorScheme='teal' mr={3} >
+                    <Button onClick={updateStatus} colorScheme='teal' mr={3} >
                         Yes, confirm
                     </Button>
                     <Button variant='ghost' onClick={onCloseOrder}>Cancel</Button>
@@ -186,7 +240,7 @@ const TransactionDetailPage = () => {
                     </FormControl>
                 </ModalBody>
                 <ModalFooter className="space-x-3">
-                    <Button colorScheme="teal">Upload</Button>
+                    <Button onClick={updateStatus} colorScheme="teal">Upload</Button>
                     <Button
                         onClick={onClosePayment}
                     >
@@ -201,7 +255,7 @@ const TransactionDetailPage = () => {
         <div>
             {
                 !loading ?
-                    <div className='min-h-screen px-[50px] py-10 pt-[150px]'>
+                    <div className='min-h-screen px-[50px] py-8 pt-[140px]'>
                         <div className='w-1/2 mx-auto p-10 border rounded shadow'>
                             <div className="flex justify-between border-b pb-2">
                                 <div className=" flex">
@@ -222,7 +276,7 @@ const TransactionDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className={`${transaction_status === 'Cancelled' ? 'bg-red-100 text-[#e53e3e]' : 'bg-[#d6ffde] text-[#37ba69]'} text-green-500  rounded font-bold  flex items-center px-2 mx-2 `}>
+                                <div className={`${transaction_status === 'Cancelled' ? 'bg-red-100 text-[#e53e3e]' : 'bg-[#d6ffde] text-[#37ba69]'} rounded font-bold  flex items-center px-2 mx-2 `}>
                                     {transaction_status}
                                 </div>
                             </div>
@@ -318,7 +372,7 @@ const TransactionDetailPage = () => {
                                 </div>
                             </div>
 
-                            <div className='flex justify-between pb-3'>
+                            <div className='flex justify-between'>
                                 {
                                     transaction_status === 'Awaiting Admin Confirmation' ?
                                         <>
@@ -334,18 +388,37 @@ const TransactionDetailPage = () => {
 
                             </div>
 
-                            <div className='flex justify-end mt-5 pb-5'>
+                            <div className='flex justify-end'>
                                 {
                                     transaction_status === 'Awaiting Payment' &&
                                     <>
-                                        <Button className='mx-3' colorScheme='red' onClick={onOpenCancelModal}>Cancel Order</Button>
-                                        <Button colorScheme='teal' onClick={onOpenPayment}>Upload Payment Proof</Button>
+                                        <Button className='mx-3 mt-5 py-3' colorScheme='red'
+                                            onClick={() => {
+                                                onOpenCancelModal();
+                                                setAction('Cancel')
+                                            }}>
+                                            Cancel Order
+                                        </Button>
+
+                                        <Button className='mt-5 py-3' colorScheme='teal' onClick={() => {
+                                            onOpenPayment();
+                                            setAction('Payment')
+                                        }}
+                                        >
+                                            Upload Payment Proof
+                                        </Button>
                                     </>
                                 }
 
                                 {
                                     transaction_status === 'Shipped' &&
-                                    <Button colorScheme='teal' onClick={onOrder}>Confirm Order</Button>
+                                    <Button className='mt-5 py-3' colorScheme='teal' onClick={() => {
+                                        onOrder();
+                                        setAction('Confirm')
+                                    }}
+                                    >
+                                        Confirm Order
+                                    </Button>
                                 }
                             </div>
 
@@ -357,7 +430,7 @@ const TransactionDetailPage = () => {
                         </div>
                     </div>
                     :
-                    <div className='pt-[25%] h-screen'>
+                    <div className='pt-[25%] h-screen flex justify-center'>
                         <Spinner size='md' className='mx-auto' color={'teal'} />
                     </div>
 

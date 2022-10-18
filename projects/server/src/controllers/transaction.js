@@ -198,7 +198,24 @@ module.exports = {
                 ...resData[0],
                 detail: transDetail,
                 success: true
-            })
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    updateStatus: async (req, res) => {
+        try {
+            let resUpdate = await dbQuery(`UPDATE transactions SET transaction_status = ${dbConf.escape(req.body.newStatus)} WHERE transaction_id = ${req.params.transaction_id};`);
+
+            if (resUpdate.affectedRows) {
+                res.status(200).send({
+                    success: true,
+                    message: 'Status updated'
+                });
+            }
+
 
         } catch (error) {
             console.log(error);
