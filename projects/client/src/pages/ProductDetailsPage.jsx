@@ -22,6 +22,8 @@ export default function ProductDetailsPage() {
   const [skeleton, setSkeleton] = React.useState(true);
   const [query, setQuery] = React.useState(0);
 
+  console.log(data);
+
   const getStock = React.useCallback(
     async(id) => {
       let getData = await Axios.get(API_URL + `/product/stock/${id}`);
