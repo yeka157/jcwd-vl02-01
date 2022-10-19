@@ -6,9 +6,6 @@ import { useNavigate } from "react-router-dom";
 const TransactionListComponent = (props) => {
 
     const navigate = useNavigate();
-
-    console.log('ini detail:', props.getData.transaction_detail);
-
     return (
         <div>
             {
