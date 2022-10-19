@@ -54,6 +54,8 @@ const TransactionDetailPage = () => {
         }
     };
 
+    console.log(transaction_id);
+
     const printSubTotal = () => {
         let total = 0;
 
