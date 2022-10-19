@@ -82,6 +82,7 @@ export default function AdminDashboardPage() {
 					fontWeight="semibold"
 					lineHeight="tight"
 					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					onClick={() => navigate('/admin/report')}
 				>
 					<h1 className="inline">Report</h1>
 					<TbReportAnalytics className="inline ml-2" />
@@ -95,6 +96,7 @@ export default function AdminDashboardPage() {
 					fontWeight="semibold"
 					lineHeight="tight"
 					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					onClick={() => navigate('/')}
 				>
 					<h1 className="inline">Visit Website</h1>
 					<CgWebsite className="inline ml-2" />

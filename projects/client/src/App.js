@@ -23,6 +23,9 @@ import PrescriptionPage from './pages/PrescriptionPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
+import AdminReportPage from './pages/AdminReportPage';
+import AdminSalesReportPage from './pages/AdminSalesReportPage';
+import AdminStockHistoryPage from './pages/AdminStockHistoryPage';
 
 function App() {
   const [userData, setUserData] = useState([]);
@@ -120,6 +123,9 @@ function App() {
               <Route path='/admin' element={<AdminDashboardPage />} />
               <Route path='/admin/category' element={<AdminCategoryPage />} />
               <Route path="/admin/product" element={<AdminProductPage />} />
+              <Route path='/admin/report' element={<AdminReportPage/>} />
+              <Route path='/admin/report/sales' element={<AdminSalesReportPage/>} />
+              <Route path='/admin/report/stock' element={<AdminStockHistoryPage/>} />
             </>
             :
             <Route path='/*' element={<NotFoundPage />} />

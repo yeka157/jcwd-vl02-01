@@ -114,7 +114,6 @@ module.exports = {
 
             if (resGet.length > 0) {
 
-                console.log('ini resget', resGet);
 
                 let token = createToken({ ...resGet[0] });
                 let link = `http://localhost:3000/verification/${token}`;
@@ -189,7 +188,6 @@ module.exports = {
             if (resUser.length > 0) {
                 let token = createToken({ ...resUser[0] });
 
-                console.log('ini token keeplogin', token);
 
                 res.status(200).send({
                     success: true,
@@ -283,11 +281,9 @@ module.exports = {
             }
 
             transport.use('compile', hbs(handlebarOptions));
-            console.log('ini data token', req.dataToken.user_id);
 
 
             let resGet = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`);
-            console.log('ini resget', resGet[0]);
 
             if (resGet.length > 0) {
 
@@ -325,13 +321,10 @@ module.exports = {
     changePassword: async (req, res) => {
         try {
 
-            console.log(req.dataToken);
-            console.log(req.body.password);
 
             let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users 
             WHERE email = ${dbConf.escape(req.dataToken.email)} AND password = ${dbConf.escape(hashPassword(req.body.oldPassword))};`);
 
-            console.log('ini data changePass', resUser);
 
             if (resUser.length > 0 ) {
                 await dbQuery(`UPDATE users SET password = ${dbConf.escape(hashPassword(req.body.password))} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`)
