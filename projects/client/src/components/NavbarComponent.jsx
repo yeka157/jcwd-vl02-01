@@ -33,8 +33,19 @@ export default function Navbar(props) {
   }
 
   return (
-    <div className={`border-b border-slate-400 ${props.class} ${pathName === '/' || pathName === '/transaction_list' || pathName === '/transaction_detail'|| pathName === '/prescription' || pathName === '/profile' || pathName === '/cart'  || pathName === '/checkout'|| pathName === '/login' || pathName === '/register' || pathName.includes('/product') ? '' : 'hidden'} ${pathName === '/login' || pathName === '/register' || pathName === '/transaction_detail'  ? 'absolute w-full' : ""}`}>
-
+    <div className={`border-b border-slate-400 ${props.class} ${
+      pathName === '/' || 
+      pathName === '/transaction_list'|| 
+      pathName === '/prescription' || 
+      pathName === '/profile' || 
+      pathName === '/cart'  || 
+      pathName === '/checkout'|| 
+      pathName === '/login' || 
+      pathName === '/register' || 
+      pathName === '/product' || 
+      pathName === '/product/detail'
+      ? '' : 'hidden'} 
+      ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
           {/* dropdown menu untuk ukuran hp */}

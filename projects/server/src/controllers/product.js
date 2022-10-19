@@ -45,9 +45,15 @@ module.exports = {
 	},
 	addProduct: async (req, res) => {
 		try {
+
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			const product_image = `imgProduct/${req.files[0]?.filename}`;
 
-			let { category_id, product_name, product_price, product_description, product_usage, default_unit, product_stock } = JSON.parse(req.body.data);
+			let { category_id, product_name, product_price, product_description, product_usage, default_unit, product_stock, product_netto, product_conversion } = JSON.parse(req.body.data);
 
 			let product = await dbQuery(`SELECT * FROM products WHERE product_name=${dbConf.escape(product_name)};`);
 
@@ -76,10 +82,9 @@ module.exports = {
 					(${dbConf.escape(insertedProduct[0].product_id)},
 					${dbConf.escape(product_stock)},
 					${dbConf.escape(default_unit)},
-					${dbConf.escape(0)},
-					${dbConf.escape('-')});
-				`
-				);
+					${dbConf.escape(product_netto)},
+					${dbConf.escape(product_conversion)});
+				`);
 
 				if (stock.length === 0) {
 					res.status(400).send({ success: false, message: 'New product has been added ✅' });
@@ -95,6 +100,11 @@ module.exports = {
 	},
 	updateProduct: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			let product_image;
 			if (req.files[0]?.filename) {
 				product_image = `imgProduct/${req.files[0]?.filename}`;
@@ -119,6 +129,11 @@ module.exports = {
 	},
 	deleteProduct: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			let id = req.params.id;
 			const product = await dbQuery(`SELECT * FROM products WHERE product_id = ${dbConf.escape(id)};`);
 
@@ -153,6 +168,11 @@ module.exports = {
 	},
 	addProductStock: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			let { product_id, product_stock, product_unit, product_netto, product_conversion } = req.body;
 
 			let stock = await dbQuery(`SELECT * FROM stock WHERE product_id=${dbConf.escape(product_id)} AND product_unit=${dbConf.escape(product_unit)};`);
@@ -179,6 +199,11 @@ module.exports = {
 	},
 	updateProductStock: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			let productStock = await dbQuery(`SELECT * FROM stock WHERE product_id = ${dbConf.escape(req.params?.id)}`);
 
 			if (productStock.length === 0) {
@@ -218,6 +243,11 @@ module.exports = {
 	},
 	deleteProductStock: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+			
 			let id = req.params.id;
 			const product = await dbQuery(`SELECT * FROM stock WHERE product_id=${dbConf.escape(id)};`);
 
