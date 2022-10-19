@@ -46,7 +46,6 @@ export default function Navbar(props) {
       pathName === '/product/detail'
       ? '' : 'hidden'} 
       ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
-
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
           {/* dropdown menu untuk ukuran hp */}
