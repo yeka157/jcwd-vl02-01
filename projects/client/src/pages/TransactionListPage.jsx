@@ -37,9 +37,8 @@ export default function TransactionListPage() {
     const [totalData, setTotalData] = useState(0);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-
-
     const itemsPerPage = 4;
+    const time = '23:59:59'
 
     const getTotalData = async () => {
         try {
