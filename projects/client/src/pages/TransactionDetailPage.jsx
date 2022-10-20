@@ -16,7 +16,8 @@ import {
     FormControl,
     Input,
     FormLabel,
-    Spinner
+    Spinner,
+    Badge
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API_URL } from '../helper';
@@ -53,8 +54,6 @@ const TransactionDetailPage = () => {
             console.log(error);
         }
     };
-
-    console.log(transaction_id);
 
     const printSubTotal = () => {
         let total = 0;
@@ -100,17 +99,32 @@ const TransactionDetailPage = () => {
 
     const saveImage = async () => {
         try {
-          let formData = new FormData();
-          formData.append('image', images);
-        
-          let res = await axios.patch(API_URL + `/transaction/upload_payment_proof/${transaction_id}`, formData);
-          if (res.data.success) {
-            // console.log('success');
-          }
+            let formData = new FormData();
+            formData.append('image', images);
+
+            let res = await axios.patch(API_URL + `/transaction/upload_payment_proof/${transaction_id}`, formData);
+            if (res.data.success) {
+                // console.log('success');
+            }
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      }
+    };
+
+    console.log(detail);
+
+    const stockRecovery = async () => {
+        try {
+            for (let i = 0; i < detail.length; i++) {
+                let data = detail[i]
+
+                await axios.patch(API_URL + `/transaction/stock_recovery/${detail[i].product_id}`, { data });
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
         getData();
@@ -133,6 +147,7 @@ const TransactionDetailPage = () => {
 
             if (res.data.success) {
                 if (action === 'Cancel') {
+                    stockRecovery();
                     onCancelModal()
                     toast({
                         title: 'Order succesfully cancelled',
@@ -144,6 +159,15 @@ const TransactionDetailPage = () => {
                 } else if (action === 'Payment') {
                     onClosePayment();
                     toast({
+                        title: 'Payment proof succesfully uploaded',
+                        position: 'bottom',
+                        status: 'success',
+                        duration: 3000,
+                        isClosable: true,
+                    });
+                } else {
+                    onCloseOrder();
+                    toast({
                         title: 'Order succesfully confirmed',
                         position: 'bottom',
                         status: 'success',
@@ -151,6 +175,7 @@ const TransactionDetailPage = () => {
                         isClosable: true,
                     });
                 }
+
                 setAction('');
                 getData();
 
@@ -159,7 +184,6 @@ const TransactionDetailPage = () => {
             console.log(error);
         }
     }
-
 
     const cancelModal = (
         <Modal isOpen={cancelConfirmation} onClose={onCancelModal}>
@@ -225,7 +249,8 @@ const TransactionDetailPage = () => {
                                 onChange={addImage}
                             />
                             <Button onClick={() => {
-                                filePickerRef.current.click()}
+                                filePickerRef.current.click()
+                            }
                             } >
                                 Browse
                             </Button>
@@ -249,7 +274,7 @@ const TransactionDetailPage = () => {
                     </FormControl>
                 </ModalBody>
                 <ModalFooter className="space-x-3">
-                    <Button onClick={ () => {
+                    <Button onClick={() => {
                         saveImage();
                         updateStatus();
                     }} colorScheme="teal">Upload</Button>
@@ -288,8 +313,31 @@ const TransactionDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className={`${transaction_status === 'Cancelled' ? 'bg-red-100 text-[#e53e3e]' : 'bg-[#d6ffde] text-[#37ba69]'} rounded font-bold  flex items-center px-2 mx-2 `}>
-                                    {transaction_status}
+                                <div className='text-white'>
+                                    <Badge
+                                        colorScheme={
+                                            transaction_status === 'Cancelled'
+                                                ? 'red'
+                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                    ? 'purple'
+                                                    : transaction_status.includes('Awaiting Payment')
+                                                        ? 'blue'
+                                                        : 'green'
+                                        }
+                                    >
+                                        <p className={`
+                                    ${transaction_status === 'Cancelled'
+                                                ? 'text-red-500'
+                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                    ? 'text-purple-500'
+                                                    : transaction_status.includes('Awaiting Payment')
+                                                        ? 'text-blue-500'
+                                                        : 'text-green-500'}
+                                    
+                                    `}>
+                                            {transaction_status}
+                                        </p>
+                                    </Badge>
                                 </div>
                             </div>
 

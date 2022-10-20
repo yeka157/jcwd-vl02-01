@@ -114,6 +114,40 @@ module.exports = {
             res.status(500).send({ success: false, message: error });
         }
     },
+    stockRecovery: async (req, res) => {
+        try {
+        
+            const { quantity, product_id, transaction_id, product_name, product_image, product_unit} = req.body.data
+            
+            console.log('ini data;', req.body.data);
+            
+            let resUpdate = await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+
+            if (resUpdate.affectedRows) {
+
+                let resReport = await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
+                VALUES (
+                ${dbConf.escape(transaction_id)}, 
+                ${dbConf.escape(product_id)}, 
+                ${dbConf.escape(product_name)}, 
+                ${dbConf.escape(product_image)}, 
+                ${dbConf.escape(product_unit)},
+                ${quantity},
+                'Stock recovery',
+                'Addition'
+                );`)
+            }
+
+            res.status(200).send({
+                success: true,
+                massage: 'Stock update success'
+            })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
     getTransactions: async (req, res) => {
         try {
             const { invoice, transaction_status, order, sort, offset, limit, from, to } = req.query
@@ -232,7 +266,7 @@ module.exports = {
                 success: true,
                 massage: 'Payent Proof Uploaded'
             })
-            
+
         } catch (error) {
             console.log(error);
         }
