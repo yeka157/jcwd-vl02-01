@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { FiShoppingBag } from "react-icons/fi";
 import { RiErrorWarningLine } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@chakra-ui/react";
+
 
 const TransactionListComponent = (props) => {
 
@@ -31,8 +33,31 @@ const TransactionListComponent = (props) => {
                                 </div>
                             </div>
 
-                            <div className={`${props.getData.transaction_status == 'Cancelled' ? 'bg-red-100 text-red-500' : 'bg-[#d6ffde] text-[#37ba69]'} rounded font-bold  flex items-center px-2 mx-2 `}>
-                                {props.getData.transaction_status}
+                            <div className='text-white'>
+                                <Badge
+                                    colorScheme={
+                                        props.getData.transaction_status === 'Cancelled'
+                                            ? 'red'
+                                            : props.getData.transaction_status === 'Awaiting Admin Confirmation'
+                                                ? 'purple'
+                                                : props.getData.transaction_status.includes('Awaiting Payment')
+                                                    ? 'blue'
+                                                    : 'green'
+                                    }
+                                >
+                                    <p className={`
+                                    ${props.getData.transaction_status === 'Cancelled'
+                                            ? 'text-red-500'
+                                            : props.getData.transaction_status === 'Awaiting Admin Confirmation'
+                                                ? 'text-purple-500'
+                                                : props.getData.transaction_status.includes('Awaiting Payment')
+                                                    ? 'text-blue-500'
+                                                    : 'text-green-500'}
+                                    
+                                    `}>
+                                        {props.getData.transaction_status}
+                                    </p>
+                                </Badge>
                             </div>
                         </div>
 

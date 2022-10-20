@@ -5,13 +5,15 @@ import { API_URL } from '../helper';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@chakra-ui/react'
+import { useToast, Spinner } from '@chakra-ui/react';
+import { FaCartPlus } from "react-icons/fa";
 
 const CartPage = (props) => {
 
     // APKG1-27
-    
+
     const [cartData, setCartData] = useState([]);
+    const [loading, setLoading] = useState(true)
     const navigate = useNavigate();
     const toast = useToast();
 
@@ -26,18 +28,15 @@ const CartPage = (props) => {
                 }
             });
 
-
             if (resCart.data.succes) {
                 setCartData(resCart.data.cartData);
-                console.log('ini data', resCart.data.cartData);
+                setLoading(false)
             }
-
 
         } catch (error) {
             console.log(error);
         }
     }
-
 
     useState(() => {
         getCartData();
@@ -62,7 +61,7 @@ const CartPage = (props) => {
     };
 
     const btnCheckout = () => {
-        if (printTotalPurchase() == 0 ) {
+        if (printTotalPurchase() == 0) {
             toast({
                 title: `Checkout can't be proccessed`,
                 description: 'Please choose item first',
@@ -91,13 +90,31 @@ const CartPage = (props) => {
                         </div>
 
                         {
-                            cartData.map((val, idx) => {
-                                return (
-                                    <CartComponent key={idx} data={val} getData={getCartData} cart={cartData}/>
-                                )
-                            })
+                            !loading ?
+                                cartData.length > 0 ?
+                                    <div>
+                                        {
+                                            cartData.map((val, idx) => {
+                                                return (
+                                                    <CartComponent key={idx} data={val} getData={getCartData} cart={cartData} />
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                    :
+                                    <div className='flex justify-center pt-[200px]'>
+                                        <div className='mx-auto'>
+                                            <FaCartPlus className='mx-auto text-[120px] text-center text-muted' />
+                                            <p className='mx-auto pt-4 text-center text-muted'>Your cart is empty, let add some products</p>
+                                        </div>
+                                    </div>
+                                :
+                                <div className='flex justify-center pt-[200px]'>
+                                    <div className='mx-auto'>
+                                        <Spinner size='md' className='mx-auto' color={'teal'} />
+                                    </div>
+                                </div>
                         }
-
                     </div>
 
                     {/* Checkout Component */}

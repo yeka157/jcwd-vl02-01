@@ -1,6 +1,6 @@
 import React from 'react';
 import { MdLocationOn } from "react-icons/md";
-import { Select, useToast } from '@chakra-ui/react';
+import { Select, useToast, Spinner } from '@chakra-ui/react';
 import CheckoutComponent from '../components/CheckoutComponent';
 import { useState } from 'react';
 import { API_URL } from '../helper';
@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux';
-import { getAddress} from '../slices/addressSlice';
+import { getAddress } from '../slices/addressSlice';
 import { useNavigate } from 'react-router-dom';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
 
@@ -19,6 +19,8 @@ const CheckoutPage = (props) => {
     const [deliveryOption, setDeliveryOption] = useState([]);
     const [selectedDelivery, setSelectedDelivery] = useState('default-0');
     const [address, setAddress] = useState({});
+    const [btnSpinner, setBtnSpinner] = useState(false);
+    const [disableBtn, setDisableBtn] = useState(false);
 
     const user = useSelector(getUser);
     const addressList = useSelector(getAddress);
@@ -113,8 +115,6 @@ const CheckoutPage = (props) => {
         return printSubTotal() + parseInt(selectedDelivery.split('-')[1]);
     };
 
-    console.log(item);
-
     const btnOrder = async () => {
         if (selectedDelivery != 'default-0') {
             let token = Cookies.get('sehatToken');
@@ -140,9 +140,11 @@ const CheckoutPage = (props) => {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            
+
             if (resOrder.data.success) {
                 updateStock();
+                setDisableBtn(true);
+                setBtnSpinner(false)
                 navigate('/transaction_list')
                 toast({
                     title: `Order success`,
@@ -170,9 +172,8 @@ const CheckoutPage = (props) => {
         try {
             for (let i = 0; i < item.length; i++) {
                 let data = item[i].product_stock - item[i].quantity
-                console.log(data);
 
-                const resUpdate = await axios.patch(API_URL + `/transaction/substract_stock/${item[i].stock_id}`, {data});
+                const resUpdate = await axios.patch(API_URL + `/transaction/substract_stock/${item[i].stock_id}`, { data });
             }
 
         } catch (error) {
@@ -250,8 +251,14 @@ const CheckoutPage = (props) => {
                             </div>
                         </div>
 
-                        <button onClick={btnOrder} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
-                            Order
+                        <button onClick={() => {
+                            setBtnSpinner(true)
+                            setDisableBtn(true)
+                            setTimeout(btnOrder, 2000)
+                        }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'
+                        disabled={disableBtn}
+                        >
+                            {btnSpinner ? <Spinner size='sm' /> : 'Order'}
                         </button>
 
                     </div>

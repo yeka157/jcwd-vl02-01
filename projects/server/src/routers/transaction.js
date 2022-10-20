@@ -15,5 +15,6 @@ route.get('/count', readToken, transactionController.countTransactionLIst);
 route.get('/transaction_detail/:transaction_id', transactionController.getTransactionDetail);
 route.patch('/update_status/:transaction_id', transactionController.updateStatus);
 route.patch('/upload_payment_proof/:transaction_id', uploadProof, transactionController.uploadPAymentProof);
+route.patch('/stock_recovery/:product_id', uploadProof, transactionController.stockRecovery);
 
 module.exports = route;
