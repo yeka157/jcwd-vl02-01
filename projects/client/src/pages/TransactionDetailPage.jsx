@@ -54,6 +54,8 @@ const TransactionDetailPage = () => {
         }
     };
 
+    console.log(transaction_id);
+
     const printSubTotal = () => {
         let total = 0;
 
@@ -96,6 +98,20 @@ const TransactionDetailPage = () => {
         }
     };
 
+    const saveImage = async () => {
+        try {
+          let formData = new FormData();
+          formData.append('image', images);
+        
+          let res = await axios.patch(API_URL + `/transaction/upload_payment_proof/${transaction_id}`, formData);
+          if (res.data.success) {
+            // console.log('success');
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
     useEffect(() => {
         getData();
     }, []);
@@ -127,15 +143,6 @@ const TransactionDetailPage = () => {
                     });
                 } else if (action === 'Payment') {
                     onClosePayment();
-                    toast({
-                        title: 'Payment proof succesfully uploaded',
-                        position: 'bottom',
-                        status: 'success',
-                        duration: 3000,
-                        isClosable: true,
-                    });
-                } else {
-                    onCloseOrder()
                     toast({
                         title: 'Order succesfully confirmed',
                         position: 'bottom',
@@ -217,7 +224,9 @@ const TransactionDetailPage = () => {
                                 ref={filePickerRef}
                                 onChange={addImage}
                             />
-                            <Button onClick={() => filePickerRef.current.click()}>
+                            <Button onClick={() => {
+                                filePickerRef.current.click()}
+                            } >
                                 Browse
                             </Button>
                             {selectedImg && (
@@ -240,7 +249,10 @@ const TransactionDetailPage = () => {
                     </FormControl>
                 </ModalBody>
                 <ModalFooter className="space-x-3">
-                    <Button onClick={updateStatus} colorScheme="teal">Upload</Button>
+                    <Button onClick={ () => {
+                        saveImage();
+                        updateStatus();
+                    }} colorScheme="teal">Upload</Button>
                     <Button
                         onClick={onClosePayment}
                     >
@@ -298,7 +310,7 @@ const TransactionDetailPage = () => {
                                         :
                                         detail.map((val, idx) => {
                                             return (
-                                                <div className='pt-1'>
+                                                <div key={idx} className='pt-1'>
                                                     <div className='flex'>
                                                         <div>
                                                             {

@@ -129,7 +129,7 @@ module.exports = {
             };
 
             if (from && to) {
-                filter.push(`order_date BETWEEN '${from}' AND '${to}'`)
+                filter.push(`order_date BETWEEN '${from}' AND '${to + ' 23:59:59'}'`)
             };
 
             if (req.dataToken.role === 'CUSTOMER') {
@@ -220,6 +220,21 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(500).send({ success: false, message: error });
+        }
+    },
+    uploadPAymentProof: async (req, res) => {
+        try {
+            let images = `/imgPayment/${req.files[0].filename}`
+
+            let resUpoad = await dbQuery(`UPDATE transactions SET payment_proof = ${dbConf.escape(images)} WHERE transaction_id = ${req.params.transaction_id};`)
+
+            res.status(200).send({
+                success: true,
+                massage: 'Payent Proof Uploaded'
+            })
+            
+        } catch (error) {
+            console.log(error);
         }
     }
 }
