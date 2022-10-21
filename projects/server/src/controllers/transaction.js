@@ -117,6 +117,7 @@ module.exports = {
     getTransactions: async (req, res) => {
         try {
             const { invoice, transaction_status, order, sort, offset, limit, from, to } = req.query
+            console.log(to)
 
             let filter = [];
 
@@ -129,7 +130,7 @@ module.exports = {
             };
 
             if (from && to) {
-                filter.push(`order_date BETWEEN '${from}' AND '${to}'`)
+                filter.push(`order_date BETWEEN '${from}' AND '${to + ' 23:59:59'}'`)
             };
 
             if (req.dataToken.role === 'CUSTOMER') {

@@ -24,9 +24,9 @@ module.exports = {
 			const products = await dbQuery(
 				`SELECT * FROM products p 
 				JOIN categories c ON p.category_id = c.category_id
-				${productName && !categoryName ? `WHERE product_name LIKE "%${productName}%"` : ''}
-				${categoryName && !productName ? `WHERE category_name LIKE "%${categoryName}%"` : ''}
-				${categoryName && productName ? `WHERE product_name LIKE "%${productName}%" AND category_name LIKE "%${categoryName}%"` : ''}
+				${productName && !categoryName ? `WHERE product_name LIKE "${productName}%"` : ''}
+				${categoryName && !productName ? `WHERE category_name LIKE "${categoryName}%"` : ''}
+				${categoryName && productName ? `WHERE product_name LIKE "${productName}%" AND category_name LIKE "${categoryName}%"` : ''}
 				${sort ? 'ORDER BY product_' + sort + ' ' + order : ''} 
 				${limit ? 'LIMIT ' + limit + ' OFFSET ' + offset : ''}
 			`
