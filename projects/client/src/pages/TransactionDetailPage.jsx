@@ -16,7 +16,8 @@ import {
     FormControl,
     Input,
     FormLabel,
-    Spinner
+    Spinner,
+    Badge
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API_URL } from '../helper';
@@ -96,6 +97,35 @@ const TransactionDetailPage = () => {
         }
     };
 
+    const saveImage = async () => {
+        try {
+            let formData = new FormData();
+            formData.append('image', images);
+
+            let res = await axios.patch(API_URL + `/transaction/upload_payment_proof/${transaction_id}`, formData);
+            if (res.data.success) {
+                // console.log('success');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    console.log(detail);
+
+    const stockRecovery = async () => {
+        try {
+            for (let i = 0; i < detail.length; i++) {
+                let data = detail[i]
+
+                await axios.patch(API_URL + `/transaction/stock_recovery/${detail[i].product_id}`, { data });
+            }
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     useEffect(() => {
         getData();
     }, []);
@@ -117,6 +147,7 @@ const TransactionDetailPage = () => {
 
             if (res.data.success) {
                 if (action === 'Cancel') {
+                    stockRecovery();
                     onCancelModal()
                     toast({
                         title: 'Order succesfully cancelled',
@@ -135,7 +166,7 @@ const TransactionDetailPage = () => {
                         isClosable: true,
                     });
                 } else {
-                    onCloseOrder()
+                    onCloseOrder();
                     toast({
                         title: 'Order succesfully confirmed',
                         position: 'bottom',
@@ -144,6 +175,7 @@ const TransactionDetailPage = () => {
                         isClosable: true,
                     });
                 }
+
                 setAction('');
                 getData();
 
@@ -152,7 +184,6 @@ const TransactionDetailPage = () => {
             console.log(error);
         }
     }
-
 
     const cancelModal = (
         <Modal isOpen={cancelConfirmation} onClose={onCancelModal}>
@@ -217,7 +248,10 @@ const TransactionDetailPage = () => {
                                 ref={filePickerRef}
                                 onChange={addImage}
                             />
-                            <Button onClick={() => filePickerRef.current.click()}>
+                            <Button onClick={() => {
+                                filePickerRef.current.click()
+                            }
+                            } >
                                 Browse
                             </Button>
                             {selectedImg && (
@@ -240,7 +274,10 @@ const TransactionDetailPage = () => {
                     </FormControl>
                 </ModalBody>
                 <ModalFooter className="space-x-3">
-                    <Button onClick={updateStatus} colorScheme="teal">Upload</Button>
+                    <Button onClick={() => {
+                        saveImage();
+                        updateStatus();
+                    }} colorScheme="teal">Upload</Button>
                     <Button
                         onClick={onClosePayment}
                     >
@@ -276,8 +313,31 @@ const TransactionDetailPage = () => {
                                     </div>
                                 </div>
 
-                                <div className={`${transaction_status === 'Cancelled' ? 'bg-red-100 text-[#e53e3e]' : 'bg-[#d6ffde] text-[#37ba69]'} rounded font-bold  flex items-center px-2 mx-2 `}>
-                                    {transaction_status}
+                                <div className='text-white'>
+                                    <Badge
+                                        colorScheme={
+                                            transaction_status === 'Cancelled'
+                                                ? 'red'
+                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                    ? 'purple'
+                                                    : transaction_status.includes('Awaiting Payment')
+                                                        ? 'blue'
+                                                        : 'green'
+                                        }
+                                    >
+                                        <p className={`
+                                    ${transaction_status === 'Cancelled'
+                                                ? 'text-red-500'
+                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                    ? 'text-purple-500'
+                                                    : transaction_status.includes('Awaiting Payment')
+                                                        ? 'text-blue-500'
+                                                        : 'text-green-500'}
+                                    
+                                    `}>
+                                            {transaction_status}
+                                        </p>
+                                    </Badge>
                                 </div>
                             </div>
 
@@ -298,7 +358,7 @@ const TransactionDetailPage = () => {
                                         :
                                         detail.map((val, idx) => {
                                             return (
-                                                <div className='pt-1'>
+                                                <div key={idx} className='pt-1'>
                                                     <div className='flex'>
                                                         <div>
                                                             {

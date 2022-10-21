@@ -119,8 +119,6 @@ const LoginPage = () => {
                     email: emailRecovery
                 })
 
-                console.log(res.data.token);
-
                 if (res.data.success) {
                     onClose();
                     setEmailRecoveryStatus(true);

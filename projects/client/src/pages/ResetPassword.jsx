@@ -34,19 +34,15 @@ const ResetPassword = () => {
             if (password.length >= 6) {
                 if (password.match(strongPasswordChecker)) {
                     setPasswordStrength('strong');
-                    console.log('strong');
                     setPasswordValid(true);
                 } else if (password.match(passwordChecker)) {
-                    console.log('medium');
                     setPasswordStrength('medium');
                     setPasswordValid(true);
                 } else {
-                    console.log('weak');
                     setPasswordStrength('weak');
                     setPasswordValid(true);
                 }
             } else {
-                console.log('no match');
                 setPasswordStrength('Wrong format');
                 setPasswordValid(false);
             }
