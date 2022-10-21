@@ -296,7 +296,7 @@ const PrescriptionPage = (props) => {
 
                         </div>
 
-                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold'>
+                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}>
                             {btnThrottle ? <Spinner size='xs' /> : 'Order'}
                         </button>
 

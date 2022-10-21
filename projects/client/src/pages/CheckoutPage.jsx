@@ -143,8 +143,8 @@ const CheckoutPage = (props) => {
 
             if (resOrder.data.success) {
                 updateStock();
-                setDisableBtn(true);
-                setBtnSpinner(false)
+                setDisableBtn(false);
+                setBtnSpinner(false);
                 navigate('/transaction_list')
                 toast({
                     title: `Order success`,
@@ -157,6 +157,8 @@ const CheckoutPage = (props) => {
             };
 
         } else {
+            setDisableBtn(false);
+            setBtnSpinner(false);
             toast({
                 title: `Order can't be proccessed`,
                 description: 'Please choose the delivery option first',
@@ -255,8 +257,8 @@ const CheckoutPage = (props) => {
                             setBtnSpinner(true)
                             setDisableBtn(true)
                             setTimeout(btnOrder, 2000)
-                        }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'
-                        disabled={disableBtn}
+                        }} className={`mx-auto bg-hijauBtn ${disableBtn ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
+                            disabled={disableBtn}
                         >
                             {btnSpinner ? <Spinner size='sm' /> : 'Order'}
                         </button>

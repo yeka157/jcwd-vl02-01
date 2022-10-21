@@ -147,7 +147,9 @@ const TransactionDetailPage = () => {
 
             if (res.data.success) {
                 if (action === 'Cancel') {
-                    stockRecovery();
+                    if (!invoice.includes('CSTM')) {
+                        stockRecovery();
+                    };
                     onCancelModal()
                     toast({
                         title: 'Order succesfully cancelled',
@@ -318,9 +320,9 @@ const TransactionDetailPage = () => {
                                         colorScheme={
                                             transaction_status === 'Cancelled'
                                                 ? 'red'
-                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                : transaction_status.includes('Confirmation') 
                                                     ? 'purple'
-                                                    : transaction_status.includes('Awaiting Payment')
+                                                    : transaction_status === 'Awaiting Payment'
                                                         ? 'blue'
                                                         : 'green'
                                         }
@@ -328,9 +330,9 @@ const TransactionDetailPage = () => {
                                         <p className={`
                                     ${transaction_status === 'Cancelled'
                                                 ? 'text-red-500'
-                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                : transaction_status.includes('Confirmation') 
                                                     ? 'text-purple-500'
-                                                    : transaction_status.includes('Awaiting Payment')
+                                                    : transaction_status === 'Awaiting Payment'
                                                         ? 'text-blue-500'
                                                         : 'text-green-500'}
                                     
