@@ -34,7 +34,7 @@ const CheckoutPage = (props) => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resData = await axios.get(API_URL + '/cart//checkouted_item', {
+            let resData = await axios.get(API_URL + '/cart/checkouted_item', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

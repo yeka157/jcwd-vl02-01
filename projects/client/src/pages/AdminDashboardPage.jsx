@@ -69,6 +69,7 @@ export default function AdminDashboardPage() {
 					fontWeight="semibold"
 					lineHeight="tight"
 					className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+					onClick={() => navigate('/admin/transaction')}
 				>
 					<h1 className="inline">Transaction</h1>
 					<AiOutlineTransaction className="inline ml-2" />

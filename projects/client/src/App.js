@@ -9,6 +9,7 @@ import VerificationPage from './pages/VerificationPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AdminCategoryPage from './pages/AdminCategoryPage';
 import AdminProductPage from './pages/AdminProductPage';
+import AdminTransactionPage from './pages/AdminTransactionPage';
 import Cookies from 'js-cookie';
 import { userLogin, getUser } from './slices/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +27,11 @@ import ProductDetailsPage from './pages/ProductDetailsPage';
 import AdminReportPage from './pages/AdminReportPage';
 import AdminSalesReportPage from './pages/AdminSalesReportPage';
 import AdminStockHistoryPage from './pages/AdminStockHistoryPage';
+import TransactionListPage from './pages/TransactionListPage';
+import TransactionDetailPage from './pages/TransactionDetailPage';
+import AdminReportTransaction from './pages/AdminReportTransaction';
+import AdminReportUser from './pages/AdminReportUser';
+import AdminReportProduct from './pages/AdminReportProduct';
 
 function App() {
   const [userData, setUserData] = useState([]);
@@ -97,12 +103,14 @@ function App() {
 
         {
           user.user_id ?
-            user.role == 'CUSTOMER' ?
+            user.role === 'CUSTOMER' ?
               <>
                 {/* Kevin - APKG1-13 - Profile Page */}
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/cart' element={<CartPage />} />
                 <Route path='/checkout' element={<CheckoutPage />} />
+                <Route path='/transaction_list' element={<TransactionListPage />} />
+                <Route path='/transaction_detail' element={<TransactionDetailPage />} />
               </>
               :
               <>
@@ -116,7 +124,7 @@ function App() {
         }
 
         {
-          user.role != 'CUSTOMER' ?
+          user.role !== 'CUSTOMER' ?
             <>
               {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
               {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
@@ -125,7 +133,11 @@ function App() {
               <Route path="/admin/product" element={<AdminProductPage />} />
               <Route path='/admin/report' element={<AdminReportPage/>} />
               <Route path='/admin/report/sales' element={<AdminSalesReportPage/>} />
+              <Route path='/admin/report/sales/product' element={<AdminReportProduct/>} />
+              <Route path='/admin/report/sales/transaction' element={<AdminReportTransaction/>} />
+              <Route path='/admin/report/sales/user' element={<AdminReportUser/>} />
               <Route path='/admin/report/stock' element={<AdminStockHistoryPage/>} />
+              <Route path="/admin/transaction" element={<AdminTransactionPage />} />
             </>
             :
             <Route path='/*' element={<NotFoundPage />} />

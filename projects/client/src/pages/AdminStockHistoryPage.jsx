@@ -208,6 +208,7 @@ export default function AdminStockHistoryPage() {
           inputValue={filters.product_name}
           setCurrentPage={setCurrentPage}
           getProductData={getData}
+          placeholder={"Search by product name"}
         />
       <div className="container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end ">
         <div className="space-x-3">

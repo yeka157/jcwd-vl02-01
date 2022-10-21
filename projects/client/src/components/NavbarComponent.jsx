@@ -40,31 +40,24 @@ export default function Navbar(props) {
   };
 
   React.useEffect(() => {
-    console.log(pathName);
-    console.log(params.get('category'));
-    console.log(user);
+    // console.log(pathName);
+    // console.log(params.get('category'));
   })
 
   return (
-    <div
-      className={`border-b border-slate-400 ${props.class} ${
-        pathName === "/" ||
-        pathName === "/prescription" ||
-        pathName === "/profile" ||
-        pathName === "/cart" ||
-        pathName === "/checkout" ||
-        pathName === "/login" ||
-        pathName === "/register" ||
-        pathName === "/product" ||
-        pathName === '/product/detail' 
-          ? ""
-          : "hidden"
-      } ${
-        pathName === "/login" || pathName === "/register"
-          ? "absolute w-full"
-          : ""
-      }`}
-    >
+    <div className={`border-b border-slate-400 ${props.class} ${
+      pathName === '/' || 
+      pathName === '/transaction_list'|| 
+      pathName === '/prescription' || 
+      pathName === '/profile' || 
+      pathName === '/cart'  || 
+      pathName === '/checkout'|| 
+      pathName === '/login' || 
+      pathName === '/register' || 
+      pathName === '/product' || 
+      pathName === '/product/detail'
+      ? '' : 'hidden'} 
+      ${pathName === '/login' || pathName === '/register' ? 'absolute w-full' : ""}`}>
       <div className="bg-transparent flex px-8 py-3 items-center justify-between">
         <div className="md:w-[200px]">
           {/* dropdown menu untuk ukuran hp */}
@@ -84,45 +77,17 @@ export default function Navbar(props) {
           {user.user_id ? (
             user.role === "CUSTOMER" ? 
             <>
-              <Menu>
-                <MenuButton
-                  as={IconButton}
-                  icon={
-                    <HiOutlineUser className="cursor-pointer hoverIcons text-black" />
-                  }
-                  variant="link"
-                  px={0}
-                  py={0}
-                  borderRadius="full"
-                ></MenuButton>
-                <MenuList>
-                  <MenuItem
-                    onClick={() => {
-                      navigate("/profile");
-                    }}
-                    icon={<CgProfile />}
-                  >
-                    Profile
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      navigate("/cart");
-                    }}
-                    icon={<GoChecklist />}
-                  >
-                    Transaction List
-                  </MenuItem>
-                  <MenuItem icon={<RiLogoutBoxLine />} onClick={btnLogout}>
-                    Logout
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-              <HiOutlineShoppingBag
-                onClick={() => {
-                  navigate("/cart");
-                }}
-                className="cursor-pointer hoverIcons text-black"
-              />
+            <Menu>
+              <MenuButton as={IconButton} icon={<HiOutlineUser className="cursor-pointer hoverIcons text-black" />} variant='link' px={0} py={0} borderRadius='full'>
+                
+              </MenuButton>
+              <MenuList>
+                <MenuItem onClick={()=> {navigate('/profile')}} icon={<CgProfile/>}>Profile</MenuItem>
+                <MenuItem onClick={()=> {navigate('/transaction_list')}} icon={<GoChecklist/>}>Transaction List</MenuItem>
+                <MenuItem icon={<RiLogoutBoxLine/>} onClick={btnLogout}>Logout</MenuItem>
+              </MenuList>
+            </Menu>
+              <HiOutlineShoppingBag onClick={()=> {navigate('/cart')}} className="cursor-pointer hoverIcons text-black" />
             </>
             :
             <>

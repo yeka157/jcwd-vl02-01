@@ -19,7 +19,7 @@ import Pagination from "../components/Pagination";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function ProductListPage() {
-  const {pathname, state} = useLocation();
+  const {pathname, state, search} = useLocation();
   const [categoryData, setCategoryData] = React.useState([]);
   const [filters, setFilters] = React.useState({ product_name : '', category_name : state ? state.category : '', sort : '', order : ''});
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -27,7 +27,7 @@ export default function ProductListPage() {
   const [totalData, setTotalData] = React.useState(0);
   const navigate = useNavigate();
   const itemsPerPage = 12;
-
+  const query = new URLSearchParams(window.location.search);
   const getCategory = async () => {
     let getData = await Axios.get(API_URL + "/category/");
     if (getData.data.success) {
@@ -103,6 +103,25 @@ export default function ProductListPage() {
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
+  // React.useEffect(() => {
+  //   console.log(search);
+  //   let searchQuery = search.split('=');
+  //   if (search) {
+  //     setFilters((prev) => ({...prev, category_name : searchQuery[1]}));
+  //     console.log(filters);
+  //   }
+  // }, [search]);
+
+  // React.useEffect(() => {
+  //   if (query.get('category')) {
+  //     setFilters((prev) => ({...prev, ...query}))
+  //   } else {
+  //     setFilters((prev) => (prev = { product_name : '', category_name : '', sort : '', order : ''}))
+  //   }
+  //   console.log(query);
+  //   console.log(filters);
+  // }, [query]);
 
   React.useEffect(() => {
     getProduct();
