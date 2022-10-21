@@ -30,8 +30,26 @@ import { BsCalendarDate } from "react-icons/bs";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import Axios from 'axios';
 import { API_URL } from "../helper";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 
 export default function AdminReportProduct() {
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
   const [filters, setFilters] = React.useState({
     date_from: "",
     date_to: "",
@@ -42,18 +60,43 @@ export default function AdminReportProduct() {
   const [dateFrom, setDateFrom] = React.useState("");
   const [dateTo, setDateTo] = React.useState("");
   const [dataChart, setDataChart] = React.useState([]);
+  const [labelChart, setLabelChart] = React.useState({});
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const options = {responsive : true,
+    plugins : {
+      title : {
+        display : true,
+        text : 'Product Report'
+      },
+    },
+    scales : {
+      y : {
+        beginAtZero : true,
+        title : {
+          display : true,
+          text : 'Total Purchased'
+        }
+      },
+      x : {
+        title : {
+          display : true,
+          text : 'user'
+        }
+      }
+    }}
   const btnClosePopover = async () => {};
   const resetFilter = async () => {};
 
   const getData = async () => {
     try {
       let getRes = await Axios.get(API_URL + "/admin/get_product_report");
-      setDataChart((prev) => (prev = getRes.data));
-      console.log(getRes);
-      console.log(dataChart);
+      if (getRes.data.note === 'data found') {
+        setDataChart(getRes.data.dataMap);
+        setLabelChart(getRes.data.data);
+      } else {
+        //toast
+      }
     } catch (error) {
       console.log(error);
     }
@@ -61,7 +104,7 @@ export default function AdminReportProduct() {
 
   React.useEffect(() => {
     getData();
-  })
+  }, [])
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
@@ -91,6 +134,13 @@ export default function AdminReportProduct() {
             <BreadcrumbLink>Product Report</BreadcrumbLink>
           </BreadcrumbItem>
         </Breadcrumb>
+      </div>
+
+      <div className="mt-3">
+        {Object.keys(labelChart).length > 0 && 
+        <Bar options={options}
+        height={"80%"}
+        data={labelChart}/>}
       </div>
       <div className="container mx-auto lg:mt-3 text-[rgb(49,53,65,0.75)] lg:grid justify-items-end ">
         <div className="space-x-3">
@@ -272,8 +322,8 @@ export default function AdminReportProduct() {
                     <Td>{val.product_name}</Td>
                     <Td>{val.total_qty}</Td>
                     <Td>{val.product_unit}</Td>
-                    <Td>{val.product_price}</Td>
-                    <Td>{val.total_price}</Td>
+                    <Td>Rp{val.product_price.toLocaleString("id")},-</Td>
+                    <Td>Rp{val.total_price.toLocaleString("id")},-</Td>
                   </Tr>
                 )
               })}

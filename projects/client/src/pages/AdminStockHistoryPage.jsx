@@ -173,7 +173,6 @@ export default function AdminStockHistoryPage() {
       getTotalData();
       getData();
     } else {
-      console.log("changes");
       getData();
     }
   }, [filters])

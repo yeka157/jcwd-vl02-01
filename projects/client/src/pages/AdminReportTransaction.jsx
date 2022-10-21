@@ -52,14 +52,41 @@ export default function AdminReportTransaction() {
     Tooltip,
     Legend
   );
-  const yLabels = {
-    150000: `Rp150.000,-`,
-    200000: "Rp200.000,-",
-    1000000: "Rp1.000.000,-",
-    500000: "Rp500.000,-",
-    250000: "Rp250.000,-",
-    50000: "Rp50.000,-",
-  };
+  const options = {responsive: true,
+  plugins : {
+    title: {
+      display: true,
+      text: "Transaction Report",
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: "Total Sales (in Rp)",
+      },
+      // ticks: {
+      //   callback: function (value, index, values) {
+      //     return yLabels[value];
+      //   },
+      // },
+    },
+    x: {
+      title: {
+        display: true,
+        text: "Date",
+      },
+    },
+  }}
+  // const yLabels = {
+  //   150000: `Rp150.000,-`,
+  //   200000: "Rp200.000,-",
+  //   1000000: "Rp1.000.000,-",
+  //   500000: "Rp500.000,-",
+  //   250000: "Rp250.000,-",
+  //   50000: "Rp50.000,-",
+  // };
   const data = {
     labels: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"],
     datasets: [
@@ -81,15 +108,19 @@ export default function AdminReportTransaction() {
   const [dateFrom, setDateFrom] = React.useState("");
   const [dateTo, setDateTo] = React.useState("");
   const [dataChart, setDataChart] = React.useState([]);
+  const [labelChart, setLabelChart] = React.useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnClosePopover = async () => {};
   const resetFilter = async () => {};
   const getData = async () => {
     try {
       let getRes = await Axios.get(API_URL + "/admin/get_transaction_report");
-      setDataChart((prev) => (prev = getRes.data));
-      console.log(getRes);
-      console.log(dataChart);
+      if (getRes.data.note === 'data found') {
+        setDataChart((prev) => (prev = getRes.data.dataMap));
+        setLabelChart((prev) => (prev = getRes.data.data));
+      } else {
+        // toast
+      }
     } catch (error) {
       console.log(error);
     }
@@ -130,38 +161,14 @@ export default function AdminReportTransaction() {
       </div>
       {/* Chart */}
       <div className="mt-3">
+        {Object.keys(labelChart).length > 0 &&
         <Line
-          options={{
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: "Total Sales (in Rp)",
-                },
-                ticks: {
-                  callback: function (value, index, values) {
-                    return yLabels[value];
-                  },
-                },
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: "Date",
-                },
-              },
-            },
-            title: {
-              display: true,
-              text: "Transaction Report",
-            },
-          }}
-          data={data}
+          options={options}
+          data={labelChart}
           height={"80%"}
           redraw={true}
         />
+        }
       </div>
       <div className="container mx-auto lg:mt-3 text-[rgb(49,53,65,0.75)] lg:grid justify-items-end ">
         <div className="space-x-3">
@@ -329,7 +336,7 @@ export default function AdminReportTransaction() {
             <Tbody>
               {dataChart.map((val, idx) => {
                 return (
-                  <Tr>
+                  <Tr key={idx+1}>
                     <Td>{idx + 1}</Td>
                     <Td>
                       {new Date(val.date).toLocaleDateString("en-GB", {

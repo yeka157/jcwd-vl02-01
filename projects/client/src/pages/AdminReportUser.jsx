@@ -63,9 +63,11 @@ export default function AdminReportUser() {
   const [dataChart, setDataChart] = React.useState([]);
   const [labelChart, setLabelChart] = React.useState({});
   const options = {responsive : true,
-    title : {
-      display : true,
-      text : 'User report'
+    plugins : {
+      title : {
+        display : true,
+        text : 'User report'
+      },
     },
     scales : {
       y : {
@@ -87,19 +89,23 @@ export default function AdminReportUser() {
   const resetFilter = async () => {};
 
   const getData = async () => {
-    let getRes = await Axios.get(API_URL + "/admin/get_user_report");
-    // console.log(getRes.data.getData);
-    console.log(getRes);
-    setDataChart(getRes.data.dataMap);
-    setLabelChart(getRes.data.data);
+    try {
+      let getRes = await Axios.get(API_URL + "/admin/get_user_report");
+      if (getRes.data.note === 'data found') {
+        setDataChart(getRes.data.dataMap);
+        setLabelChart(getRes.data.data);
+      } else {
+        //toast
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   React.useEffect(() => {
     getData();
     console.log(dataChart);
     console.log(labelChart);
-    
-    // assignChartData();
   }, []);
 
   return (
