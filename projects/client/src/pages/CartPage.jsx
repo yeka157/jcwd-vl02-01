@@ -40,7 +40,6 @@ const CartPage = (props) => {
 
     useState(() => {
         getCartData();
-        console.log(cartData);
     }, []);
 
     const printTotalPurchase = () => {

@@ -29,10 +29,10 @@ const CheckoutPage = (props) => {
 
     useEffect(() => {
         getData();
-        getMainAddress();
+        if (addressList.length > 0) {
+            getMainAddress();
+        }
     }, []);
-
-    console.log(addressList);
 
     let getData = async () => {
         try {
@@ -202,14 +202,14 @@ const CheckoutPage = (props) => {
                                     <p>{address.address_detail}</p>
                                     <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
 
-                                    <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
                                 </div>
                                 :
                                 <div className='flex items-center pb-7'>
-                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address in profile page</p>
+                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
                                 </div>
                             }
 
+                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress}/>
 
                         </div>
 

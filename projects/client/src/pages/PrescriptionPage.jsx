@@ -29,7 +29,9 @@ const PrescriptionPage = (props) => {
     const toast = useToast();
 
     useEffect(() => {
-        getMainAddress();
+        if (addressList.length > 0) {
+            getMainAddress();
+        }
     }, []);
 
     const getMainAddress = async () => {
@@ -236,13 +238,14 @@ const PrescriptionPage = (props) => {
                                     <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
                                     <p>{address.address_detail}</p>
                                     <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                    <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
                                 </div>
                                 :
-                                <div className='flex items-center pb-8'>
-                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address in profile page</p>
+                                <div className='flex items-center'>
+                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
                                 </div>
                             }
+
+                            <ChangeAddressComponent getMainAdress={getMainAddress} addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
 
                         </div>
 

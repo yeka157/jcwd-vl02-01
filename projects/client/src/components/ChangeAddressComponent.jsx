@@ -107,7 +107,6 @@ const ChangeAddressComponent = (props) => {
                             'Authorization': `Bearer ${token}`
                         }
                     });
-                    console.log(getData.data);
                     dispatch(userAddress(getData.data));
                     toast({
                         title: 'Address successfully added',
@@ -117,6 +116,7 @@ const ChangeAddressComponent = (props) => {
                         position: 'top'
                     })
                     setAddAddressToggle(!addAddressToggle);
+                    props.getMainAddress();
                 }
             }
         } catch (error) {
