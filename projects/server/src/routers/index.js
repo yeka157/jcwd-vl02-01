@@ -12,9 +12,10 @@ const categoryRouter = require('./category');
 const rajaongkirRouter = require('./rajaOngkir');
 // APKG1-32
 const transactionRouter = require('./transaction')
-
+const adminRouter = require('./admin');
 const cartRouter = require('./cart')
 
+router.use('/admin', adminRouter);
 router.use('/rajaongkir', rajaongkirRouter);
 router.use('/auth', authRouter);
 router.use('/user', userRouter);

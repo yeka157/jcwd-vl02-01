@@ -5,7 +5,7 @@ const rajaOngkirController = (require('./rajaongkir'));
 const productController =  require('./product');
 const transactionController = require('./transaction');
 const cartController = require('./cart')
-
+const adminController = require('./admin');
 
 module.exports = {
     authController,
@@ -14,5 +14,6 @@ module.exports = {
     rajaOngkirController,
     productController,
     transactionController,
-    cartController
+    cartController,
+    adminController
 }
