@@ -32,6 +32,8 @@ const CheckoutPage = (props) => {
         getMainAddress();
     }, []);
 
+    console.log(addressList);
+
     let getData = async () => {
         try {
             let token = Cookies.get('sehatToken');
@@ -199,13 +201,15 @@ const CheckoutPage = (props) => {
                                     <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
                                     <p>{address.address_detail}</p>
                                     <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                </div> :
-                                <div className='flex items-center'>
-                                    <p className='text-red-500 text-center'>  You dont have any address yet please add your address</p>
+
+                                    <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
+                                </div>
+                                :
+                                <div className='flex items-center pb-7'>
+                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address in profile page</p>
                                 </div>
                             }
 
-                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
 
                         </div>
 
@@ -253,16 +257,25 @@ const CheckoutPage = (props) => {
                             </div>
                         </div>
 
-                        <button onClick={() => {
-                            setBtnSpinner(true)
-                            setDisableBtn(true)
-                            setTimeout(btnOrder, 2000)
-                        }} className={`mx-auto bg-hijauBtn ${disableBtn ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
-                            disabled={disableBtn}
-                        >
-                            {btnSpinner ? <Spinner size='sm' /> : 'Order'}
-                        </button>
-
+                        {
+                            addressList.length > 0 ?
+                                <button onClick={() => {
+                                    setBtnSpinner(true)
+                                    setDisableBtn(true)
+                                    setTimeout(btnOrder, 2000)
+                                }} className={`mx-auto  bg-hijauBtn ${disableBtn ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
+                                    disabled={disableBtn}
+                                >
+                                    {btnSpinner ? <Spinner size='sm' /> : 'Order'}
+                                </button>
+                                :
+                                <button
+                                    className={`mx-auto  bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
+                                    disabled
+                                >
+                                    Order
+                                </button>
+                        }
                     </div>
                 </div>
             </div>

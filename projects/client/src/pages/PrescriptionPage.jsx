@@ -236,13 +236,14 @@ const PrescriptionPage = (props) => {
                                     <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
                                     <p>{address.address_detail}</p>
                                     <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                </div> :
-                                <div className='flex items-center'>
-                                    <p className='text-red-500 text-center'>  You dont have any address yet please add your address</p>
+                                    <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
+                                </div>
+                                :
+                                <div className='flex items-center pb-8'>
+                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address in profile page</p>
                                 </div>
                             }
 
-                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
                         </div>
 
                         {/* Prescription */}
@@ -296,9 +297,19 @@ const PrescriptionPage = (props) => {
 
                         </div>
 
-                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}>
-                            {btnThrottle ? <Spinner size='xs' /> : 'Order'}
-                        </button>
+                        {
+                            addressList.length > 0 ?
+                                <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}>
+                                    {btnThrottle ? <Spinner size='xs' /> : 'Order'}
+                                </button>
+                                :
+                                <button className={`mx-auto bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`} disabled>
+                                    Order
+                                </button>
+
+                        }
+
+
 
                     </div>
                 </div>
