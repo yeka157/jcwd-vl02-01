@@ -245,7 +245,7 @@ const PrescriptionPage = (props) => {
                                 </div>
                             }
 
-                            <ChangeAddressComponent getMainAdress={getMainAddress} addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
+                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress}/>
 
                         </div>
 
@@ -302,7 +302,7 @@ const PrescriptionPage = (props) => {
 
                         {
                             addressList.length > 0 ?
-                                <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}>
+                                <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`}>
                                     {btnThrottle ? <Spinner size='xs' /> : 'Order'}
                                 </button>
                                 :
