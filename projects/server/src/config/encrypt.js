@@ -19,9 +19,6 @@ module.exports = {
                     message: 'Authenticate error ❌'
                 })
             }
-
-            console.log('result token', decode);
-
             req.dataToken = decode;
 
             next();

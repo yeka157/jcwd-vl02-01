@@ -126,7 +126,7 @@ const PrescriptionPage = (props) => {
 
             formData.append('data', JSON.stringify({
                 user_id: user.user_id,
-                transaction_status: 'Processed',
+                transaction_status: 'Awaiting Admin Confirmation',
                 invoice: `INV/CSTM/${date.getTime()}`,
                 delivery_option: selectedDelivery.split('-')[0],
                 delivery_charge: parseInt(selectedDelivery.split('-')[1]),

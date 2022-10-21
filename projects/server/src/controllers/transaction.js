@@ -62,10 +62,11 @@ module.exports = {
                     item.product_name,
                     item.product_image,
                     item.product_price,
-                    item.product_description
+                    item.product_description,
+                    item.default_unit
                 ])
 
-                let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description) VALUES ?`
+                let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description, product_unit) VALUES ?`
                 let resDetail = await dbQuery(transDetailQuery, [detailValues]);
 
                 // Add to reports
@@ -74,14 +75,13 @@ module.exports = {
                     item.product_id,
                     item.product_name,
                     item.product_image,
-                    item.product_price,
                     item.default_unit,
                     item.quantity,
                     'Selling',
                     'Substraction'
                 ])
 
-                let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_price, product_unit, quantity, type, note) VALUES ?`
+                let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note) VALUES ?`
                 let resReports = await dbQuery(reportQuery, [reportValues]);
 
                 // Delete from cart
@@ -106,7 +106,41 @@ module.exports = {
 
             res.status(200).send({
                 success: true,
-                massage: 'Stocl update success'
+                massage: 'Stock update success'
+            })
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    stockRecovery: async (req, res) => {
+        try {
+        
+            const { quantity, product_id, transaction_id, product_name, product_image, product_unit} = req.body.data
+            
+            console.log('ini data;', req.body.data);
+            
+            let resUpdate = await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+
+            if (resUpdate.affectedRows) {
+
+                let resReport = await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
+                VALUES (
+                ${dbConf.escape(transaction_id)}, 
+                ${dbConf.escape(product_id)}, 
+                ${dbConf.escape(product_name)}, 
+                ${dbConf.escape(product_image)}, 
+                ${dbConf.escape(product_unit)},
+                ${quantity},
+                'Stock recovery',
+                'Addition'
+                );`)
+            }
+
+            res.status(200).send({
+                success: true,
+                massage: 'Stock update success'
             })
 
         } catch (error) {
@@ -184,6 +218,58 @@ module.exports = {
         } catch (error) {
             console.log(error);
             res.status(500).send({ success: false, message: error });
+        }
+    },
+    getTransactionDetail: async (req, res) => {
+        try {
+
+            let resData = await dbQuery(`SELECT * from transactions
+            WHERE transaction_id = ${req.params.transaction_id}`);
+
+            let transDetail = await dbQuery(`SELECT * from transaction_detail
+            WHERE transaction_id = ${req.params.transaction_id}`)
+
+            res.status(200).send({
+                ...resData[0],
+                detail: transDetail,
+                success: true
+            });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    updateStatus: async (req, res) => {
+        try {
+            let resUpdate = await dbQuery(`UPDATE transactions SET transaction_status = ${dbConf.escape(req.body.newStatus)} WHERE transaction_id = ${req.params.transaction_id};`);
+
+            if (resUpdate.affectedRows) {
+                res.status(200).send({
+                    success: true,
+                    message: 'Status updated'
+                });
+            }
+
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    uploadPAymentProof: async (req, res) => {
+        try {
+            let images = `/imgPayment/${req.files[0].filename}`
+
+            let resUpoad = await dbQuery(`UPDATE transactions SET payment_proof = ${dbConf.escape(images)} WHERE transaction_id = ${req.params.transaction_id};`)
+
+            res.status(200).send({
+                success: true,
+                massage: 'Payent Proof Uploaded'
+            })
+
+        } catch (error) {
+            console.log(error);
         }
     }
 }
