@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { getAddress } from '../slices/addressSlice';
 import { useNavigate } from 'react-router-dom';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
+import { RiErrorWarningLine } from "react-icons/ri";
 
 const CheckoutPage = (props) => {
 
@@ -197,19 +198,25 @@ const CheckoutPage = (props) => {
                                 <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
                             </div>
                             {addressList.length > 0 ?
-                                <div className='py-3'>
-                                    <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
-                                    <p>{address.address_detail}</p>
-                                    <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-
-                                </div>
+                                address.address_id ?
+                                    <div className='py-3'>
+                                        <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                        <p>{address.address_detail}</p>
+                                        <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
+                                    </div>
+                                    :
+                                    <div className='flex'>
+                                        <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                        <p className='text-red-500'>You have no main address yet, please choose address manually</p>
+                                    </div>
                                 :
                                 <div className='flex items-center pb-7'>
+                                    <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
                                     <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
                                 </div>
                             }
 
-                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress}/>
+                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />
 
                         </div>
 

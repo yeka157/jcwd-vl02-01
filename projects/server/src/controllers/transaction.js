@@ -116,16 +116,16 @@ module.exports = {
     },
     stockRecovery: async (req, res) => {
         try {
-        
-            const { quantity, product_id, transaction_id, product_name, product_image, product_unit} = req.body.data
-            
-            console.log('ini data;', req.body.data);
-            
-            let resUpdate = await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
 
-            if (resUpdate.affectedRows) {
+            const { quantity, product_id, transaction_id, product_name, product_image, product_unit } = req.body.data
 
-                let resReport = await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
+            if (product_unit == 'Kapsul' || product_unit == 'Mililiter' || product_unit == 'Tablet') {
+                await dbQuery(`UPDATE stock s SET product_conversion_stock = s.product_conversion_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+            } else {
+                await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+            };
+
+            await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
                 VALUES (
                 ${dbConf.escape(transaction_id)}, 
                 ${dbConf.escape(product_id)}, 
@@ -136,7 +136,6 @@ module.exports = {
                 'Stock recovery',
                 'Addition'
                 );`)
-            }
 
             res.status(200).send({
                 success: true,
