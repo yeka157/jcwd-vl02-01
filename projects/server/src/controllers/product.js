@@ -188,8 +188,7 @@ module.exports = {
 				${dbConf.escape(product_unit)},
 				${dbConf.escape(product_netto)},
 				${dbConf.escape(product_conversion)});
-			`
-			);
+			`);
 
 			res.status(200).send({ success: true, message: 'New stock has been added! ✅' });
 		} catch (error) {
