@@ -746,7 +746,7 @@ export default function AdminTransactionPage() {
 					<h1 className="inline">Transaction</h1>
 				</Box>
 			</div>
-			<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-[2.5vh]">
+			<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-5">
 				<TableContainer w="100vw" fontSize={'xs'}>
 					<Table size="sm">
 						<Thead>
@@ -781,7 +781,7 @@ export default function AdminTransactionPage() {
 													className="mr-2"
 													style={{ borderRadius: '0' }}
 													onClick={() => {
-														onOpenModalAction();
+														// previewComponent
 													}}
 												>
 													Preview

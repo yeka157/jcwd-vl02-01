@@ -252,22 +252,22 @@ export default function AdminProductPage() {
 	const displayStockData = () => {
 		return productStock?.map((val, idx) => {
 			if (!val.product_stock) {
-				return <h1>Out of stock</h1>
+				return <h1 key={idx}>Out of stock</h1>
 			}
 			if (val.product_conversion_stock) {
 				return (
-					<>
+					<div key={idx}> 
 						<li>
 							• {val.product_unit} : {val.product_stock}
 						</li>
 						<li>
 							• {val.product_conversion} : {val.product_conversion_stock}
 						</li>
-					</>
+					</div>
 				);
 			}
 			return (
-				<li>
+				<li key={idx}>
 					{val.product_unit} : {val.product_stock}
 				</li>
 			)
