@@ -140,6 +140,7 @@ export default function AdminProductPage() {
 
 				<ModalFooter>
 					<Button
+						borderRadius={0}
 						size="sm"
 						colorScheme="red"
 						mr={3}
@@ -170,7 +171,7 @@ export default function AdminProductPage() {
 					>
 						Delete
 					</Button>
-					<Button size="sm" onClick={onCloseDeleteConfirmation}>
+					<Button borderRadius={0} size="sm" onClick={onCloseDeleteConfirmation}>
 						Cancel
 					</Button>
 				</ModalFooter>
@@ -187,8 +188,12 @@ export default function AdminProductPage() {
 					<Td className="text-[rgb(67,67,67)]">Rp{val.product_price.toLocaleString('id')},-</Td>
 					<Td className="text-[rgb(67,67,67)]">{val.category_name}</Td>
 					<Td className="text-[rgb(67,67,67)]">
-						<h1
-							className="inline text-xs underline cursor-pointer"
+						<Button
+							size={'xs'}
+							colorScheme="blue"
+							variant={'outline'}
+							className="mr-2"
+							style={{ borderRadius: '0' }}
 							onClick={() => {
 								onOpenProductDetails();
 								setSelectedProduct((prev) => (prev = val.product_name));
@@ -197,41 +202,45 @@ export default function AdminProductPage() {
 								getProductData();
 							}}
 						>
-							see preview
-						</h1>
+							Preview
+						</Button>
 					</Td>
 					<Td>
 						<div className="inline">
-							<Tooltip hasArrow label="edit" placement="right" shouldWrapChildren>
-								<AiFillEdit
-									size={17}
-									color="rgb(67,67,67,0.8)"
-									className="cursor-pointer"
-									onClick={() => {
-										onOpenEditProduct();
-										setSelectedProduct((prev) => (prev = val.product_name));
-										setSelectedProductIndex((prev) => (prev = idx));
-										getProductStock(val.product_id);
-										getProductData();
-									}}
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="teal"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenEditProduct();
+									setSelectedProduct((prev) => (prev = val.product_name));
+									setSelectedProductIndex((prev) => (prev = idx));
+									getProductStock(val.product_id);
+									getProductData();
+								}}
+							>
+								Edit
+							</Button>
 						</div>
 						<div className="inline">
-							<Tooltip hasArrow label="delete" placement="right" shouldWrapChildren>
-								<AiFillDelete
-									size={17}
-									color="rgb(67,67,67,0.8)"
-									className="cursor-pointer ml-5"
-									onClick={() => {
-										onOpenDeleteConfirmation();
-										setSelectedProduct((prev) => (prev = val.product_name));
-										setSelectedProductIndex((prev) => (prev = idx));
-										getProductStock(val.product_id);
-										getProductData();
-									}}
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="red"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenDeleteConfirmation();
+									setSelectedProduct((prev) => (prev = val.product_name));
+									setSelectedProductIndex((prev) => (prev = idx));
+									getProductStock(val.product_id);
+									getProductData();
+								}}
+							>
+								Delete
+							</Button>
 						</div>
 					</Td>
 				</Tr>
@@ -242,14 +251,26 @@ export default function AdminProductPage() {
 
 	const displayStockData = () => {
 		return productStock?.map((val, idx) => {
-			if (val.product_stock) {
+			if (!val.product_stock) {
+				return <h1 key={idx}>Out of stock</h1>
+			}
+			if (val.product_conversion_stock) {
 				return (
-					<li key={idx}>
-						{productStock.length > 1 ? '•' : ''} {val.product_unit} : {val.product_stock}
-					</li>
+					<div key={idx}> 
+						<li>
+							• {val.product_unit} : {val.product_stock}
+						</li>
+						<li>
+							• {val.product_conversion} : {val.product_conversion_stock}
+						</li>
+					</div>
 				);
 			}
-			return <h1>Out of stock</h1>
+			return (
+				<li key={idx}>
+					{val.product_unit} : {val.product_stock}
+				</li>
+			)
 		});
 	};
 
@@ -280,7 +301,7 @@ export default function AdminProductPage() {
 										? productData[selectedProductIndex]?.product_image
 										: `http://localhost:8000/${productData[selectedProductIndex]?.product_image}`
 								}
-								alt=""
+								alt="product_image"
 							/>
 						</div>
 						<h1 className="text-xs font-bold mt-[20px] mb-[5px]">Price</h1>

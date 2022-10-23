@@ -24,38 +24,38 @@ import {
 	MenuButton,
 	MenuList,
 	MenuItem,
-	Tooltip,
 	useToast,
 	Badge,
 	Input,
 	NumberInput,
 	NumberInputField,
-	NumberInputStepper,
-	NumberIncrementStepper,
-	NumberDecrementStepper,
-	Checkbox,
 	FormControl,
 	FormLabel,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API_URL } from '../helper';
 import { HiOutlineChevronDown } from 'react-icons/hi';
-import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
 import { BsCalendar2Event } from 'react-icons/bs';
 import Pagination from '../components/Pagination';
-import SearchBar from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 export default function AdminTransactionPage() {
 	// HOOKS
 	const { isOpen: isOpenSelectDate, onOpen: onOpenSelectDate, onClose: onCloseSelectDate } = useDisclosure();
+	const { isOpen: isOpenModalAction, onOpen: onOpenModalAction, onClose: onCloseModalAction } = useDisclosure();
 	const [dateRange, setDateRange] = useState({ from: '', to: '' });
 	const [filters, setFilters] = useState({ invoice: '', transaction_status: '', from: '', to: '', sort: '', order: '' });
 	const [transactionList, setTransactionList] = useState([]);
+	const [productInputList, setProductInputList] = useState([]);
+	const [productStock, setProductStock] = useState([]);
+	const [productName, setProductName] = useState('');
+	const [ingredients, setIngredients] = useState({ product_name: '', quantity: 0, product_unit: '', isConversion: false });
+	const [ingredientsList, setIngredientsList] = useState([]);
 	const [currentPage, setCurrentPage] = useState(1);
+	const [selectedTransaction, setSelectedTransaction] = useState({});
+	const [selectedTransactionIndex, setSelectedTransactionIndex] = useState({});
 	const [totalData, setTotalData] = useState(0);
-	const [selectedForm, setSelectedForm] = useState('ingredients');
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
 	const id = useId();
@@ -65,11 +65,22 @@ export default function AdminTransactionPage() {
 	// VAR
 	const itemsPerPage = 10;
 	const transactionStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed', 'Cancelled', 'Shipped', 'Order Confirmed'];
+	const whiteListedStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment Confirmation'];
+	const whiteListedCancelStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed'];
+	const token = Cookies.get('sehatToken');
 
 	const resetFilter = () => {
 		setFilters((prev) => (prev = { invoice: '', transaction_status: '', from: '', to: '', sort: '', order: '' }));
 		setDateRange((prev) => (prev = { from: '', to: '' }));
 		setCurrentPage((prev) => (prev = 1));
+	};
+
+	const isProductInserted = () => {
+		let index = ingredientsList?.findIndex((val) => val.ingredients?.product_name === productInputList[0]?.product_name);
+		if (index > -1) {
+			return true;
+		}
+		return false;
 	};
 
 	const btnSubmitDateRange = () => {
@@ -83,8 +94,6 @@ export default function AdminTransactionPage() {
 
 	const getTotalData = async () => {
 		try {
-			const token = Cookies.get('sehatToken');
-
 			const totalData = await axios.get(`${API_URL}/transaction/count`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -93,6 +102,34 @@ export default function AdminTransactionPage() {
 
 			setTotalData((prev) => (prev = totalData.data.total_data));
 		} catch (error) {}
+	};
+
+	const badgeColor = (transaction_status) => {
+		switch (transaction_status) {
+			case 'Awaiting Admin Confirmation':
+				return 'purple';
+				break;
+			case 'Awaiting Payment':
+				return 'blue';
+				break;
+			case 'Awaiting Payment Confirmation':
+				return 'purple';
+				break;
+			case 'Processed':
+				return 'blue';
+				break;
+			case 'Cancelled':
+				return 'red';
+				break;
+			case 'Shipped ':
+				return 'blue';
+				break;
+			case 'Order Confirmed':
+				return 'green';
+				break;
+			default:
+				break;
+		}
 	};
 
 	const getTransactions = async () => {
@@ -148,264 +185,298 @@ export default function AdminTransactionPage() {
 		}
 	};
 
-	const modalInputPrescription = (
-		<Modal isCentered size={'lg'} className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenSelectDate} onClose={onCloseSelectDate}>
-			<ModalOverlay />
-			<ModalContent>
-				<ModalHeader fontSize="md" className="font-bold">
-					Input Custom Order
-				</ModalHeader>
-				<ModalCloseButton />
-				<ModalBody pb={2}>
-					<div className="flex justify-center mb-5">
-						<h1
-							className={`inline text-sm text-center px-10 pb-2 font-semibold ${selectedForm === 'ingredients' ? 'text-borderHijau border-b-2 border-borderHijau' : 'text-gray-400 cursor-pointer'}`}
-							onClick={() => {
-								setSelectedForm((prev) => (prev = 'ingredients'));
-							}}
-						>
-							Ingredients
-						</h1>
-						<h1
-							className={`inline text-sm text-center px-10 pb-2 font-semibold ${selectedForm === 'payment' ? 'text-borderHijau border-b-2 border-borderHijau' : 'text-gray-400 cursor-pointer'}`}
-							onClick={() => {
-								setSelectedForm((prev) => (prev = 'payment'));
-							}}
-						>
-							Details
-						</h1>
-					</div>
+	const maxStockAvailable = (unit) => {
+		let conversionUnit = ['Tablet', 'Kapsul', 'Milliliter'];
+		if (!conversionUnit.includes(unit)) {
+			return productStock[0]?.product_stock;
+		}
+		return productStock[0]?.product_conversion_stock + productStock[0]?.product_netto * productStock[0]?.product_stock;
+	};
 
-					<Box className="border !border-gray-300 h-[100px] mb-2 overflow-y-scroll">
-						<Table>
-							<Tbody>
-								<Tr>
-									<Td>
-										<h1 className="text-xs ml-2">1. Zendalat 50 mg - 2 Tablet </h1>
-									</Td>
-								</Tr>
-								<Tr>
-									<Td>
-										<h1 className="text-xs ml-2">1. Zendalat 50 mg - 2 Tablet </h1>
-									</Td>
-								</Tr>
-								<Tr>
-									<Td>
-										<h1 className="text-xs ml-2">1. Zendalat 50 mg - 2 Tablet </h1>
-									</Td>
-								</Tr>
-								<Tr>
-									<Td>
-										<h1 className="text-xs ml-2">1. Zendalat 50 mg - 2 Tablet </h1>
-									</Td>
-								</Tr>
-							</Tbody>
-						</Table>
-					</Box>
+	const getProductStock = async (product_id) => {
+		try {
+			const result = await axios.get(`${API_URL}/product/stock/${product_id}`);
+			if (result.data.success) {
+				setProductStock((prev) => (prev = result.data.stock));
+				return;
+			}
+			setProductStock((prev) => (prev = ''));
+		} catch (error) {
+			console.log(error);
+			setProductStock((prev) => (prev = ''));
+		}
+	};
 
+	const countTotalPurchase = () => {
+		let totalPurchase = 0;
+		if (ingredientsList?.length === 0) {
+			return;
+		}
+
+		ingredientsList?.forEach((val, idx) => {
+			if (val.productDetails?.default_unit === val.ingredients?.product_unit) {
+				totalPurchase += val.productDetails?.product_price * val.ingredients?.quantity;
+				return;
+			}
+			totalPurchase += (val.productDetails?.product_price / val.productStock?.product_netto) * val.ingredients?.quantity;
+		});
+		return totalPurchase;
+	};
+
+	const displayIngredients = () => {
+		return ingredientsList?.map((val, idx) => {
+			countTotalPurchase();
+			return (
+				<Tr key={Math.random() + id}>
+					<Td>
+						<h1 className="text-xs ml-2">
+							{`${idx + 1}. ${val.ingredients?.product_name} 
+						${
+							val.productDetails?.default_unit === val.ingredients?.product_unit
+								? '@Rp' + val.productDetails.product_price?.toLocaleString('id') + ',-'
+								: '(c) @Rp' + (val.productDetails?.product_price / val.productStock?.product_netto).toLocaleString('id') + ',-'
+						}
+						x ${val.ingredients?.quantity} ${val.ingredients?.product_unit} 
+						= Rp${
+							val.productDetails?.default_unit === val.ingredients?.product_unit
+								? (val.productDetails?.product_price * val.ingredients?.quantity).toLocaleString('id') + ',-'
+								: ((val.productDetails?.product_price / val.productStock?.product_netto) * val.ingredients?.quantity).toLocaleString('id') + ',-'
+						}`}
+						</h1>
+					</Td>
+				</Tr>
+			);
+		});
+	};
+
+	const inputPrescription = (
+		<>
+			<Box className="border !border-b-0 !border-gray-300 container flex justify-center py-5">
+				<a href={`http://localhost:8000${selectedTransaction?.doctor_prescription}`} target="_blank">
+					<img className="min-w-[250px] max-w-[450px]" src={`http://localhost:8000/${selectedTransaction?.doctor_prescription}`} alt="doctor_prescription" />
+				</a>
+			</Box>
+			<Box className="border !border-b-0 !border-gray-300 container flex justify-center">
+				<h1 className={`text-sm text-center font-semibold text-borderHijau my-1`}>INGREDIENTS</h1>
+			</Box>
+			<Box className="border !border-gray-300 h-[100px] overflow-y-scroll">
+				<hr />
+				<Table>
+					<Tbody>
+						{/* ITEMS */}
+						{displayIngredients()}
+					</Tbody>
+				</Table>
+			</Box>
+
+			<Box className="border !border-t-0 !border-gray-300 container py-2">
+				<h1 className={`text-xs font-bold text-gray-500 text-center mr-3`}>Total Purchase: Rp{countTotalPurchase() ? countTotalPurchase()?.toLocaleString('id') : 0},-</h1>
+			</Box>
+
+			<div className="flex">
+				<Input
+					value={productName}
+					className="mt-2 inline w-[80%] mr-3"
+					borderRadius="0"
+					size="sm"
+					ref={initialRef}
+					placeholder={'Search Product'}
+					_focusVisible={{ outline: '2px solid #1F6C75' }}
+					_placeholder={{ color: 'inherit' }}
+					color="gray"
+					onChange={async (e) => {
+						try {
+							if (e.target.value === '') {
+								setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '' }));
+								setProductInputList((prev) => (prev = []));
+								setProductName('');
+								return;
+							}
+
+							setProductName(e.target.value);
+							const result = await axios.get(`${API_URL}/product?limit=1&offset=0&product_name=${e.target.value}`);
+							if (result.data.success) {
+								setProductInputList((prev) => (prev = result.data.products));
+								getProductStock(result.data.products[0].product_id);
+								setIngredients((prev) => ({
+									...prev,
+									product_id: result.data.products[0]?.product_id,
+									product_name: result.data.products[0]?.product_name,
+								}));
+							}
+						} catch (error) {
+							console.log(error);
+						}
+					}}
+				/>
+				<Button
+					borderRadius={0}
+					className="mt-2"
+					colorScheme={'gray'}
+					size="sm"
+					onClick={() => {
+						setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '' }));
+						setProductInputList((prev) => (prev = []));
+						setProductName('');
+					}}
+				>
+					Clear
+				</Button>
+			</div>
+
+			{productInputList.length > 0 && (
+				<>
+					<hr className="mt-2" />
+					<h1 className={`text-red-500 text-xs text-center my-2 ${isProductInserted() || ingredients?.quantity <= maxStockAvailable(ingredients?.product_unit) ? 'hidden' : ''}`}>
+						Insufficient stock: {maxStockAvailable(ingredients?.product_unit) + ' ' + ingredients?.product_unit + ' left'}
+					</h1>
+					<h1 className={`text-red-500 text-xs text-center my-2 ${!isProductInserted() ? 'hidden' : ''}`}>Product is already on the list!</h1>
+					<h1 className={`text-gray-500 text-xs text-center my-2 ${isProductInserted() || ingredients?.quantity > maxStockAvailable(ingredients?.product_unit) ? 'hidden' : ''}`}>
+						Available stock : {maxStockAvailable(ingredients?.product_unit) + ' ' + ingredients?.product_unit}
+					</h1>
+					<hr />
+				</>
+			)}
+
+			{productInputList.length > 0 && (
+				<div className="flex">
 					<Input
 						required
-						className="mt-2 mb-2 inline mr-3"
+						isDisabled
+						className="my-2 inline mr-3 !w-[40%]"
 						borderRadius="0"
 						size="sm"
 						ref={initialRef}
-						placeholder={'Search Product'}
+						placeholder={productInputList[0]?.product_name}
 						_focusVisible={{ outline: '2px solid #1F6C75' }}
 						_placeholder={{ color: 'inherit' }}
-						color="gray"
-						onChange={(e) => ''}
+						color="black"
 					/>
 
-					<div className="flex">
-						{/* <Checkbox
-              _focusVisible={{ outline: '2px solid #1F6C75' }}
-              _placeholder={{ color: 'inherit' }}
-              colorScheme="teal"
-              color={'gray'}
-              className="my-2 mr-3"
-              isChecked={false}
-              onChange={(e) => ''}
-            >
-              <p className="text-gray text-sm">
-                {productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
-                  ? 'Edit conversion unit'
-                  : 'Create new conversion unit'}
-              </p>
-            </Checkbox> */}
-
-						<Input
-							required
-							isDisabled
-							className="my-2 inline mr-3 !w-[40%]"
-							borderRadius="0"
-							size="sm"
-							ref={initialRef}
-							placeholder={'Product name'}
-							_focusVisible={{ outline: '2px solid #1F6C75' }}
-							_placeholder={{ color: 'inherit' }}
-							color="black"
-							onChange={(e) => ''}
-						/>
-
-						<NumberInput size="sm" min={0} className="text-borderHijau my-2 !w-[25%] mr-3">
-							<NumberInputField borderRadius="0" placeholder={'Stock'} color="gray" _focusVisible={{ outline: '2px solid #1F6C75' }} _placeholder={{ color: 'inherit' }} onChange={(e) => ''} />
-							<NumberInputStepper>
-								<NumberIncrementStepper />
-								<NumberDecrementStepper />
-							</NumberInputStepper>
-						</NumberInput>
-
-						<Menu>
-							<MenuButton
-								className="my-2 w-[35%] border-[1px] border-gray text-xs mr-3"
+					<Menu>
+						<MenuButton
+							className="my-2 w-[30%] border-[1px] border-gray text-xs mr-3"
+							color={'gray'}
+							bgColor={'white'}
+							style={{ borderRadius: 0 }}
+							as={Button}
+							rightIcon={<HiOutlineChevronDown />}
+							size={'sm'}
+						>
+							{ingredients?.product_unit ? ingredients?.product_unit : 'Unit'}
+						</MenuButton>
+						<MenuList>
+							<MenuItem
+								className="text-xs"
 								color={'gray'}
-								bgColor={'white'}
-								style={{ borderRadius: 0 }}
-								as={Button}
-								rightIcon={<HiOutlineChevronDown />}
-								size={'sm'}
+								onClick={() => {
+									setIngredients((prev) => ({ ...prev, product_unit: productStock[0]?.product_unit, isConversion: false }));
+									getProductStock(productInputList[0]?.product_id);
+								}}
 							>
-								{/* {form.category_name ? form.category_name : productData[selectedProductIndex]?.category_name} */}
-							</MenuButton>
-							<MenuList>
-								<MenuItem
-									className="text-xs"
-									color={'gray'}
-									onClick={() => {
-										'';
-									}}
-								>
-									Strip
-								</MenuItem>
-
-								<MenuItem
-									className="text-xs"
-									color={'gray'}
-									onClick={() => {
-										'';
-									}}
-								>
-									Tablet
-								</MenuItem>
-								{/* {categoryData.map((val, idx) => {
-                  return (
-                    <MenuItem
-                      key={idx}
-                      className="text-xs"
-                      color={'gray'}
-                      onClick={() => {
-                        setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
-                      }}
-                    >
-                      {val.category_name}
-                    </MenuItem>
-                  );
-                })} */}
-							</MenuList>
-						</Menu>
-						<Button className="my-2" colorScheme={'teal'} size="sm">
-							+
-						</Button>
-					</div>
-
-					<div className="flex">
-						{/* <Checkbox
-              _focusVisible={{ outline: '2px solid #1F6C75' }}
-              _placeholder={{ color: 'inherit' }}
-              colorScheme="teal"
-              color={'gray'}
-              className="my-2 mr-3"
-              isChecked={false}
-              onChange={(e) => ''}
-            >
-              <p className="text-gray text-sm">
-                {productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
-                  ? 'Edit conversion unit'
-                  : 'Create new conversion unit'}
-              </p>
-            </Checkbox> */}
-
-						<Input
-							required
-							isDisabled
-							className="my-2 inline mr-3 !w-[40%]"
-							borderRadius="0"
-							size="sm"
-							ref={initialRef}
-							placeholder={'Product name'}
-							_focusVisible={{ outline: '2px solid #1F6C75' }}
-							_placeholder={{ color: 'inherit' }}
-							color="black"
-							onChange={(e) => ''}
-						/>
-
-						<NumberInput size="sm" min={0} className="text-borderHijau my-2 !w-[25%] mr-3">
-							<NumberInputField borderRadius="0" placeholder={'Stock'} color="gray" _focusVisible={{ outline: '2px solid #1F6C75' }} _placeholder={{ color: 'inherit' }} onChange={(e) => ''} />
-							<NumberInputStepper>
-								<NumberIncrementStepper />
-								<NumberDecrementStepper />
-							</NumberInputStepper>
-						</NumberInput>
-
-						<Menu>
-							<MenuButton
-								className="my-2 w-[35%] border-[1px] border-gray text-xs mr-3"
+								{productStock[0]?.product_unit}
+							</MenuItem>
+							<MenuItem
+								className="text-xs"
 								color={'gray'}
-								bgColor={'white'}
-								style={{ borderRadius: 0 }}
-								as={Button}
-								rightIcon={<HiOutlineChevronDown />}
-								size={'sm'}
+								onClick={() => {
+									setIngredients((prev) => ({ ...prev, product_unit: productStock[0]?.product_conversion, isConversion: true }));
+									getProductStock(productInputList[0]?.product_id);
+								}}
 							>
-								{/* {form.category_name ? form.category_name : productData[selectedProductIndex]?.category_name} */}
-							</MenuButton>
-							<MenuList>
-								<MenuItem
-									className="text-xs"
-									color={'gray'}
-									onClick={() => {
-										'';
-									}}
-								>
-									Strip
-								</MenuItem>
+								{productStock[0]?.product_conversion}
+							</MenuItem>
+						</MenuList>
+					</Menu>
 
-								<MenuItem
-									className="text-xs"
-									color={'gray'}
-									onClick={() => {
-										'';
-									}}
-								>
-									Tablet
-								</MenuItem>
-								{/* {categoryData.map((val, idx) => {
-                  return (
-                    <MenuItem
-                      key={idx}
-                      className="text-xs"
-                      color={'gray'}
-                      onClick={() => {
-                        setForm((prev) => ({ ...prev, category_id: val.category_id, category_name: val.category_name }));
-                      }}
-                    >
-                      {val.category_name}
-                    </MenuItem>
-                  );
-                })} */}
-							</MenuList>
-						</Menu>
-						<Button className="my-2" colorScheme={'teal'} size="sm">
-							+
-						</Button>
-					</div>
-				</ModalBody>
+					<NumberInput
+						placeholder="Stock"
+						size="sm"
+						min={0}
+						className="text-borderHijau my-2 !w-[20%] mr-3"
+						_focusVisible={{ outline: `2px solid ${ingredients?.quantity > maxStockAvailable(ingredients?.product_unit) ? '#eb4848' : '#1F6C75'}` }}
+						_placeholder={{ color: 'inherit' }}
+					>
+						<NumberInputField
+							placeholder="Stock"
+							borderRadius="0"
+							color="gray"
+							_focusVisible={{ outline: `2px solid ${ingredients?.quantity > maxStockAvailable(ingredients?.product_unit) ? '#eb4848' : '#1F6C75'}` }}
+							_placeholder={{ color: 'inherit' }}
+							onChange={(e) => {
+								setIngredients((prev) => ({ ...prev, quantity: e.target.value }));
+							}}
+						/>
+					</NumberInput>
 
+					<Button
+						disabled={ingredients?.quantity > maxStockAvailable(ingredients.product_unit) || ingredients?.quantity === 0 || isProductInserted()}
+						borderRadius={0}
+						className="my-2"
+						colorScheme={'teal'}
+						size="sm"
+						onClick={() => {
+							setIngredientsList(
+								(prev) => (prev = [...ingredientsList, { ingredients: ingredients, productDetails: productInputList[0], productStock: productStock[0], transactionDetails: selectedTransaction }])
+							);
+							// reset input
+							setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '' }));
+							setProductInputList((prev) => (prev = []));
+							setProductName('');
+						}}
+					>
+						+
+					</Button>
+				</div>
+			)}
+		</>
+	);
+
+	const modalWindow = (
+		<Modal isCentered size={'2xl'} className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenModalAction} onClose={onCloseModalAction}>
+			<ModalOverlay />
+			<ModalContent>
+				<ModalHeader fontSize="lg" className="font-bold text-center">
+					{selectedTransaction?.doctor_prescription ? 'DOCTOR PRESCRIPTION ORDER' : 'ORDER'}
+				</ModalHeader>
+				<ModalCloseButton />
+				<ModalBody pb={2}>{selectedTransaction?.doctor_prescription ? inputPrescription : ''}</ModalBody>
 				<ModalFooter>
-					<Button className="mr-3" colorScheme={'teal'} size="sm" onClick={onCloseSelectDate}>
+					<Button
+						borderRadius={0}
+						className="mr-3"
+						colorScheme={'teal'}
+						size="sm"
+						onClick={() => {
+							console.log(ingredientsList);
+							let promise = [];
+							const handleDoctorPrescription = async () => {
+								for (let i = 0; i < ingredientsList.length; i++) {
+									promise.push(
+										await axios.patch(`http://localhost:8000/api/transaction/confirm_prescription/${ingredientsList[i]?.productDetails.product_id}`, ingredientsList[i], {
+											headers: {
+												Authorization: `Bearer ${token}`,
+											},
+										})
+									);
+								}
+								await Promise.all(promise);
+							};
+							const resolvePromise = async () => {
+								await handleDoctorPrescription();
+								console.log(promise);
+							};
+
+							resolvePromise();
+							onCloseModalAction();
+							let temp = transactionList;
+							temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Awaiting Payment'});
+							setTransactionList((prev) => prev = temp);
+						}}
+					>
 						Confirm Order
 					</Button>
-					<Button size="sm" onClick={onCloseSelectDate}>
+					<Button borderRadius={0} size="sm" onClick={onCloseModalAction}>
 						Close
 					</Button>
 				</ModalFooter>
@@ -420,12 +491,13 @@ export default function AdminTransactionPage() {
 				<ModalHeader>Search by date range</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody>
-					<div className="flex justify-center">
+					<div className="flex justify-center mb-4">
 						<div className="mx-1">
 							<FormControl>
 								<FormLabel>From :</FormLabel>
 								<Input
 									required
+									value={dateRange.from}
 									className="text-borderHijau"
 									borderRadius="0"
 									size="sm"
@@ -445,6 +517,7 @@ export default function AdminTransactionPage() {
 								<FormLabel>To : </FormLabel>
 								<Input
 									required
+									value={dateRange.to}
 									className="text-borderHijau"
 									borderRadius="0"
 									size="sm"
@@ -461,13 +534,38 @@ export default function AdminTransactionPage() {
 				</ModalBody>
 
 				<ModalFooter>
-					<Button colorScheme="teal" onClick={btnSubmitDateRange}>
-						Apply
+					<Button borderRadius={0} size={'sm'} colorScheme="teal" onClick={btnSubmitDateRange} className="mr-3">
+						Apply date
+					</Button>
+					<Button
+						borderRadius={0}
+						size={'sm'}
+						colorScheme="red"
+						onClick={() => {
+							setFilters((prev) => ({ ...prev, from: '', to: '' }));
+							setDateRange((prev) => (prev = { from: '', to: '' }));
+							setCurrentPage((prev) => (prev = 1));
+						}}
+					>
+						Reset date
 					</Button>
 				</ModalFooter>
 			</ModalContent>
 		</Modal>
 	);
+
+	useEffect(() => {
+		setIngredients((prev) => ({ ...prev, product_name: productInputList[0]?.product_name }));
+	}, [productInputList]);
+
+	useEffect(() => {
+		if (!isOpenModalAction) {
+			setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '' }));
+			setProductInputList((prev) => (prev = []));
+			setProductName('');
+			setIngredientsList((prev) => (prev = []));
+		}
+	}, [isOpenModalAction]);
 
 	useEffect(() => {
 		getTransactions();
@@ -490,6 +588,7 @@ export default function AdminTransactionPage() {
 	return (
 		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
 			{modalSelectDate}
+			{modalWindow}
 
 			<div className="container mx-auto mt-[2.5vh]">
 				<h1
@@ -498,7 +597,7 @@ export default function AdminTransactionPage() {
 						navigate('/admin');
 					}}
 				>
-					SEHATBOS.COM <span className="font-normal">| TRANSACTION</span>
+					SEHATBOS.COM <span className="font-normal">| TRANSACTION HISTORY</span>
 				</h1>
 			</div>
 
@@ -556,7 +655,7 @@ export default function AdminTransactionPage() {
 							{transactionStatus.map((val, idx) => {
 								return (
 									<MenuItem
-										key={idx}
+										key={Math.random() + id}
 										className="text-xs"
 										onClick={() => {
 											setFilters((prev) => ({ ...prev, transaction_status: val }));
@@ -622,12 +721,13 @@ export default function AdminTransactionPage() {
 						</MenuList>
 					</Menu>
 
-					<Button className="mr-3" style={{ borderColor: 'gray' }} borderRadius={'0'} color="gray" variant="outline" size={'sm'} onClick={onOpenSelectDate}>
+					<Button className="mr-3 mt-3 md:mt-0 lg:mt-0" style={{ borderColor: 'gray' }} borderRadius={'0'} color="gray" variant="outline" size={'sm'} onClick={onOpenSelectDate}>
 						{filters.from ? new Date(filters.from).toLocaleDateString('id') + ' - ' + new Date(filters.to).toLocaleDateString('id') : 'By date range'}
 						<BsCalendar2Event className="ml-3" />
 					</Button>
 
 					<Button
+						className="mt-3 md:mt-0 lg:mt-0"
 						style={{ borderColor: 'gray' }}
 						disabled={!filters.invoice && !filters.transaction_status && !filters.from && !filters.to && !filters.sort && !filters.order}
 						borderRadius={'0'}
@@ -646,49 +746,91 @@ export default function AdminTransactionPage() {
 					<h1 className="inline">Transaction</h1>
 				</Box>
 			</div>
-			<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-[2.5vh]">
+			<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-5">
 				<TableContainer w="100vw" fontSize={'xs'}>
 					<Table size="sm">
 						<Thead>
 							<Tr>
 								<Th>No.</Th>
 								<Th>Date</Th>
-								<Th>Invoice</Th>
-								<Th>Total Purchase</Th>
+								<Th>Invoice ID</Th>
 								<Th>Status</Th>
+								<Th>Preview</Th>
 								<Th>Action</Th>
 							</Tr>
 						</Thead>
 						<Tbody>
-							{transactionList?.map((val, idx) => {
-								return (
-									<Tr key={idx}>
-										<Td className="text-[rgb(67,67,67)]">{idx + 1}</Td>
-										<Td className="text-[rgb(67,67,67)]">{new Date(val.order_date).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Td>
-										<Td className="text-[rgb(67,67,67)]">{val.invoice}</Td>
-										<Td className="text-[rgb(67,67,67)]"> {val.total_purchase ? 'Rp' + val.total_purchase?.toLocaleString('id') + ',-' : '-'}</Td>
-										<Td className="text-[rgb(67,67,67)]">
-											<Badge
-												colorScheme={
-													val.transaction_status === 'Cancelled'
-														? 'red'
-														: val.transaction_status === 'Awaiting Admin Confirmation'
-														? 'purple'
-														: val.transaction_status === 'Awaiting Payment'
-														? 'blue'
-														: 'green'
-												}
-											>
-												{val.transaction_status}
-											</Badge>
-										</Td>
-										<Td className="text-[rgb(67,67,67)]">Action</Td>
-									</Tr>
-								);
-							})}
+							{transactionList.length > 0 &&
+								transactionList?.map((val, idx) => {
+									return (
+										<Tr key={id + idx}>
+											<Td className="text-[rgb(67,67,67)]">{idx + 1}</Td>
+											<Td className="text-[rgb(67,67,67)]">{new Date(val.order_date).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Td>
+											<Td className="text-[rgb(67,67,67)]">{val.invoice}</Td>
+											{/* <Td className="text-[rgb(67,67,67)]"> {val.total_purchase ? 'Rp' + val.total_purchase?.toLocaleString('id') + ',-' : '-'}</Td> */}
+											<Td className="text-[rgb(67,67,67)]">
+												<Badge variant={'solid'} colorScheme={badgeColor(val.transaction_status)}>
+													{val.transaction_status}
+												</Badge>
+											</Td>
+											<Td className="text-[rgb(67,67,67)]">
+												<Button
+													size={'xs'}
+													colorScheme="blue"
+													variant={'outline'}
+													className="mr-2"
+													style={{ borderRadius: '0' }}
+													onClick={() => {
+														// previewComponent
+													}}
+												>
+													Preview
+												</Button>
+											</Td>
+											<Td className="text-[rgb(67,67,67)]">
+												{whiteListedStatus.includes(val.transaction_status) && (
+													<Button
+														size={'xs'}
+														colorScheme="purple"
+														variant={'outline'}
+														className={`mr-2`}
+														style={{ borderRadius: '0' }}
+														onClick={() => {
+															onOpenModalAction();
+															setSelectedTransaction((prev) => (prev = val));
+															setSelectedTransactionIndex(prev => prev = idx)
+														}}
+													>
+														Handle
+													</Button>
+												)}
+												{whiteListedCancelStatus.includes(val.transaction_status) && (
+													<Button size={'xs'} colorScheme="red" variant={'outline'} style={{ borderRadius: '0' }}>
+														Cancel
+													</Button>
+												)}
+											</Td>
+										</Tr>
+									);
+								})}
 						</Tbody>
 					</Table>
 				</TableContainer>
+			</div>
+			<div className="mb-5">
+				<h1 className="inline mr-2 font-semibold text-sm text-gray-500">Status Color:</h1>
+				<Badge variant={'solid'} colorScheme={'purple'} className="mr-2">
+					HANDLING
+				</Badge>
+				<Badge variant={'solid'} colorScheme={'blue'} className="mr-2">
+					WAITING
+				</Badge>
+				<Badge variant={'solid'} colorScheme={'green'} className="mr-2">
+					COMPLETED
+				</Badge>
+				<Badge variant={'solid'} colorScheme={'red'}>
+					CANCELLED
+				</Badge>
 			</div>
 			<Pagination getProductData={getTransactions} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
 		</main>

@@ -8,7 +8,6 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
-	Select,
 	Box,
 	Textarea,
 	NumberInput,
@@ -61,6 +60,7 @@ export default function EditProductComponent({
 	const [checkedDeleteStock, setCheckedDeleteStock] = useState(false);
 	const toast = useToast();
 	const token = Cookies.get('sehatToken');
+	const conversion_unit = ['Tablet', 'Kapsul', 'Milliliter'];
 
 	const btnEditProduct = async () => {
 		try {
@@ -435,24 +435,24 @@ export default function EditProductComponent({
 											</>
 										)}
 
-										{/* <Checkbox
-											_focusVisible={{ outline: '2px solid #1F6C75' }}
-											_placeholder={{ color: 'inherit' }}
-											colorScheme="teal"
-											color={'gray'}
-											className="my-2"
-											isChecked={checkedItems}
-											onChange={(e) => setCheckedItems(e.target.checked)}
-										>
-											<p className="text-gray text-sm">
-												{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
-													? 'Edit conversion unit'
-													: 'Create new conversion unit'}
-											</p>
-										</Checkbox>
 
-										{checkedItems && (
+										{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion ? '' : (
 											<>
+												{/* <Checkbox
+													_focusVisible={{ outline: '2px solid #1F6C75' }}
+													_placeholder={{ color: 'inherit' }}
+													colorScheme="teal"
+													color={'gray'}
+													className="my-2"
+													isChecked={checkedItems}
+													onChange={(e) => setCheckedItems(e.target.checked)}
+												>
+													<p className="text-gray text-sm">
+														{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
+															? 'Edit conversion unit'
+															: 'Create new conversion unit'}
+													</p>
+												</Checkbox> */}
 												<h1 className="font-semibold text-gray text-xs mt-2">Product Netto:</h1>
 												<NumberInput size="sm" min={0} className="text-borderHijau my-2">
 													<NumberInputField
@@ -470,7 +470,38 @@ export default function EditProductComponent({
 												</NumberInput>
 
 												<h1 className="font-semibold text-gray text-xs mt-2">Conversion Unit:</h1>
-												<Input
+												<Menu>
+													<MenuButton
+														className="my-2 w-[100%] border-[1px] border-gray text-xs"
+														color={'gray'}
+														bgColor={'white'}
+														style={{ borderRadius: 0 }}
+														as={Button}
+														rightIcon={<HiOutlineChevronDown />}
+														size={'sm'}
+													>
+														{!form.product_conversion || form.product_conversion === '-' ? 'Conversion unit' : form.product_conversion}
+													</MenuButton>
+													<MenuList>
+														{conversion_unit.map((val, idx) => {
+															if (val !== form.default_unit) {
+																return (
+																	<MenuItem
+																		key={idx}
+																		className="text-xs"
+																		color={'gray'}
+																		onClick={() => {
+																			setForm((prev) => ({ ...prev, product_conversion: val }));
+																		}}
+																	>
+																		{val}
+																	</MenuItem>
+																);
+															}
+														})}
+													</MenuList>
+												</Menu>
+												{/* <Input
 													required
 													className="text-borderHijau my-2"
 													borderRadius="0"
@@ -481,10 +512,10 @@ export default function EditProductComponent({
 													_placeholder={{ color: 'inherit' }}
 													color="gray"
 													onChange={(e) => setForm((prev) => ({ ...prev, product_conversion: e.target.value }))}
-												/>
+												/> */}
 											</>
 										)}
-										<br /> */}
+										<br />
 									</>
 								)}
 
@@ -509,6 +540,7 @@ export default function EditProductComponent({
 
 					<ModalFooter>
 						<Button
+							borderRadius={0}
 							size="sm"
 							colorScheme={checkedDeleteStock ? 'red' : 'teal'}
 							mr={3}
@@ -541,6 +573,7 @@ export default function EditProductComponent({
 							{checkedDeleteStock ? 'Delete & Update' : 'Save changes'}
 						</Button>
 						<Button
+							borderRadius={0}
 							size="sm"
 							onClick={() => {
 								if (checkedDeleteStock) {
