@@ -147,9 +147,7 @@ const TransactionDetailPage = () => {
 
             if (res.data.success) {
                 if (action === 'Cancel') {
-                    if (!invoice.includes('CSTM')) {
-                        stockRecovery();
-                    };
+                    stockRecovery();
                     onCancelModal()
                     toast({
                         title: 'Order succesfully cancelled',
