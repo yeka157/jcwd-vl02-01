@@ -118,13 +118,14 @@ export default function EditProductComponent({
 
 				if (productStock?.length > 0 && !checkedDeleteStock) {
 					let updateStock = await axios.patch(
-						`${API_URL}/product/update_stock/${productStock[0].stock_id}`,
+						`${API_URL}/product/update_stock/${productData[selectedProductIndex]?.product_id}`,
 						{
 							product_id: productData[selectedProductIndex]?.product_id,
 							product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
 							product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
 							product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto,
-							product_conversion: form.product_conversion && form.product_conversion !== '-' ? form.product_conversion : productData[selectedProductIndex]?.product_conversion,
+							product_conversion: form.product_conversion && form.product_conversion !== '-' 
+							? form.product_conversion : productData[selectedProductIndex]?.product_conversion,
 						},
 						{
 							headers: {
