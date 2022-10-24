@@ -37,8 +37,8 @@ export default function Pagination({ totalData, itemsPerPage, currentPage, setCu
   }
 
 	return (
-		<div className="flex container items-center justify-between border-t border-gray-300 px-5 py-5 sm:px-6">
-			<div className="flex flex-1 justify-between sm:hidden">
+		<div className="container items-center justify-between border-t border-gray-300 px-5 py-5 sm:px-6">
+			<div className="flex-1 justify-between sm:hidden">
 				<button 
 					className={`${currentPage === '1' ? 'disabled cursor-default hover:disabled' : ''} relative inline-flex items-center border hover:bg-muted hover:text-gray-700 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700`}
 					onClick={() => {

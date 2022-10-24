@@ -217,12 +217,12 @@ module.exports = {
 				if (stock.length === 0) {
 					await dbQuery(
 						`INSERT INTO stock (product_id, product_stock, product_unit, product_netto, product_conversion) VALUES
-						(${dbConf.escape(product_id)},
-						${dbConf.escape(product_stock)},
-						${dbConf.escape(product_unit)},
-						${dbConf.escape(product_netto)},
-						${dbConf.escape(product_conversion)});
-					`
+							(${dbConf.escape(product_id)},
+							${dbConf.escape(product_stock)},
+							${dbConf.escape(product_unit)},
+							${dbConf.escape(product_netto)},
+							${dbConf.escape(product_conversion)}
+						);`
 					);
 					await dbQuery(`INSERT INTO reports (transaction_id, product_id, quantity, type, note, product_name, product_image, product_unit) VALUES
 						(

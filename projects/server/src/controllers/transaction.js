@@ -97,55 +97,55 @@ module.exports = {
             console.log(error);
             res.status(500).send({ success: false, message: error });
         }
-    },
-    substractStock: async (req, res) => {
-        try {
-            let resUpdate = await dbQuery(`UPDATE stock SET product_stock = ${req.body.data} WHERE stock_id = ${req.params.stock_id};`);
+	},
+	substractStock: async (req, res) => {
+			try {
+					let resUpdate = await dbQuery(`UPDATE stock SET product_stock = ${req.body.data} WHERE stock_id = ${req.params.stock_id};`);
 
-            res.status(200).send({
-                success: true,
-                massage: 'Stock update success'
-            })
+					res.status(200).send({
+							success: true,
+							massage: 'Stock update success'
+					})
 
-        } catch (error) {
-            console.log(error);
-            res.status(500).send({ success: false, message: error });
-        }
-    },
-    stockRecovery: async (req, res) => {
-        try {
+			} catch (error) {
+					console.log(error);
+					res.status(500).send({ success: false, message: error });
+			}
+	},
+	stockRecovery: async (req, res) => {
+			try {
 
-            const { quantity, product_id, transaction_id, product_name, product_image, product_unit } = req.body.data
+					const { quantity, product_id, transaction_id, product_name, product_image, product_unit } = req.body.data
 
-            if (product_unit == 'Kapsul' || product_unit == 'Mililiter' || product_unit == 'Tablet') {
-                await dbQuery(`UPDATE stock s SET product_conversion_stock = s.product_conversion_stock + ${quantity} WHERE s.product_id = ${product_id};`);
-            } else {
-                await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
-            };
+					if (product_unit == 'Kapsul' || product_unit == 'Mililiter' || product_unit == 'Tablet') {
+							await dbQuery(`UPDATE stock s SET product_conversion_stock = s.product_conversion_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+					} else {
+							await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+					};
 
-            await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
-                VALUES (
-                ${dbConf.escape(transaction_id)}, 
-                ${dbConf.escape(product_id)}, 
-                ${dbConf.escape(product_name)}, 
-                ${dbConf.escape(product_image)}, 
-                ${dbConf.escape(product_unit)},
-                ${quantity},
-                'Stock recovery',
-                'Addition'
-                );`)
+					await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
+							VALUES (
+							${dbConf.escape(transaction_id)}, 
+							${dbConf.escape(product_id)}, 
+							${dbConf.escape(product_name)}, 
+							${dbConf.escape(product_image)}, 
+							${dbConf.escape(product_unit)},
+							${quantity},
+							'Stock recovery',
+							'Addition'
+							);`)
 
-            res.status(200).send({
-                success: true,
-                massage: 'Stock update success'
-            })
+					res.status(200).send({
+							success: true,
+							massage: 'Stock update success'
+					})
 
-        } catch (error) {
-            console.log(error);
-            res.status(500).send({ success: false, message: error });
-        }
-    },
-    getTransactions: async (req, res) => {
+			} catch (error) {
+					console.log(error);
+					res.status(500).send({ success: false, message: error });
+			}
+	},
+	getTransactions: async (req, res) => {
         try {
             const { invoice, transaction_status, order, sort, offset, limit, from, to } = req.query
 
