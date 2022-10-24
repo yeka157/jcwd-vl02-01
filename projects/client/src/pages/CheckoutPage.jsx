@@ -67,6 +67,7 @@ const CheckoutPage = (props) => {
             if (resAddress.data.success) {
                 setAddress(resAddress.data.address);
                 getDeliveryService(resAddress.data.address.city_id);
+                setLoading(false)
 
             }
         } catch (error) {
@@ -86,7 +87,6 @@ const CheckoutPage = (props) => {
 
             if (resDelivery.data.success) {
                 setDeliveryOption(resDelivery.data.option)
-                setLoading(false)
             }
 
         } catch (error) {
