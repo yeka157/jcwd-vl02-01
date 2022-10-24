@@ -107,7 +107,6 @@ const ChangeAddressComponent = (props) => {
                             'Authorization': `Bearer ${token}`
                         }
                     });
-                    console.log(getData.data);
                     dispatch(userAddress(getData.data));
                     toast({
                         title: 'Address successfully added',
@@ -117,6 +116,7 @@ const ChangeAddressComponent = (props) => {
                         position: 'top'
                     })
                     setAddAddressToggle(!addAddressToggle);
+                    props.getMainAddress();
                 }
             }
         } catch (error) {
@@ -167,7 +167,7 @@ const ChangeAddressComponent = (props) => {
                 <ModalBody>
                     <FormControl>
                         <FormLabel>Province</FormLabel>
-                        <Select placeholder='Select province' onChange={(e) => { setProvinceId(e.target.value.split('-')[0]); getDataCity(e.target.value); setProvince(e.target.value.split('-')[1]) }}>
+                        <Select className='mb-2' placeholder='Select province' onChange={(e) => { setProvinceId(e.target.value.split('-')[0]); getDataCity(e.target.value); setProvince(e.target.value.split('-')[1]) }}>
                             {dataProvince.map((val) => {
                                 return (
                                     <option key={val.province_id} value={`${val.province_id}-${val.province}`}>{val.province}</option>
@@ -177,7 +177,7 @@ const ChangeAddressComponent = (props) => {
                     </FormControl>
                     <FormControl>
                         <FormLabel>City</FormLabel>
-                        <Select placeholder='Select city' onChange={(e) => { setCityId(e.target.value.split('-')[0]); setCity(e.target.value.split('-')[1]) }}>
+                        <Select className='mb-1' placeholder='Select city' onChange={(e) => { setCityId(e.target.value.split('-')[0]); setCity(e.target.value.split('-')[1]) }}>
                             {dataCity.map((val) => {
                                 return (
                                     <option key={val.city_id} value={`${val.city_id}-${val.type} ${val.city_name}`}>{val.type} {val.city_name}</option>
@@ -187,7 +187,7 @@ const ChangeAddressComponent = (props) => {
                     </FormControl>
                     <FormControl>
                         <FormLabel>District</FormLabel>
-                        <Input placeholder='District' onChange={(e) => setDistrict(e.target.value)} />
+                        <Input className='mb-2' placeholder='District' onChange={(e) => setDistrict(e.target.value)} />
                     </FormControl>
                     <FormControl>
                         <FormLabel>Details</FormLabel>
