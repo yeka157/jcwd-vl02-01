@@ -28,10 +28,6 @@ const PrescriptionPage = (props) => {
     const addressList = useSelector(getAddress);
     const toast = useToast();
 
-    useEffect(() => {
-        getMainAddress();
-    }, []);
-
     const getMainAddress = async () => {
         try {
             let token = Cookies.get('sehatToken');
@@ -51,6 +47,11 @@ const PrescriptionPage = (props) => {
             console.log(error);
         }
     };
+
+    useEffect(() => {
+        getMainAddress();
+    }, []);
+
 
     let getDeliveryService = async (city_id) => {
         try {
@@ -244,7 +245,7 @@ const PrescriptionPage = (props) => {
                                         <p className='text-red-500'>You have no main address yet, please choose address manually</p>
                                     </div>
                                 :
-                                <div className='flex items-center'>
+                                <div className='flex items-center pb-7'>
                                     <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
                                     <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
                                 </div>
