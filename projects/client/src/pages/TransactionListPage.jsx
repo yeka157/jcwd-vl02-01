@@ -40,7 +40,7 @@ export default function TransactionListPage() {
     const [loading, setLoading] = useState(true);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const itemsPerPage = 4;
+    const itemsPerPage = 7;
 
 
     const getTotalData = async () => {

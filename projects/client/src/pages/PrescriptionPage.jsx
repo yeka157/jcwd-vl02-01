@@ -29,9 +29,7 @@ const PrescriptionPage = (props) => {
     const toast = useToast();
 
     useEffect(() => {
-        if (addressList.length > 0) {
-            getMainAddress();
-        }
+        getMainAddress();
     }, []);
 
     const getMainAddress = async () => {
