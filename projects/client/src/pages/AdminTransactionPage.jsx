@@ -46,6 +46,7 @@ export default function AdminTransactionPage() {
 	const { isOpen: isOpenSelectDate, onOpen: onOpenSelectDate, onClose: onCloseSelectDate } = useDisclosure();
 	const { isOpen: isOpenModalAction, onOpen: onOpenModalAction, onClose: onCloseModalAction } = useDisclosure();
 	const { isOpen: isOpenModalPreview, onOpen: onOpenModalPreview, onClose: onCloseModalPreview } = useDisclosure();
+	const { isOpen: isOpenCancelConfirmation, onOpen: onOpenCancelConfirmation, onClose: onCloseCancelConfirmation } = useDisclosure();
 	const [dateRange, setDateRange] = useState({ from: '', to: '' });
 	const [filters, setFilters] = useState({ invoice: '', transaction_status: '', from: '', to: '', sort: '', order: '' });
 	const [transactionList, setTransactionList] = useState([]);
@@ -67,7 +68,7 @@ export default function AdminTransactionPage() {
 	// VAR
 	const itemsPerPage = 10;
 	const transactionStatus = ['Cancelled', 'Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed', 'Shipped', 'Order Confirmed'];
-	const whiteListedStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment Confirmation', "Processed"];
+	const whiteListedStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment Confirmation', 'Processed'];
 	const whiteListedCancelStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed'];
 	const token = Cookies.get('sehatToken');
 
@@ -78,7 +79,7 @@ export default function AdminTransactionPage() {
 	};
 
 	const updateTransactionStatus = async (action) => {
-		let index = transactionStatus.findIndex(val => val === selectedTransaction?.transaction_status);
+		let index = transactionStatus.findIndex((val) => val === selectedTransaction?.transaction_status);
 		if (action === 'reject') {
 			index -= 1;
 		}
@@ -88,17 +89,41 @@ export default function AdminTransactionPage() {
 		if (action === 'cancel') {
 			index = 0;
 		}
-		
-		let updateStatus = await axios.patch(`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`, {newStatus: transactionStatus[index]}, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		
+
+		let updateStatus = await axios.patch(
+			`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
+			{ newStatus: transactionStatus[index] },
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}
+		);
+
 		if (updateStatus.data.success) {
-			console.log(transactionStatus[index])
+			console.log(transactionStatus[index]);
 		}
-	}
+	};
+
+	const btnCancelTransaction = async (transaction_detail) => {
+		let promise = [];
+		const handleStockRecovery = async () => {
+			for (let i = 0; i < transaction_detail?.length; i++) {
+				promise.push(
+					await axios.patch(`${API_URL}/transaction/stock_recovery/${selectedTransaction?.product_id}`, {data: transaction_detail[0]}, {
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					})
+				);
+			}
+			await Promise.all(promise);
+		};
+		const resolvePromise = async () => {
+			await handleStockRecovery();
+		};
+		resolvePromise();
+	};
 
 	const isProductInserted = () => {
 		let index = ingredientsList?.findIndex((val) => val.ingredients?.product_name === productInputList[0]?.product_name);
@@ -112,7 +137,7 @@ export default function AdminTransactionPage() {
 		if (dateRange.from || dateRange.to) {
 			setFilters((prev) => (prev = { ...prev, from: dateRange.from, to: dateRange.to }));
 			onCloseSelectDate();
-		} 
+		}
 	};
 
 	const getTotalData = async () => {
@@ -440,16 +465,19 @@ export default function AdminTransactionPage() {
 						size="sm"
 						onClick={() => {
 							setIngredientsList(
-								(prev) => (prev = 
-									[...ingredientsList, { 
-										ingredients: ingredients, 
-										productDetails: productInputList[0], 
-										productStock: productStock[0], 
-										transactionDetails: selectedTransaction }
+								(prev) =>
+									(prev = [
+										...ingredientsList,
+										{
+											ingredients: ingredients,
+											productDetails: productInputList[0],
+											productStock: productStock[0],
+											transactionDetails: selectedTransaction,
+										},
 									])
 							);
 							// reset input
-							setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '', total_purchase: countTotalPurchase()}));
+							setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '', total_purchase: countTotalPurchase() }));
 							setProductInputList((prev) => (prev = []));
 							setProductName('');
 						}}
@@ -463,69 +491,85 @@ export default function AdminTransactionPage() {
 
 	const inputNonPrescription = (
 		<div>
-			{
-				selectedTransaction?.transaction_status === 'Awaiting Payment Confirmation' && (
-					<>
-						<Box className='border border-gray-300'>
-							<div className='flex justify-center align-middle my-5'>
-								<a href={`http://localhost:8000${selectedTransaction?.payment_proof}`} target="_blank">
-									<img className="max-w-[250px]" src={`http://localhost:8000/${selectedTransaction?.payment_proof}`} alt="doctor_prescription" />
-								</a>
-							</div>
-						</Box>
-						<h1 className='text-sm text-center font-bold mt-5'>CONFIRM THIS TRANSACTION PAYMENT ?</h1>
-						<div className='flex justify-center mt-5'>
-							<Button className='mr-2' borderRadius={0} colorScheme={'teal'} size="sm" 
-								onClick={() => {
-									updateTransactionStatus('confirm');
-									let temp = transactionList;
-									temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Processed'});
-									setTransactionList((prev) => prev = temp);
-									onCloseModalAction();
-								}}
-							>
-								Confirm
-							</Button>
-							<Button className='ml-2' borderRadius={0} colorScheme={'red'} size="sm" 
-								onClick={() => {
-									updateTransactionStatus('reject');
-									let temp = transactionList;
-									temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Awaiting Payment'});
-									setTransactionList((prev) => prev = temp);
-									onCloseModalAction();
-								}}
-							>
-								Reject
-							</Button>
+			{selectedTransaction?.transaction_status === 'Awaiting Payment Confirmation' && (
+				<>
+					<Box className="border border-gray-300">
+						<div className="flex justify-center align-middle my-5">
+							<a href={`http://localhost:8000${selectedTransaction?.payment_proof}`} target="_blank">
+								<img className="max-w-[250px]" src={`http://localhost:8000/${selectedTransaction?.payment_proof}`} alt="doctor_prescription" />
+							</a>
 						</div>
-					</>
-				)
-			}
-			{
-				selectedTransaction?.transaction_status === 'Processed' && (
-					<>
-						<h1 className='text-sm text-center font-bold mt-5 text-borderHijau'>ORDER INVOICE {selectedTransaction.invoice} IS READY TO SHIP</h1>
-						<div className='flex justify-center mt-5'>
-							<Button className='mr-2' borderRadius={0} colorScheme={'teal'} size="sm" 
-								onClick={() => {
-									updateTransactionStatus('confirm');
-									let temp = transactionList;
-									temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Shipped'});
-									setTransactionList((prev) => prev = temp);
-									onCloseModalAction();
-								}}
-							>
-								Continue to shipping process
-							</Button>
-						</div>
-					</>
-				)
-			}
+					</Box>
+					<h1 className="text-sm text-center font-bold mt-5">CONFIRM THIS TRANSACTION PAYMENT ?</h1>
+					<div className="flex justify-center mt-5">
+						<Button
+							className="mr-2"
+							borderRadius={0}
+							colorScheme={'teal'}
+							size="sm"
+							onClick={() => {
+								updateTransactionStatus('confirm');
+								let temp = transactionList;
+								temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Processed' });
+								setTransactionList((prev) => (prev = temp));
+								onCloseModalAction();
+							}}
+						>
+							Confirm
+						</Button>
+						<Button
+							className="ml-2"
+							borderRadius={0}
+							colorScheme={'red'}
+							size="sm"
+							onClick={() => {
+								updateTransactionStatus('reject');
+								let temp = transactionList;
+								temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Awaiting Payment' });
+								setTransactionList((prev) => (prev = temp));
+								onCloseModalAction();
+							}}
+						>
+							Reject
+						</Button>
+					</div>
+				</>
+			)}
+			{selectedTransaction?.transaction_status === 'Processed' && (
+				<>
+					<h1 className="text-sm text-center font-bold mt-5 text-borderHijau">ORDER INVOICE {selectedTransaction.invoice} IS READY TO SHIP</h1>
+					<div className="flex justify-center mt-5">
+						<Button
+							className="mr-2"
+							borderRadius={0}
+							colorScheme={'teal'}
+							size="sm"
+							onClick={() => {
+								updateTransactionStatus('confirm');
+								let temp = transactionList;
+								temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Shipped' });
+								setTransactionList((prev) => (prev = temp));
+								onCloseModalAction();
+							}}
+						>
+							Continue to shipping process
+						</Button>
+					</div>
+				</>
+			)}
 		</div>
-	)
+	);
 
 	const modalWindow = (
-		<Modal isCentered size={selectedTransaction?.doctor_prescription ? '2xl' : 'xl'} className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenModalAction} onClose={onCloseModalAction}>
+		<Modal
+			isCentered
+			size={selectedTransaction?.doctor_prescription ? '2xl' : 'xl'}
+			className="bg-bgWhite"
+			initialFocusRef={initialRef}
+			finalFocusRef={finalRef}
+			isOpen={isOpenModalAction}
+			onClose={onCloseModalAction}
+		>
 			<ModalOverlay />
 			<ModalContent>
 				<ModalHeader fontSize="lg" className="font-bold text-center">
@@ -534,61 +578,62 @@ export default function AdminTransactionPage() {
 				<ModalCloseButton />
 				<ModalBody pb={2}>{selectedTransaction?.doctor_prescription && selectedTransaction?.transaction_status === 'Awaiting Admin Confirmation' ? inputPrescription : inputNonPrescription}</ModalBody>
 				<ModalFooter>
-					{
-						selectedTransaction?.doctor_prescription && selectedTransaction?.transaction_status === 'Awaiting Admin Confirmation' ? (
-							<>
-								<Button
-									borderRadius={0}
-									className="mr-3"
-									colorScheme={'teal'}
-									size="sm"
-									onClick={() => {
-										let promise = [];
-										const handleDoctorPrescription = async () => {
-											for (let i = 0; i < ingredientsList.length; i++) {
-												promise.push(
-													await axios.patch(`http://localhost:8000/api/transaction/confirm_prescription/${ingredientsList[i]?.productDetails.product_id}`, ingredientsList[i], {
-														headers: {
-															Authorization: `Bearer ${token}`,
-														},
-													})
-												);
-											}
-											await Promise.all(promise);
-										};
-										const resolvePromise = async () => {
-											await handleDoctorPrescription();
-										};
+					{selectedTransaction?.doctor_prescription && selectedTransaction?.transaction_status === 'Awaiting Admin Confirmation' ? (
+						<>
+							<Button
+								borderRadius={0}
+								className="mr-3"
+								colorScheme={'teal'}
+								size="sm"
+								onClick={() => {
+									let promise = [];
+									const handleDoctorPrescription = async () => {
+										for (let i = 0; i < ingredientsList.length; i++) {
+											promise.push(
+												await axios.patch(`http://localhost:8000/api/transaction/confirm_prescription/${ingredientsList[i]?.productDetails.product_id}`, ingredientsList[i], {
+													headers: {
+														Authorization: `Bearer ${token}`,
+													},
+												})
+											);
+										}
+										await Promise.all(promise);
+									};
+									const resolvePromise = async () => {
+										await handleDoctorPrescription();
+									};
 
-										const updateTotalPurchase = async () => {
-											await axios.patch(`http://localhost:8000/api/transaction/update_total_purchase/${selectedTransaction?.transaction_id}`, 
+									const updateTotalPurchase = async () => {
+										await axios.patch(
+											`http://localhost:8000/api/transaction/update_total_purchase/${selectedTransaction?.transaction_id}`,
 											{
-												total_purchase: countTotalPurchase()
-											}, 
+												total_purchase: countTotalPurchase(),
+											},
 											{
 												headers: {
 													Authorization: `Bearer ${token}`,
 												},
-											})
-										};
-										
-										resolvePromise();
-										updateTotalPurchase();
-										onCloseModalAction();
-										let temp = transactionList;
-										temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase()});
-										setTransactionList((prev) => prev = temp);
-									}}
-								>
-									Confirm Order
-								</Button>
-								<Button borderRadius={0} size="sm" onClick={onCloseModalAction}>
-									Close
-								</Button>
-							</>
-						)
-						: ''
-					}
+											}
+										);
+									};
+
+									resolvePromise();
+									updateTotalPurchase();
+									onCloseModalAction();
+									let temp = transactionList;
+									temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase() });
+									setTransactionList((prev) => (prev = temp));
+								}}
+							>
+								Confirm Order
+							</Button>
+							<Button borderRadius={0} size="sm" onClick={onCloseModalAction}>
+								Close
+							</Button>
+						</>
+					) : (
+						''
+					)}
 				</ModalFooter>
 			</ModalContent>
 		</Modal>
@@ -664,6 +709,40 @@ export default function AdminTransactionPage() {
 		</Modal>
 	);
 
+	const modalDeleteConfirmation = (
+		<Modal size={'md'} className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenCancelConfirmation} onClose={onCloseCancelConfirmation} isCentered>
+			<ModalOverlay />
+			<ModalContent>
+				<ModalHeader fontSize="md">Cancel order</ModalHeader>
+				<ModalCloseButton />
+				<ModalBody pb={2}>
+					<h1 className='text-sm font-semibold text-center mb-5'>
+						Cancel order {transactionList[selectedTransactionIndex]?.invoice}?
+					</h1>
+					<div className='flex justify-center my-5'>
+						<Button
+							className='flex'
+							borderRadius={0}
+							size="sm"
+							colorScheme="red"
+							mr={3}
+							onClick={() => {
+								btnCancelTransaction(transactionList[selectedTransactionIndex]?.transaction_detail);
+								updateTransactionStatus('cancel');
+								onCloseCancelConfirmation();
+								let temp = transactionList;
+								temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Cancelled' });
+								setTransactionList((prev) => (prev = temp));
+							}}
+						>
+							Continue to cancel order
+						</Button>
+					</div>
+				</ModalBody>
+			</ModalContent>
+		</Modal>
+	);
+
 	useEffect(() => {
 		setIngredients((prev) => ({ ...prev, product_name: productInputList[0]?.product_name }));
 	}, [productInputList]);
@@ -699,13 +778,8 @@ export default function AdminTransactionPage() {
 		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
 			{modalSelectDate}
 			{modalWindow}
-			<TransactionPreviewComponent
-				selectedTransaction={selectedTransaction}
-				isOpen={isOpenModalPreview} 
-				onClose={onCloseModalPreview}
-				initialFocusRef={initialRef} 
-				finalFocusRef={finalRef}
-			/>
+			{modalDeleteConfirmation}
+			<TransactionPreviewComponent selectedTransaction={selectedTransaction} isOpen={isOpenModalPreview} onClose={onCloseModalPreview} initialFocusRef={initialRef} finalFocusRef={finalRef} />
 
 			<div className="container mx-auto mt-[2.5vh]">
 				<h1
@@ -900,7 +974,7 @@ export default function AdminTransactionPage() {
 													onClick={() => {
 														onOpenModalPreview();
 														setSelectedTransaction((prev) => (prev = val));
-														setSelectedTransactionIndex(prev => prev = idx);
+														setSelectedTransactionIndex((prev) => (prev = idx));
 													}}
 												>
 													Preview
@@ -917,14 +991,24 @@ export default function AdminTransactionPage() {
 														onClick={() => {
 															onOpenModalAction();
 															setSelectedTransaction((prev) => (prev = val));
-															setSelectedTransactionIndex(prev => prev = idx);
+															setSelectedTransactionIndex((prev) => (prev = idx));
 														}}
 													>
 														Handle
 													</Button>
 												)}
 												{whiteListedCancelStatus.includes(val.transaction_status) && (
-													<Button size={'xs'} colorScheme="red" variant={'outline'} style={{ borderRadius: '0' }}>
+													<Button
+														size={'xs'}
+														colorScheme="red"
+														variant={'outline'}
+														style={{ borderRadius: '0' }}
+														onClick={() => {
+															onOpenCancelConfirmation();
+															setSelectedTransaction((prev) => (prev = val));
+															setSelectedTransactionIndex((prev) => (prev = idx));
+														}}
+													>
 														Cancel
 													</Button>
 												)}
