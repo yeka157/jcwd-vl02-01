@@ -57,7 +57,7 @@ export default function AdminProductPage() {
 	const id = useId();
 	const toast = useToast();
 	const navigate = useNavigate();
-	
+
 	// VAR
 	const itemsPerPage = 10;
 	const token = Cookies.get('sehatToken');
@@ -148,11 +148,11 @@ export default function AdminProductPage() {
 							try {
 								let result = await axios.delete(API_URL + '/product/delete_product/' + productData[selectedProductIndex].product_id, {
 									headers: {
-										'Authorization': `Bearer ${token}`
-									}
+										Authorization: `Bearer ${token}`,
+									},
 								});
 								if (result.data.success) {
-									setCurrentPage(prev => prev = 10);
+									setCurrentPage((prev) => (prev = 10));
 									getProductData();
 									displayProductData();
 									toast({
@@ -252,11 +252,11 @@ export default function AdminProductPage() {
 	const displayStockData = () => {
 		return productStock?.map((val, idx) => {
 			if (!val.product_stock) {
-				return <h1 key={idx}>Out of stock</h1>
+				return <h1 key={idx}>Out of stock</h1>;
 			}
 			if (val.product_conversion_stock) {
 				return (
-					<div key={idx}> 
+					<div key={idx}>
 						<li>
 							• {val.product_unit} : {val.product_stock}
 						</li>
@@ -270,7 +270,7 @@ export default function AdminProductPage() {
 				<li key={idx}>
 					{val.product_unit} : {val.product_stock}
 				</li>
-			)
+			);
 		});
 	};
 
@@ -403,7 +403,12 @@ export default function AdminProductPage() {
 			/>
 
 			<div className="container mx-auto mt-[2.5vh]">
-				<h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => { navigate('/admin') }}>
+				<h1
+					className="font-bold text-lg text-hijauBtn text-center cursor-pointer"
+					onClick={() => {
+						navigate('/admin');
+					}}
+				>
 					SEHATBOS.COM <span className="font-normal">| PRODUCT</span>
 				</h1>
 			</div>
@@ -512,7 +517,7 @@ export default function AdminProductPage() {
 							</MenuItem>
 						</MenuList>
 					</Menu>
-					
+
 					<Button
 						style={{ borderColor: 'gray' }}
 						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}

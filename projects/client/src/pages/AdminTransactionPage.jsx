@@ -417,10 +417,16 @@ export default function AdminTransactionPage() {
 						size="sm"
 						onClick={() => {
 							setIngredientsList(
-								(prev) => (prev = [...ingredientsList, { ingredients: ingredients, productDetails: productInputList[0], productStock: productStock[0], transactionDetails: selectedTransaction }])
+								(prev) => (prev = 
+									[...ingredientsList, { 
+										ingredients: ingredients, 
+										productDetails: productInputList[0], 
+										productStock: productStock[0], 
+										transactionDetails: selectedTransaction }
+									])
 							);
 							// reset input
-							setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '' }));
+							setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '', total_purchase: countTotalPurchase() }));
 							setProductInputList((prev) => (prev = []));
 							setProductName('');
 						}}
@@ -464,13 +470,25 @@ export default function AdminTransactionPage() {
 							};
 							const resolvePromise = async () => {
 								await handleDoctorPrescription();
-								console.log(promise);
 							};
 
+							const updateTotalPurchase = async () => {
+								await axios.patch(`http://localhost:8000/api/transaction/update_total_purchase/${selectedTransaction?.transaction_id}`, 
+								{
+									total_purchase: countTotalPurchase()
+								}, 
+								{
+									headers: {
+										Authorization: `Bearer ${token}`,
+									},
+								})
+							};
+							
 							resolvePromise();
+							updateTotalPurchase();
 							onCloseModalAction();
 							let temp = transactionList;
-							temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Awaiting Payment'});
+							temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase()});
 							setTransactionList((prev) => prev = temp);
 						}}
 					>

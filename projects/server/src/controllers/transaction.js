@@ -251,7 +251,7 @@ module.exports = {
 		try {
 			const product_id = req.params.product_id;
 			let { ingredients, productDetails, transactionDetails } = req.body;
-			let { quantity, product_unit, isConversion } = ingredients;
+			let { quantity, product_unit, isConversion, total_purchase } = ingredients;
 
 			if (req.dataToken.role !== 'ADMIN') {
 				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
@@ -271,7 +271,7 @@ module.exports = {
 				newProductStock = productStock.product_stock - quantity;
 				productPrice = productDetails.product_price;
 				// UPDATE STOCK
-					await dbQuery(`UPDATE stock SET product_stock=${newProductStock} WHERE product_id=${dbConf.escape(product_id)};`);
+				await dbQuery(`UPDATE stock SET product_stock=${newProductStock} WHERE product_id=${dbConf.escape(product_id)};`);
 
 				// // POST TRANSACTION DETAIL
 				await dbQuery(`INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description, product_unit) VALUES
@@ -300,6 +300,9 @@ module.exports = {
 						${dbConf.escape(product_unit)}
 					);
 				`);
+
+				// RUBAH STATUS -> AWAITING PAYMENT
+				await dbQuery(`UPDATE transactions SET transaction_status = ${dbConf.escape('Awaiting Payment')} WHERE transaction_id = ${dbConf.escape(transactionDetails.transaction_id)};`);
 				res.status(200).send({ success: true });
 				return;
 			}
@@ -378,7 +381,17 @@ module.exports = {
 
 			// RUBAH STATUS -> AWAITING PAYMENT
 			await dbQuery(`UPDATE transactions SET transaction_status = ${dbConf.escape('Awaiting Payment')} WHERE transaction_id = ${dbConf.escape(transactionDetails.transaction_id)};`);
-
+			res.status(200).send({ success: true });
+		} catch (error) {
+			console.log(error);
+			res.status(500).send({ message: error });
+		}
+	},
+	updateTotalPurchase: async (req, res) => {
+		try {
+			let transaction_id = req.params.transaction_id;
+			let { total_purchase } = req.body;
+			await dbQuery(`UPDATE transactions SET total_purchase = ${dbConf.escape(total_purchase)} WHERE transaction_id = ${dbConf.escape(transaction_id)};`);
 			res.status(200).send({ success: true });
 		} catch (error) {
 			console.log(error);
