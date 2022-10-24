@@ -57,7 +57,7 @@ export default function AdminProductPage() {
 	const id = useId();
 	const toast = useToast();
 	const navigate = useNavigate();
-	
+
 	// VAR
 	const itemsPerPage = 10;
 	const token = Cookies.get('sehatToken');
@@ -140,6 +140,7 @@ export default function AdminProductPage() {
 
 				<ModalFooter>
 					<Button
+						borderRadius={0}
 						size="sm"
 						colorScheme="red"
 						mr={3}
@@ -147,11 +148,11 @@ export default function AdminProductPage() {
 							try {
 								let result = await axios.delete(API_URL + '/product/delete_product/' + productData[selectedProductIndex].product_id, {
 									headers: {
-										'Authorization': `Bearer ${token}`
-									}
+										Authorization: `Bearer ${token}`,
+									},
 								});
 								if (result.data.success) {
-									setCurrentPage(prev => prev = 10);
+									setCurrentPage((prev) => (prev = 10));
 									getProductData();
 									displayProductData();
 									toast({
@@ -170,7 +171,7 @@ export default function AdminProductPage() {
 					>
 						Delete
 					</Button>
-					<Button size="sm" onClick={onCloseDeleteConfirmation}>
+					<Button borderRadius={0} size="sm" onClick={onCloseDeleteConfirmation}>
 						Cancel
 					</Button>
 				</ModalFooter>
@@ -187,8 +188,12 @@ export default function AdminProductPage() {
 					<Td className="text-[rgb(67,67,67)]">Rp{val.product_price.toLocaleString('id')},-</Td>
 					<Td className="text-[rgb(67,67,67)]">{val.category_name}</Td>
 					<Td className="text-[rgb(67,67,67)]">
-						<h1
-							className="inline text-xs underline cursor-pointer"
+						<Button
+							size={'xs'}
+							colorScheme="blue"
+							variant={'outline'}
+							className="mr-2"
+							style={{ borderRadius: '0' }}
 							onClick={() => {
 								onOpenProductDetails();
 								setSelectedProduct((prev) => (prev = val.product_name));
@@ -197,41 +202,45 @@ export default function AdminProductPage() {
 								getProductData();
 							}}
 						>
-							see preview
-						</h1>
+							Preview
+						</Button>
 					</Td>
 					<Td>
 						<div className="inline">
-							<Tooltip hasArrow label="edit" placement="right" shouldWrapChildren>
-								<AiFillEdit
-									size={17}
-									color="rgb(67,67,67,0.8)"
-									className="cursor-pointer"
-									onClick={() => {
-										onOpenEditProduct();
-										setSelectedProduct((prev) => (prev = val.product_name));
-										setSelectedProductIndex((prev) => (prev = idx));
-										getProductStock(val.product_id);
-										getProductData();
-									}}
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="teal"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenEditProduct();
+									setSelectedProduct((prev) => (prev = val.product_name));
+									setSelectedProductIndex((prev) => (prev = idx));
+									getProductStock(val.product_id);
+									getProductData();
+								}}
+							>
+								Edit
+							</Button>
 						</div>
 						<div className="inline">
-							<Tooltip hasArrow label="delete" placement="right" shouldWrapChildren>
-								<AiFillDelete
-									size={17}
-									color="rgb(67,67,67,0.8)"
-									className="cursor-pointer ml-5"
-									onClick={() => {
-										onOpenDeleteConfirmation();
-										setSelectedProduct((prev) => (prev = val.product_name));
-										setSelectedProductIndex((prev) => (prev = idx));
-										getProductStock(val.product_id);
-										getProductData();
-									}}
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="red"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenDeleteConfirmation();
+									setSelectedProduct((prev) => (prev = val.product_name));
+									setSelectedProductIndex((prev) => (prev = idx));
+									getProductStock(val.product_id);
+									getProductData();
+								}}
+							>
+								Delete
+							</Button>
 						</div>
 					</Td>
 				</Tr>
@@ -242,14 +251,26 @@ export default function AdminProductPage() {
 
 	const displayStockData = () => {
 		return productStock?.map((val, idx) => {
-			if (val.product_stock) {
+			if (!val.product_stock) {
+				return <h1 key={idx}>Out of stock</h1>;
+			}
+			if (val.product_conversion_stock) {
 				return (
-					<li key={idx}>
-						{productStock.length > 1 ? '•' : ''} {val.product_unit} : {val.product_stock}
-					</li>
+					<div key={idx}>
+						<li>
+							• {val.product_unit} : {val.product_stock}
+						</li>
+						<li>
+							• {val.product_conversion} : {val.product_conversion_stock}
+						</li>
+					</div>
 				);
 			}
-			return <h1>Out of stock</h1>
+			return (
+				<li key={idx}>
+					{val.product_unit} : {val.product_stock}
+				</li>
+			);
 		});
 	};
 
@@ -280,7 +301,7 @@ export default function AdminProductPage() {
 										? productData[selectedProductIndex]?.product_image
 										: `http://localhost:8000/${productData[selectedProductIndex]?.product_image}`
 								}
-								alt=""
+								alt="product_image"
 							/>
 						</div>
 						<h1 className="text-xs font-bold mt-[20px] mb-[5px]">Price</h1>
@@ -382,7 +403,12 @@ export default function AdminProductPage() {
 			/>
 
 			<div className="container mx-auto mt-[2.5vh]">
-				<h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => { navigate('/admin') }}>
+				<h1
+					className="font-bold text-lg text-hijauBtn text-center cursor-pointer"
+					onClick={() => {
+						navigate('/admin');
+					}}
+				>
 					SEHATBOS.COM <span className="font-normal">| PRODUCT</span>
 				</h1>
 			</div>
@@ -491,7 +517,7 @@ export default function AdminProductPage() {
 							</MenuItem>
 						</MenuList>
 					</Menu>
-					
+
 					<Button
 						style={{ borderColor: 'gray' }}
 						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
