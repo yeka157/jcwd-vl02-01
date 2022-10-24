@@ -355,11 +355,11 @@ export default function AdminStockHistoryPage() {
                     <Td
                       className={`${
                         val.note === "Substraction"
-                          ? "text-red-500 font-bold"
-                          : ""
+                          ? "text-red-500 font-bold flex justify-center"
+                          : "text-green-500 font-bold flex justify-center"
                       }`}
                     >
-                      {val.note === "Substraction" ? "- " : ""}
+                      {val.note === "Substraction" ? "-" : "+"}
                       {val.quantity}
                     </Td>
                     <Td>{val.product_unit}</Td>

@@ -57,6 +57,7 @@ export default function AdminReportProduct() {
     order: "",
   });
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalData, setTotalData] = React.useState(0);
   const [dateFrom, setDateFrom] = React.useState("");
   const [dateTo, setDateTo] = React.useState("");
   const [dataChart, setDataChart] = React.useState([]);
@@ -85,11 +86,72 @@ export default function AdminReportProduct() {
         }
       }
     }}
-  const btnClosePopover = async () => {};
-  const resetFilter = async () => {};
+  const btnClosePopover = async () => {
+    try {
+      if (dateFrom && dateTo) {
+        if (dateFrom >= dateTo) {
+          setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+          //toast warning
+        } else {
+          setCurrentPage((prev) => (prev = 1));
+          setFilters((prev) => ({...prev, date_from : dateFrom, date_to : dateTo}));
+        }
+      } else {
+        setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+      }
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const resetFilter = async () => {
+    try {
+      setFilters((prev) => (prev = {date_from : '', date_to : '', sort : '', order : ''}));
+      setCurrentPage((prev) => prev = 1);
+      getData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getTotalData = async () => {
+    try {
+      let total = await Axios.get(API_URL + `/admin/total_report?report=product`);
+      setTotalData((prev) => prev = total.data.count);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const getData = async () => {
     try {
+      if (!filters.date_from && !filters.date_to && filters.sort && filters.order) {
+        let temp = [];
+        for (let filter in filters) {
+          if (filters[filter] !== '') {
+            temp.push(`${filter}=${filters[filter]}`);
+          }
+        }
+        const result = await Axios.get(API_URL + `/admin/get_product_report?${temp.join("&")}`);
+        if (result.data.note === 'data found') {
+          setDataChart((prev) => (prev = result.data.dataMap));
+          setLabelChart((prev) => (prev = result.data.data));
+          return;
+        }
+      }
+      if (filters.date_from || filters.date_to || filters.sort || filters.order) {
+        let temp = [];
+        for (let filter in filters) {
+          if (filters[filter] !== '') {
+            temp.push(`${filter}=${filters[filter]}`);
+          }
+        }
+        const result = await Axios.get(API_URL + `/admin/get_product_report?${temp.join("&")}`);
+        if (result.data.note === 'data found') {
+          setDataChart((prev) => (prev= result.data.dataMap));
+          setLabelChart((prev) => (prev= result.data.data));
+          return;
+        }
+      }
       let getRes = await Axios.get(API_URL + "/admin/get_product_report");
       if (getRes.data.note === 'data found') {
         setDataChart(getRes.data.dataMap);
@@ -104,7 +166,23 @@ export default function AdminReportProduct() {
 
   React.useEffect(() => {
     getData();
-  }, [])
+  }, [currentPage]);
+
+  React.useEffect(() => {
+    if (filters.date_from || filters.date_to) {
+      setTotalData((prev) => prev = dataChart.length);
+    }
+  }, [dataChart, filters.date_from, filters.date_to]);
+
+  React.useEffect(() => {
+    if (filters.date_from === '' && filters.date_to === '' && filters.sort === '' && filters.order === '') {
+      getTotalData();
+      getData();
+    } else {
+      getData();
+    }
+  }, [filters]);
+  
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
@@ -302,7 +380,7 @@ export default function AdminReportProduct() {
                 <Th>No.</Th>
                 <Th>Date</Th>
                 <Th>Product</Th>
-                <Th>Quantity</Th>
+                <Th>Quantity Sold</Th>
                 <Th>Unit</Th>
                 <Th>Price</Th>
                 <Th>Total Price</Th>
