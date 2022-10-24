@@ -39,11 +39,13 @@ import { BsCalendar2Event } from 'react-icons/bs';
 import Pagination from '../components/Pagination';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import TransactionPreviewComponent from '../components/TransactionPreviewComponent';
 
 export default function AdminTransactionPage() {
 	// HOOKS
 	const { isOpen: isOpenSelectDate, onOpen: onOpenSelectDate, onClose: onCloseSelectDate } = useDisclosure();
 	const { isOpen: isOpenModalAction, onOpen: onOpenModalAction, onClose: onCloseModalAction } = useDisclosure();
+	const { isOpen: isOpenModalPreview, onOpen: onOpenModalPreview, onClose: onCloseModalPreview } = useDisclosure();
 	const [dateRange, setDateRange] = useState({ from: '', to: '' });
 	const [filters, setFilters] = useState({ invoice: '', transaction_status: '', from: '', to: '', sort: '', order: '' });
 	const [transactionList, setTransactionList] = useState([]);
@@ -426,7 +428,7 @@ export default function AdminTransactionPage() {
 									])
 							);
 							// reset input
-							setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '', total_purchase: countTotalPurchase() }));
+							setIngredients((prev) => ({ product_name: '', quantity: 0, product_unit: '', total_purchase: countTotalPurchase()}));
 							setProductInputList((prev) => (prev = []));
 							setProductName('');
 						}}
@@ -607,6 +609,13 @@ export default function AdminTransactionPage() {
 		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
 			{modalSelectDate}
 			{modalWindow}
+			<TransactionPreviewComponent
+				selectedTransaction={selectedTransaction}
+				isOpen={isOpenModalPreview} 
+				onClose={onCloseModalPreview}
+				initialFocusRef={initialRef} 
+				finalFocusRef={finalRef}
+			/>
 
 			<div className="container mx-auto mt-[2.5vh]">
 				<h1
@@ -799,7 +808,9 @@ export default function AdminTransactionPage() {
 													className="mr-2"
 													style={{ borderRadius: '0' }}
 													onClick={() => {
-														// previewComponent
+														onOpenModalPreview();
+														setSelectedTransaction((prev) => (prev = val));
+														setSelectedTransactionIndex(prev => prev = idx);
 													}}
 												>
 													Preview
@@ -816,7 +827,7 @@ export default function AdminTransactionPage() {
 														onClick={() => {
 															onOpenModalAction();
 															setSelectedTransaction((prev) => (prev = val));
-															setSelectedTransactionIndex(prev => prev = idx)
+															setSelectedTransactionIndex(prev => prev = idx);
 														}}
 													>
 														Handle

@@ -391,8 +391,11 @@ module.exports = {
 		try {
 			let transaction_id = req.params.transaction_id;
 			let { total_purchase } = req.body;
-			await dbQuery(`UPDATE transactions SET total_purchase = ${dbConf.escape(total_purchase)} WHERE transaction_id = ${dbConf.escape(transaction_id)};`);
-			res.status(200).send({ success: true });
+			let transaction = await dbQuery(`SELECT * from transactions WHERE transaction_id = ${dbConf.escape(transaction_id)}`);
+			if (transaction.length > 0) {
+				await dbQuery(`UPDATE transactions SET total_purchase = ${dbConf.escape(total_purchase + transaction[0].delivery_charge)} WHERE transaction_id = ${dbConf.escape(transaction_id)};`);
+				res.status(200).send({ success: true });
+			}
 		} catch (error) {
 			console.log(error);
 			res.status(500).send({ message: error });
