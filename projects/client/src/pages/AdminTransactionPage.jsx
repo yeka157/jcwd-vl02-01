@@ -110,7 +110,7 @@ export default function AdminTransactionPage() {
 		const handleStockRecovery = async () => {
 			for (let i = 0; i < transaction_detail?.length; i++) {
 				promise.push(
-					await axios.patch(`${API_URL}/transaction/stock_recovery/${selectedTransaction?.product_id}`, {data: transaction_detail[0]}, {
+					await axios.patch(`${API_URL}/transaction/stock_recovery/${transaction_detail[i]?.product_id}`, {data: transaction_detail[i]}, {
 						headers: {
 							Authorization: `Bearer ${token}`,
 						},
@@ -500,7 +500,7 @@ export default function AdminTransactionPage() {
 							</a>
 						</div>
 					</Box>
-					<h1 className="text-sm text-center font-bold mt-5">CONFIRM THIS TRANSACTION PAYMENT ?</h1>
+					<h1 className="text-sm text-center font-bold mt-5">CONFIRM PAYMENT?</h1>
 					<div className="flex justify-center mt-5">
 						<Button
 							className="mr-2"
@@ -623,6 +623,7 @@ export default function AdminTransactionPage() {
 									let temp = transactionList;
 									temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase() });
 									setTransactionList((prev) => (prev = temp));
+									getTransactions();
 								}}
 							>
 								Confirm Order
