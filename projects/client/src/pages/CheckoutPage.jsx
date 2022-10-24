@@ -31,9 +31,8 @@ const CheckoutPage = (props) => {
 
     useEffect(() => {
         getData();
-        if (addressList.length > 0) {
-            getMainAddress();
-        }
+        getMainAddress();
+
     }, []);
 
     let getData = async () => {
