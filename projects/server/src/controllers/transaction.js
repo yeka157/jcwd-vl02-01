@@ -51,66 +51,79 @@ module.exports = {
             ${dbConf.escape(total_purchase)});
             `);
 
-			if (resOrder.insertId) {
-				// Add to transaction detail
-				let detailValues = transaction_detail.map((item) => [
-					resOrder.insertId,
-					item.quantity,
-					item.product_id,
-					item.product_name,
-					item.product_image,
-					item.product_price,
-					item.product_description,
-					item.default_unit,
-				]);
+            if (resOrder.insertId) {
+                // Add to transaction detail
+                let detailValues = transaction_detail.map(item => [
+                    resOrder.insertId,
+                    item.quantity,
+                    item.product_id,
+                    item.product_name,
+                    item.product_image,
+                    item.product_price,
+                    item.product_description,
+                    item.default_unit
+                ])
 
-				let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description, product_unit) VALUES ?`;
-				let resDetail = await dbQuery(transDetailQuery, [detailValues]);
+                let transDetailQuery = `INSERT INTO transaction_detail (transaction_id, quantity, product_id, product_name, product_image, product_price, product_description, product_unit) VALUES ?`
+                let resDetail = await dbQuery(transDetailQuery, [detailValues]);
 
-				// Add to reports
-				let reportValues = transaction_detail.map((item) => [resOrder.insertId, item.product_id, item.product_name, item.product_image, item.default_unit, item.quantity, 'Selling', 'Substraction']);
+                // Add to reports
+                let reportValues = transaction_detail.map(item => [
+                    resOrder.insertId,
+                    item.product_id,
+                    item.product_name,
+                    item.product_image,
+                    item.default_unit,
+                    item.quantity,
+                    'Selling',
+                    'Substraction'
+                ])
 
-				let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note) VALUES ?`;
-				let resReports = await dbQuery(reportQuery, [reportValues]);
+                let reportQuery = `INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note) VALUES ?`
+                let resReports = await dbQuery(reportQuery, [reportValues]);
 
-				// Delete from cart
-				let resCart = await dbQuery(`DELETE from carts WHERE user_id = ${req.dataToken.user_id} AND is_selected = 1`);
+                // Delete from cart
+                let resCart = await dbQuery(`DELETE from carts WHERE user_id = ${req.dataToken.user_id} AND is_selected = 1`);
 
-				if (resDetail.insertId && resReports.insertId && resCart.affectedRows) {
-					res.status(200).send({
-						success: true,
-						massage: 'Order success',
-					});
-				}
-			}
-		} catch (error) {
-			console.log(error);
-			res.status(500).send({ success: false, message: error });
-		}
-	},
-	substractStock: async (req, res) => {
-		try {
-			let resUpdate = await dbQuery(`UPDATE stock SET product_stock = ${req.body.data} WHERE stock_id = ${req.params.stock_id};`);
+                if (resDetail.insertId && resReports.insertId && resCart.affectedRows) {
+                    res.status(200).send({
+                        success: true,
+                        massage: 'Order success'
+                    })
+                }
+            }
 
-			res.status(200).send({
-				success: true,
-				massage: 'Stock update success',
-			});
-		} catch (error) {
-			console.log(error);
-			res.status(500).send({ success: false, message: error });
-		}
-	},
-	stockRecovery: async (req, res) => {
-		try {
-			const { quantity, product_id, transaction_id, product_name, product_image, product_unit } = req.body.data;
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    substractStock: async (req, res) => {
+        try {
+            let resUpdate = await dbQuery(`UPDATE stock SET product_stock = ${req.body.data} WHERE stock_id = ${req.params.stock_id};`);
 
-			console.log('ini data;', req.body.data);
+            res.status(200).send({
+                success: true,
+                massage: 'Stock update success'
+            })
 
-			let resUpdate = await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    stockRecovery: async (req, res) => {
+        try {
 
-			if (resUpdate.affectedRows) {
-				let resReport = await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
+            const { quantity, product_id, transaction_id, product_name, product_image, product_unit } = req.body.data
+
+            if (product_unit == 'Kapsul' || product_unit == 'Mililiter' || product_unit == 'Tablet') {
+                await dbQuery(`UPDATE stock s SET product_conversion_stock = s.product_conversion_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+            } else {
+                await dbQuery(`UPDATE stock s SET product_stock = s.product_stock + ${quantity} WHERE s.product_id = ${product_id};`);
+            };
+
+            await dbQuery(`INSERT INTO reports (transaction_id,  product_id, product_name, product_image, product_unit, quantity, type, note)
                 VALUES (
                 ${dbConf.escape(transaction_id)}, 
                 ${dbConf.escape(product_id)}, 
@@ -120,42 +133,41 @@ module.exports = {
                 ${quantity},
                 'Stock recovery',
                 'Addition'
-                );`);
-			}
+                );`)
 
-			res.status(200).send({
-				success: true,
-				massage: 'Stock update success',
-			});
-		} catch (error) {
-			console.log(error);
-			res.status(500).send({ success: false, message: error });
-		}
-	},
-	getTransactions: async (req, res) => {
-		try {
-			const { invoice, transaction_status, order, sort, offset, limit, from, to } = req.query;
-			console.log(to);
+            res.status(200).send({
+                success: true,
+                massage: 'Stock update success'
+            })
 
-			let filter = [];
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({ success: false, message: error });
+        }
+    },
+    getTransactions: async (req, res) => {
+        try {
+            const { invoice, transaction_status, order, sort, offset, limit, from, to } = req.query
 
-			if (invoice) {
-				filter.push(`invoice LIKE '%${invoice}%'`);
-			}
+            let filter = [];
 
-			if (transaction_status) {
-				filter.push(`transaction_status = ${dbConf.escape(transaction_status)}`);
-			}
+            if (invoice) {
+                filter.push(`invoice LIKE '%${invoice}%'`)
+            };
 
-			if (from && to) {
-				filter.push(`order_date BETWEEN '${from}' AND '${to + ' 23:59:59'}'`);
-			}
+            if (transaction_status) {
+                filter.push(`transaction_status = ${dbConf.escape(transaction_status)}`)
+            };
 
-			if (req.dataToken.role === 'CUSTOMER') {
-				filter.push(`user_id = ${req.dataToken.user_id}`);
-			}
+            if (from && to) {
+                filter.push(`order_date BETWEEN '${from}' AND '${to + ' 23:59:59'}'`)
+            };
 
-			let resTransaction = await dbQuery(`SELECT * from transactions 
+            if (req.dataToken.role === 'CUSTOMER') {
+                filter.push(`user_id = ${req.dataToken.user_id}`)
+            };
+
+            let resTransaction = await dbQuery(`SELECT * from transactions 
             ${filter.length == 0 ? '' : `WHERE ${filter.join(' AND ')}`}
             ${sort == 'Date' ? `ORDER BY order_date ${order}` : ''}
             ${sort == 'Invoice' ? `ORDER BY invoice ${order}` : ''}

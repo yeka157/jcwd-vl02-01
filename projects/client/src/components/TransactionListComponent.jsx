@@ -38,9 +38,9 @@ const TransactionListComponent = (props) => {
                                     colorScheme={
                                         props.getData.transaction_status === 'Cancelled'
                                             ? 'red'
-                                            : props.getData.transaction_status === 'Awaiting Admin Confirmation'
+                                            : props.getData.transaction_status.includes('Confirmation') 
                                                 ? 'purple'
-                                                : props.getData.transaction_status.includes('Awaiting Payment')
+                                                : props.getData.transaction_status === 'Awaiting Payment'
                                                     ? 'blue'
                                                     : 'green'
                                     }
@@ -48,9 +48,9 @@ const TransactionListComponent = (props) => {
                                     <p className={`
                                     ${props.getData.transaction_status === 'Cancelled'
                                             ? 'text-red-500'
-                                            : props.getData.transaction_status === 'Awaiting Admin Confirmation'
+                                            : props.getData.transaction_status.includes('Confirmation')
                                                 ? 'text-purple-500'
-                                                : props.getData.transaction_status.includes('Awaiting Payment')
+                                                : props.getData.transaction_status === 'Awaiting Payment'
                                                     ? 'text-blue-500'
                                                     : 'text-green-500'}
                                     
