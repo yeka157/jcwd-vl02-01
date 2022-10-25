@@ -22,6 +22,7 @@ import axios from 'axios';
 import Cookies from "js-cookie";
 import { userLogin } from '../slices/userSlice';
 import { userCart } from "../slices/cartSlices";
+import { userAddress } from "../slices/addressSlice";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { HiOutlineMail } from "react-icons/hi";
@@ -78,6 +79,7 @@ const LoginPage = () => {
                 delete resUser.data.token
                 dispatch(userLogin(resUser.data.dataUser));
                 dispatch(userCart(resUser.data.cart))
+                dispatch(userAddress(resUser.data.address));
                 setDisableBtn(false);
                 setSpinner(false);
                 if (resUser.data.dataUser.role === 'CUSTOMER') {

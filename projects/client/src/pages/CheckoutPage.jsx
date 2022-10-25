@@ -34,8 +34,6 @@ const CheckoutPage = (props) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    console.log('ini cart:', cart);
-
 
     useEffect(() => {
         getData();

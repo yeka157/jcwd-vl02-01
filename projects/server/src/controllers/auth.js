@@ -3,7 +3,7 @@ const { hashPassword, createToken } = require('../config/encrypt');
 const { transport } = require('../config/nodemailer');
 const hbs = require('nodemailer-express-handlebars');
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
 
 module.exports = {
     getUsers: async (req, res) => {
@@ -158,7 +158,10 @@ module.exports = {
             let cartUser = await dbQuery(`SELECT c.cart_id, p.default_unit, c.product_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, c.is_selected, c.quantity from carts c
             JOIN products p ON p.product_id = c.product_id
             JOIN stock s ON s.product_id = c.product_id
-            WHERE c.user_id = ${resUser[0].user_id};`)
+            WHERE c.user_id = ${resUser[0].user_id};`);
+
+            let getAdress = await dbQuery(`Select * from address WHERE user_id = ${dbConf.escape(resUser[0].user_id)};`);
+
 
             if (resUser.length > 0) {
                 let token = createToken({ ...resUser[0] });
@@ -168,6 +171,7 @@ module.exports = {
                     massage: 'Login success',
                     dataUser: resUser[0],
                     cart: cartUser,
+                    address: getAdress,
                     token,
                 });
 
