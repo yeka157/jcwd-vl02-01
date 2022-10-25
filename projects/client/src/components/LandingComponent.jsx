@@ -1,7 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import ButtonComponent from "./ButtonComponent";
 
 export default function LandingComponent() {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen py-40">
       <div className="flex flex-col justify-center h-full px-24 space-y-7">
@@ -20,6 +22,7 @@ export default function LandingComponent() {
               py="3"
               px="8"
               brightness="90"
+              onclick={() => navigate('/product', {state : { category : ''}})}
             />
             <ButtonComponent
               text="&gt;"
@@ -29,8 +32,8 @@ export default function LandingComponent() {
               brightness='90'
             />
           </div>
-          <h1 className="font-semibold hidden sm:inline">
-            PERSONALISATION QUIZ
+          <h1 className="font-semibold hidden sm:inline hover:underline cursor-pointer">
+            CONSULT WITH OUR DOCTORS
           </h1>
         </div>
       </div>

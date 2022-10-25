@@ -119,8 +119,6 @@ const LoginPage = () => {
                     email: emailRecovery
                 })
 
-                console.log(res.data.token);
-
                 if (res.data.success) {
                     onClose();
                     setEmailRecoveryStatus(true);
@@ -204,7 +202,7 @@ const LoginPage = () => {
 
                             <div className="pt-[16px]">
                                 {/* Additional APKG1-4 */}
-                                <button onClick={() => { setTimeout(btnLogin, 2000); setDisableBtn(true); setSpinner(true) }} disabled={disableBtn} class={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
+                                <button onClick={() => { setTimeout(btnLogin, 2000); setDisableBtn(true); setSpinner(true) }} disabled={disableBtn} className={`w-[312px] text-[16px]  bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Login'}
                                 </button>
 

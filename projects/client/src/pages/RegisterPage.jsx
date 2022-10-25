@@ -126,19 +126,15 @@ const RegisterPage = () => {
             if (password.length >= 6) {
                 if (password.match(strongPasswordChecker)) {
                     setPasswordStrength('strong');
-                    console.log('strong');
                     setPasswordValid(true);
                 } else if (password.match(passwordChecker)) {
-                    console.log('medium');
                     setPasswordStrength('medium');
                     setPasswordValid(true);
                 } else {
-                    console.log('weak');
                     setPasswordStrength('weak');
                     setPasswordValid(true);
                 }
             } else {
-                console.log('no match');
                 setPasswordStrength('Wrong format');
                 setPasswordValid(false);
             }
@@ -307,7 +303,7 @@ const RegisterPage = () => {
 
                             <div className="pt-[24px]">
                                 {/* Additional APKG1-4 */}
-                                <button onClick={() => { setSpinner(true); setTimeout(btnRegister, 2000); setDisableBtn(true) }} disabled={disableBtn} class={`w-[312px] text-[16px] bg-[#015D67] hover:bg-brightness-90 text-center ${disableBtn ? '' : 'bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
+                                <button onClick={() => { setSpinner(true); setTimeout(btnRegister, 2000); setDisableBtn(true) }} disabled={disableBtn} className={`w-[312px] text-[16px] bg-[#015D67] hover:bg-brightness-90 text-center ${disableBtn ? '' : 'bg-brightness-90'}  text-white font-bold py-2 px-4 `}>
                                     {spinner ? <Spinner size='sm' color="grey" /> : 'Create Account'}
                                 </button>
 

@@ -8,7 +8,6 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
-	Select,
 	Box,
 	Textarea,
 	NumberInput,
@@ -29,6 +28,7 @@ import { AiOutlinePaperClip } from 'react-icons/ai';
 import { HiOutlineChevronDown } from 'react-icons/hi';
 import axios from 'axios';
 import { API_URL } from '../helper';
+import Cookies from 'js-cookie';
 
 export default function EditProductComponent({
 	initialRef,
@@ -55,12 +55,12 @@ export default function EditProductComponent({
 		product_netto: 0,
 		product_conversion: '',
 	});
-
 	const [selectedForm, setSelectedForm] = useState('details');
 	const [checkedItems, setCheckedItems] = useState(false);
 	const [checkedDeleteStock, setCheckedDeleteStock] = useState(false);
-
 	const toast = useToast();
+	const token = Cookies.get('sehatToken');
+	const conversion_unit = ['Tablet', 'Kapsul', 'Milliliter'];
 
 	const btnEditProduct = async () => {
 		try {
@@ -83,11 +83,19 @@ export default function EditProductComponent({
 
 			formData.append('data', JSON.stringify(inputData));
 
-			let updateProduct = await axios.patch(`${API_URL}/product/update_product/${productData[selectedProductIndex]?.product_id}`, formData);
+			let updateProduct = await axios.patch(`${API_URL}/product/update_product/${productData[selectedProductIndex]?.product_id}`, formData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 
 			if (updateProduct.data.success) {
 				if (checkedDeleteStock) {
-					let deleteStock = await axios.delete(`${API_URL}/product/delete_stock/${productData[selectedProductIndex]?.product_id}`);
+					let deleteStock = await axios.delete(`${API_URL}/product/delete_stock/${productData[selectedProductIndex]?.product_id}`, {
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
+					});
 					if (deleteStock.data.success) {
 						getProductData();
 						toast({
@@ -109,13 +117,22 @@ export default function EditProductComponent({
 				}
 
 				if (productStock?.length > 0 && !checkedDeleteStock) {
-					let updateStock = await axios.patch(`${API_URL}/product/update_stock/${productStock[0].stock_id}`, {
-						product_id: productData[selectedProductIndex]?.product_id,
-						product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
-						product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
-						product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto,
-						product_conversion: form.product_conversion && form.product_conversion !== '-' ? form.product_conversion : productData[selectedProductIndex]?.product_conversion,
-					});
+					let updateStock = await axios.patch(
+						`${API_URL}/product/update_stock/${productData[selectedProductIndex]?.product_id}`,
+						{
+							product_id: productData[selectedProductIndex]?.product_id,
+							product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
+							product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
+							product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto,
+							product_conversion: form.product_conversion && form.product_conversion !== '-' 
+							? form.product_conversion : productData[selectedProductIndex]?.product_conversion,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						}
+					);
 
 					if (updateStock.data.success) {
 						getProductData();
@@ -138,13 +155,26 @@ export default function EditProductComponent({
 				}
 
 				if (productStock?.length === 0 && !checkedDeleteStock) {
-					let addStock = await axios.post(`${API_URL}/product/add_stock`, {
-						product_id: productData[selectedProductIndex]?.product_id,
-						product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
-						product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
-						product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto ? productData[selectedProductIndex]?.product_netto : 0,
-						product_conversion: form.product_conversion && form.product_conversion !== '-' ? form.product_conversion : productData[selectedProductIndex]?.product_conversion ? productData[selectedProductIndex]?.product_conversion : '-',
-					});
+					let addStock = await axios.post(
+						`${API_URL}/product/add_stock`,
+						{
+							product_id: productData[selectedProductIndex]?.product_id,
+							product_stock: form.product_stock ? form.product_stock : productStock[0]?.product_stock,
+							product_unit: form.default_unit ? form.default_unit : productData[selectedProductIndex]?.default_unit,
+							product_netto: form.product_netto ? form.product_netto : productData[selectedProductIndex]?.product_netto ? productData[selectedProductIndex]?.product_netto : 0,
+							product_conversion:
+								form.product_conversion && form.product_conversion !== '-'
+									? form.product_conversion
+									: productData[selectedProductIndex]?.product_conversion
+									? productData[selectedProductIndex]?.product_conversion
+									: '-',
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						}
+					);
 
 					if (addStock.data.success) {
 						getProductData();
@@ -358,7 +388,7 @@ export default function EditProductComponent({
 													{form.product_image ? (
 														<p className="inline ml-1 font-semibold text-sm text-gray-500">{form.product_image.name}</p>
 													) : (
-														<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Profile Picture</p>
+														<p className="inline ml-1 font-semibold text-sm text-gray-500">Choose Product Image</p>
 													)}
 												</label>
 											</div>
@@ -368,8 +398,8 @@ export default function EditProductComponent({
 
 								{selectedForm === 'stock' && !checkedDeleteStock && (
 									<>
-										<h1 className="font-semibold text-gray text-xs">Product Stock:</h1>
-										<NumberInput size="sm" min={0} className="text-borderHijau my-2">
+										<h1 className="font-semibold text-gray text-xs">Product Stock ({productData[selectedProductIndex]?.default_unit}) :</h1>
+										<NumberInput size="sm" min={0} className="text-borderHijau mt-2">
 											<NumberInputField
 												borderRadius="0"
 												placeholder={productStock[0]?.product_stock ? productStock[0]?.product_stock : 0}
@@ -384,18 +414,17 @@ export default function EditProductComponent({
 											</NumberInputStepper>
 										</NumberInput>
 
-										<h1 className="font-semibold text-gray text-xs">Default Unit:</h1>
+										{/* <h1 className="font-semibold text-gray text-xs">Default Unit:</h1>
 										<Input
-											required
-											className="text-borderHijau my-2 inline"
+											isDisabled
+											className="text-!gray-700 my-2 inline"
 											borderRadius="0"
 											size="sm"
 											placeholder={productData[selectedProductIndex]?.default_unit ? productData[selectedProductIndex]?.default_unit : 'Default unit'}
 											_focusVisible={{ outline: '2px solid #1F6C75' }}
 											_placeholder={{ color: 'inherit' }}
-											color="gray"
 											onChange={(e) => setForm((prev) => ({ ...prev, default_unit: e.target.value }))}
-										/>
+										/> */}
 
 										{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && (
 											<>
@@ -407,24 +436,24 @@ export default function EditProductComponent({
 											</>
 										)}
 
-										<Checkbox
-											_focusVisible={{ outline: '2px solid #1F6C75' }}
-											_placeholder={{ color: 'inherit' }}
-											colorScheme="teal"
-											color={'gray'}
-											className="my-2"
-											isChecked={checkedItems}
-											onChange={(e) => setCheckedItems(e.target.checked)}
-										>
-											<p className="text-gray text-sm">
-												{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
-													? 'Edit conversion unit'
-													: 'Create new conversion unit'}
-											</p>
-										</Checkbox>
 
-										{checkedItems && (
+										{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion ? '' : (
 											<>
+												{/* <Checkbox
+													_focusVisible={{ outline: '2px solid #1F6C75' }}
+													_placeholder={{ color: 'inherit' }}
+													colorScheme="teal"
+													color={'gray'}
+													className="my-2"
+													isChecked={checkedItems}
+													onChange={(e) => setCheckedItems(e.target.checked)}
+												>
+													<p className="text-gray text-sm">
+														{productStock[0]?.product_conversion && productStock[0]?.product_conversion !== '-' && productStock[0]?.product_conversion
+															? 'Edit conversion unit'
+															: 'Create new conversion unit'}
+													</p>
+												</Checkbox> */}
 												<h1 className="font-semibold text-gray text-xs mt-2">Product Netto:</h1>
 												<NumberInput size="sm" min={0} className="text-borderHijau my-2">
 													<NumberInputField
@@ -442,7 +471,38 @@ export default function EditProductComponent({
 												</NumberInput>
 
 												<h1 className="font-semibold text-gray text-xs mt-2">Conversion Unit:</h1>
-												<Input
+												<Menu>
+													<MenuButton
+														className="my-2 w-[100%] border-[1px] border-gray text-xs"
+														color={'gray'}
+														bgColor={'white'}
+														style={{ borderRadius: 0 }}
+														as={Button}
+														rightIcon={<HiOutlineChevronDown />}
+														size={'sm'}
+													>
+														{!form.product_conversion || form.product_conversion === '-' ? 'Conversion unit' : form.product_conversion}
+													</MenuButton>
+													<MenuList>
+														{conversion_unit.map((val, idx) => {
+															if (val !== form.default_unit) {
+																return (
+																	<MenuItem
+																		key={idx}
+																		className="text-xs"
+																		color={'gray'}
+																		onClick={() => {
+																			setForm((prev) => ({ ...prev, product_conversion: val }));
+																		}}
+																	>
+																		{val}
+																	</MenuItem>
+																);
+															}
+														})}
+													</MenuList>
+												</Menu>
+												{/* <Input
 													required
 													className="text-borderHijau my-2"
 													borderRadius="0"
@@ -453,7 +513,7 @@ export default function EditProductComponent({
 													_placeholder={{ color: 'inherit' }}
 													color="gray"
 													onChange={(e) => setForm((prev) => ({ ...prev, product_conversion: e.target.value }))}
-												/>
+												/> */}
 											</>
 										)}
 										<br />
@@ -481,6 +541,7 @@ export default function EditProductComponent({
 
 					<ModalFooter>
 						<Button
+							borderRadius={0}
 							size="sm"
 							colorScheme={checkedDeleteStock ? 'red' : 'teal'}
 							mr={3}
@@ -513,6 +574,7 @@ export default function EditProductComponent({
 							{checkedDeleteStock ? 'Delete & Update' : 'Save changes'}
 						</Button>
 						<Button
+							borderRadius={0}
 							size="sm"
 							onClick={() => {
 								if (checkedDeleteStock) {

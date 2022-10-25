@@ -18,6 +18,11 @@ module.exports = {
 	},
 	addCategory: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			let category_name = req.body.category_name;
 			const category = await dbQuery(`SELECT * FROM categories WHERE category_name = ${dbConf.escape(category_name)};`);
 
@@ -35,6 +40,11 @@ module.exports = {
 	},
 	editCategory: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			let new_category = req.body.new_category;
 			let id = req.params.id;
 
@@ -54,6 +64,11 @@ module.exports = {
 	},
 	deleteCategory: async (req, res) => {
 		try {
+			if (req.dataToken.role !== 'ADMIN') {
+				res.status(401).send({ success: false, message: 'You not authorized for this activity' });
+				return;
+			}
+
 			let id = req.params.id;
 			let category = await dbQuery(`SELECT * FROM categories WHERE category_id = ${dbConf.escape(id)};`);
 

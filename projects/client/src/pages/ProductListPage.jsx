@@ -16,20 +16,18 @@ import SearchBar from "../components/SearchBar";
 import { HiChevronDown } from "react-icons/hi";
 import CarouselComponent from '../components/CarouselComponent';
 import Pagination from "../components/Pagination";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function ProductListPage() {
+  const {pathname, state, search} = useLocation();
   const [categoryData, setCategoryData] = React.useState([]);
-  // const [categoryFilter, setCategoryFilter] = React.useState("");
-  const [filters, setFilters] = React.useState({ product_name : '', category_name : '', sort : '', order : ''});
+  const [filters, setFilters] = React.useState({ product_name : '', category_name : state ? state.category : '', sort : '', order : ''});
   const [currentPage, setCurrentPage] = React.useState(1);
   const [productData, setProductData] = React.useState([]);
   const [totalData, setTotalData] = React.useState(0);
-  const pathname = useLocation();
-
+  const navigate = useNavigate();
   const itemsPerPage = 12;
-  console.log(totalData);
-
+  const query = new URLSearchParams(window.location.search);
   const getCategory = async () => {
     let getData = await Axios.get(API_URL + "/category/");
     if (getData.data.success) {
@@ -83,11 +81,19 @@ export default function ProductListPage() {
     }
   }
 
-  const resetFilter = () => {
-    setFilters((prev) => (prev = { product_name : '', category_name : '', sort : '', order : ''}));
-    setCurrentPage(prev => prev = 1) ;
-    getTotalProduct();
-    getProduct();
+  const resetFilter = async() => {
+    try {
+      let params = new URLSearchParams(window.location.search);
+      if (params.get('category')) {
+        navigate('/product')
+      }
+      setFilters((prev) => (prev = { product_name : '', category_name : '', sort : '', order : ''}));
+      setCurrentPage(prev => prev = 1) ;
+      // await getProduct();
+      // await getTotalProduct();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   React.useEffect(() => {
@@ -98,13 +104,35 @@ export default function ProductListPage() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  // React.useEffect(() => {
+  //   console.log(search);
+  //   let searchQuery = search.split('=');
+  //   if (search) {
+  //     setFilters((prev) => ({...prev, category_name : searchQuery[1]}));
+  //     console.log(filters);
+  //   }
+  // }, [search]);
+
+  // React.useEffect(() => {
+  //   if (query.get('category')) {
+  //     setFilters((prev) => ({...prev, ...query}))
+  //   } else {
+  //     setFilters((prev) => (prev = { product_name : '', category_name : '', sort : '', order : ''}))
+  //   }
+  //   console.log(query);
+  //   console.log(filters);
+  // }, [query]);
+
+  React.useEffect(() => {
+    getProduct();
+  }, [state]);
+
   React.useEffect(() => {
     getProduct();
   }, [currentPage]);
 
   React.useEffect(() => {
     if (filters.category_name || filters.product_name) {
-      console.log(filters);
       setTotalData((prev) => (prev= productData.length));
     }
   }, [productData, filters.category_name, filters.product_name]);

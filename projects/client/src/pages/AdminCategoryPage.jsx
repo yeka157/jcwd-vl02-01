@@ -25,10 +25,11 @@ import {
 	useDisclosure,
 	useToast,
 } from '@chakra-ui/react';
-import { MdCategory } from 'react-icons/md';
 import { AiFillEdit, AiFillDelete } from 'react-icons/ai';
 import axios from 'axios';
 import { API_URL } from '../helper';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export default function AdminCategoryPage() {
 	// HOOKS
@@ -40,15 +41,14 @@ export default function AdminCategoryPage() {
 	const [selectedCategory, setSelectedCategory] = useState('');
 	const [selectedCategoryIndex, setSelectedCategoryIndex] = useState(-1);
 	const [newCategory, setNewCategory] = useState('')
-
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
-
 	const id = useId();
-
 	const toast = useToast();
+	const navigate = useNavigate();
 
 	// VAR
+	const token = Cookies.get('sehatToken');
 
 	const getCategoryData = async () => {
 		try {
@@ -62,7 +62,11 @@ export default function AdminCategoryPage() {
 	const btnAddCategory = async (inputCategory) => {
 		try {
 			const category_name = inputCategory;
-			const result = await axios.post(API_URL + '/category/add_category', { category_name });
+			const result = await axios.post(API_URL + '/category/add_category', { category_name }, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
 			if (result.data.success) {
 				setInputCategory((prev) => (prev = ''));
 				toast({
@@ -95,7 +99,11 @@ export default function AdminCategoryPage() {
 	};
 
 	const btnEditCategory = async (category_id, new_category) => {
-		let result = await axios.patch(API_URL + '/category/edit_category/' + category_id, { new_category });
+		let result = await axios.patch(API_URL + '/category/edit_category/' + category_id, { new_category }, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
 		if (result.data.success) {
 			getCategoryData();
 			displayCategoryData();
@@ -110,7 +118,11 @@ export default function AdminCategoryPage() {
 	};
 
 	const btnDeleteCategory = async (category_id) => {
-		let result = await axios.delete(API_URL + '/category/delete_category/' + category_id);
+		let result = await axios.delete(API_URL + '/category/delete_category/' + category_id, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
 		if (result.data.success) {
 			getCategoryData();
 			displayCategoryData();
@@ -130,30 +142,40 @@ export default function AdminCategoryPage() {
 				<Tr key={id + idx}>
 					<Td className="text-[rgb(67,67,67)]">{idx + 1}.</Td>
 					<Td className="text-[rgb(67,67,67)]">{val.category_name}</Td>
-					<Td>
+					<Td className='flex justify-end'>
 						<div className="inline">
-							<Tooltip hasArrow label="edit" placement="right" shouldWrapChildren>
-								<AiFillEdit size={17} color="rgb(67,67,67,0.8)" className="cursor-pointer" 
-									onClick={() => {
-										onOpenEditCategory();
-										setSelectedCategory(prev => prev = val.category_name);
-										setSelectedCategoryIndex(prev => prev = val.category_id);
-										getCategoryData();
-									}}
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="teal"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenEditCategory();
+									setSelectedCategory(prev => prev = val.category_name);
+									setSelectedCategoryIndex(prev => prev = val.category_id);
+									getCategoryData();
+								}}
+							>
+								Edit
+							</Button>
 						</div>
 						<div className="inline">
-							<Tooltip hasArrow label="delete" placement="right" shouldWrapChildren>
-								<AiFillDelete size={17} color="rgb(67,67,67,0.8)" className="cursor-pointer ml-5" 
-									onClick={() => {
-										onOpenDeleteConfirmation();
-										setSelectedCategory(prev => prev = val.category_name);
-										setSelectedCategoryIndex(prev => prev = val.category_id);
-										getCategoryData();
-									}} 
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="red"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenDeleteConfirmation();
+									setSelectedCategory(prev => prev = val.category_name);
+									setSelectedCategoryIndex(prev => prev = val.category_id);
+									getCategoryData();
+								}}
+							>
+								Delete
+							</Button>
 						</div>
 					</Td>
 				</Tr>
@@ -221,8 +243,8 @@ export default function AdminCategoryPage() {
 				<ModalBody pb={2}>
 					<FormControl>
 						<Input
+							borderRadius={0}
 							className="text-borderHijau"
-							borderRadius="md"
 							size="sm"
 							ref={initialRef}
 							placeholder={selectedCategory}
@@ -236,6 +258,7 @@ export default function AdminCategoryPage() {
 
 				<ModalFooter>
 					<Button
+						borderRadius={0}
 						size="sm"
 						colorScheme="teal"
 						mr={3}
@@ -246,7 +269,7 @@ export default function AdminCategoryPage() {
 					>
 						Save
 					</Button>
-					<Button size="sm" onClick={onCloseEditCategory}>
+					<Button borderRadius={0} size="sm" onClick={onCloseEditCategory}>
 						Cancel
 					</Button>
 				</ModalFooter>
@@ -266,6 +289,7 @@ export default function AdminCategoryPage() {
 
 				<ModalFooter>
 					<Button
+						borderRadius={0}
 						size="sm"
 						colorScheme="red"
 						mr={3}
@@ -276,7 +300,11 @@ export default function AdminCategoryPage() {
 					>
 						Delete
 					</Button>
-					<Button size="sm" onClick={onCloseDeleteConfirmation}>
+					<Button 
+						borderRadius={0}
+						size="sm" 
+						onClick={onCloseDeleteConfirmation}
+					>
 						Cancel
 					</Button>
 				</ModalFooter>
@@ -287,8 +315,8 @@ export default function AdminCategoryPage() {
 	return (
 		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
 			<div className="container mx-auto mt-[2.5vh]">
-				<h1 className="font-bold text-lg text-hijauBtn text-center">
-					SEHATBOS.COM <span className="font-normal">| DASHBOARD</span>
+				<h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => { navigate('/admin') }}>
+					SEHATBOS.COM <span className="font-normal">| CATEGORY</span>
 				</h1>
 			</div>
 
@@ -324,7 +352,7 @@ export default function AdminCategoryPage() {
 							<Tr>
 								<Th>No.</Th>
 								<Th>Category Name</Th>
-								<Th>Action</Th>
+								<Th className='flex justify-end mr-10'>Action</Th>
 							</Tr>
 						</Thead>
 						<Tbody>{displayCategoryData()}</Tbody>

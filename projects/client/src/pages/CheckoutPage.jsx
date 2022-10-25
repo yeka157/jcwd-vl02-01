@@ -1,6 +1,6 @@
 import React from 'react';
 import { MdLocationOn } from "react-icons/md";
-import { Select, useToast } from '@chakra-ui/react';
+import { Select, useToast, Spinner } from '@chakra-ui/react';
 import CheckoutComponent from '../components/CheckoutComponent';
 import { useState } from 'react';
 import { API_URL } from '../helper';
@@ -9,9 +9,10 @@ import { useEffect } from 'react';
 import axios from 'axios';
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux';
-import { getAddress} from '../slices/addressSlice';
+import { getAddress } from '../slices/addressSlice';
 import { useNavigate } from 'react-router-dom';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
+import { RiErrorWarningLine } from "react-icons/ri";
 
 const CheckoutPage = (props) => {
 
@@ -19,6 +20,8 @@ const CheckoutPage = (props) => {
     const [deliveryOption, setDeliveryOption] = useState([]);
     const [selectedDelivery, setSelectedDelivery] = useState('default-0');
     const [address, setAddress] = useState({});
+    const [btnSpinner, setBtnSpinner] = useState(false);
+    const [disableBtn, setDisableBtn] = useState(false);
 
     const user = useSelector(getUser);
     const addressList = useSelector(getAddress);
@@ -27,14 +30,16 @@ const CheckoutPage = (props) => {
 
     useEffect(() => {
         getData();
-        getMainAddress();
+        if (addressList.length > 0) {
+            getMainAddress();
+        }
     }, []);
 
     let getData = async () => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resData = await axios.get(API_URL + '/cart//checkouted_item', {
+            let resData = await axios.get(API_URL + '/cart/checkouted_item', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -113,8 +118,6 @@ const CheckoutPage = (props) => {
         return printSubTotal() + parseInt(selectedDelivery.split('-')[1]);
     };
 
-    console.log(item);
-
     const btnOrder = async () => {
         if (selectedDelivery != 'default-0') {
             let token = Cookies.get('sehatToken');
@@ -140,9 +143,11 @@ const CheckoutPage = (props) => {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            
+
             if (resOrder.data.success) {
                 updateStock();
+                setDisableBtn(false);
+                setBtnSpinner(false);
                 navigate('/transaction_list')
                 toast({
                     title: `Order success`,
@@ -155,6 +160,8 @@ const CheckoutPage = (props) => {
             };
 
         } else {
+            setDisableBtn(false);
+            setBtnSpinner(false);
             toast({
                 title: `Order can't be proccessed`,
                 description: 'Please choose the delivery option first',
@@ -170,9 +177,8 @@ const CheckoutPage = (props) => {
         try {
             for (let i = 0; i < item.length; i++) {
                 let data = item[i].product_stock - item[i].quantity
-                console.log(data);
 
-                const resUpdate = await axios.patch(API_URL + `/transaction/substract_stock/${item[i].stock_id}`, {data});
+                const resUpdate = await axios.patch(API_URL + `/transaction/substract_stock/${item[i].stock_id}`, { data });
             }
 
         } catch (error) {
@@ -192,17 +198,25 @@ const CheckoutPage = (props) => {
                                 <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
                             </div>
                             {addressList.length > 0 ?
-                                <div className='py-3'>
-                                    <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
-                                    <p>{address.address_detail}</p>
-                                    <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                </div> :
-                                <div className='flex items-center'>
-                                    <p className='text-red-500 text-center'>  You dont have any address yet please add your address</p>
+                                address.address_id ?
+                                    <div className='py-3'>
+                                        <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                        <p>{address.address_detail}</p>
+                                        <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
+                                    </div>
+                                    :
+                                    <div className='flex'>
+                                        <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                        <p className='text-red-500'>You have no main address yet, please choose address manually</p>
+                                    </div>
+                                :
+                                <div className='flex items-center pb-7'>
+                                    <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
                                 </div>
                             }
 
-                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
+                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />
 
                         </div>
 
@@ -250,10 +264,25 @@ const CheckoutPage = (props) => {
                             </div>
                         </div>
 
-                        <button onClick={btnOrder} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]'>
-                            Order
-                        </button>
-
+                        {
+                            addressList.length > 0 ?
+                                <button onClick={() => {
+                                    setBtnSpinner(true)
+                                    setDisableBtn(true)
+                                    setTimeout(btnOrder, 2000)
+                                }} className={`mx-auto  bg-hijauBtn ${disableBtn ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
+                                    disabled={disableBtn}
+                                >
+                                    {btnSpinner ? <Spinner size='sm' /> : 'Order'}
+                                </button>
+                                :
+                                <button
+                                    className={`mx-auto  bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
+                                    disabled
+                                >
+                                    Order
+                                </button>
+                        }
                     </div>
                 </div>
             </div>

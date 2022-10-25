@@ -126,11 +126,13 @@ export default function ProductDetailsPage() {
     <div className="bg-bgWhite">
       <div className="max-w-[1400px] mx-auto border-borderHijau border-x min-h-[50vh]">
         <div className="px-5 py-4 lg:flex lg:justify-between">
+          <div className="w-[75%] h-[60%]">
           <img
             src={data.product_image}
             alt="obat-img"
             className=""
           />
+          </div>
           <div className="space-y-2 pt-5 px-5 grow">
             <h1 className="text-2xl font-semibold">
               {data.product_name}
