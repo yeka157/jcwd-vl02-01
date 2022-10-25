@@ -3,7 +3,7 @@ import { MdLocationOn } from "react-icons/md";
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux'
 import { useState } from 'react';
-import { Select, Spinner, useToast } from '@chakra-ui/react';
+import { Select, Spinner, useToast, Skeleton, Stack } from '@chakra-ui/react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { API_URL } from '../helper';
@@ -21,16 +21,13 @@ const PrescriptionPage = (props) => {
     const [deliveryOption, setDeliveryOption] = useState([]);
     const [selectedDelivery, setSelectedDelivery] = useState('default-0');
     const [address, setAddress] = useState({});
-    const [btnThrottle, setBtnThrottle] = useState(false)
+    const [btnThrottle, setBtnThrottle] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const user = useSelector(getUser);
     const navigate = useNavigate();
     const addressList = useSelector(getAddress);
     const toast = useToast();
-
-    useEffect(() => {
-        getMainAddress();
-    }, []);
 
     const getMainAddress = async () => {
         try {
@@ -45,12 +42,17 @@ const PrescriptionPage = (props) => {
             if (resAddress.data.success) {
                 setAddress(resAddress.data.address);
                 getDeliveryService(resAddress.data.address.city_id);
-
+                setLoading(false);
             }
         } catch (error) {
             console.log(error);
         }
     };
+
+    useEffect(() => {
+        getMainAddress();
+    }, []);
+
 
     let getDeliveryService = async (city_id) => {
         try {
@@ -231,18 +233,35 @@ const PrescriptionPage = (props) => {
                                 <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
                                 <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
                             </div>
-                            {addressList.length > 0 ?
-                                <div className='py-3'>
-                                    <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
-                                    <p>{address.address_detail}</p>
-                                    <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                </div> :
-                                <div className='flex items-center'>
-                                    <p className='text-red-500 text-center'>  You dont have any address yet please add your address</p>
-                                </div>
+                            {
+                                loading ?
+                                    <Stack>
+                                        <Skeleton height='20px' width='400px'/>
+                                        <Skeleton height='20px' width='400px'/>
+                                        <Skeleton height='20px' width='400px'/>
+                                    </Stack>
+                                    :
+                                    addressList.length > 0 ?
+                                        address.address_id ?
+                                            <div className='py-3'>
+                                                <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                                <p>{address.address_detail}</p>
+                                                <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
+                                            </div>
+                                            :
+                                            <div className='flex'>
+                                                <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                                <p className='text-red-500'>You have no main address yet, please choose address manually</p>
+                                            </div>
+                                        :
+                                        <div className='flex items-center pb-7'>
+                                            <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                            <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
+                                        </div>
                             }
 
-                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} />
+                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />
+
                         </div>
 
                         {/* Prescription */}
@@ -296,9 +315,19 @@ const PrescriptionPage = (props) => {
 
                         </div>
 
-                        <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className='mx-auto  bg-hijauBtn hover:bg-white text-white hover:text-hijauBtn border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold'>
-                            {btnThrottle ? <Spinner size='xs' /> : 'Order'}
-                        </button>
+                        {
+                            addressList.length > 0 ?
+                                <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`}>
+                                    {btnThrottle ? <Spinner size='xs' /> : 'Order'}
+                                </button>
+                                :
+                                <button className={`mx-auto bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`} disabled>
+                                    Order
+                                </button>
+
+                        }
+
+
 
                     </div>
                 </div>

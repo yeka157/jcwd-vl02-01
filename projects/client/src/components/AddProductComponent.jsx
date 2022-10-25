@@ -8,7 +8,6 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
-	Select,
 	Box,
 	Textarea,
 	NumberInput,
@@ -135,7 +134,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 
 	return (
 		<div>
-			<Modal className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenAddProduct} onClose={onCloseAddProduct} isCentered size={'sm'}>
+			<Modal className="bg-bgWhite" initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpenAddProduct} onClose={onCloseAddProduct} isCentered size={'md'}>
 				<ModalOverlay />
 				<ModalContent>
 					<ModalHeader fontSize="md">Add new product</ModalHeader>
@@ -403,6 +402,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 
 					<ModalFooter>
 						<Button
+							borderRadius={0}
 							size="sm"
 							colorScheme="teal"
 							mr={3}
@@ -437,6 +437,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 							Add Product
 						</Button>
 						<Button
+							borderRadius={0}
 							size="sm"
 							onClick={() => {
 								onCloseAddProduct();

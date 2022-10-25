@@ -143,11 +143,17 @@ module.exports = {
         try {
             let resAddress = await dbQuery(`SELECT * from address WHERE user_id = ${req.dataToken.user_id} AND main_address = 1;`);
 
-            console.log('ini data address', resAddress);
-            res.status(200).send({
-                success: true,
-                address: resAddress[0]
-            })
+            if (resAddress.length > 0) {
+                res.status(200).send({
+                    success: true,
+                    address: resAddress[0]
+                })
+            } else {
+                res.status(200).send({
+                    success: false
+                })
+            }
+
 
         } catch (error) {
             res.status(500).send({

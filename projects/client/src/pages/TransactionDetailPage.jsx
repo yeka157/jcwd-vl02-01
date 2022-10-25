@@ -318,9 +318,9 @@ const TransactionDetailPage = () => {
                                         colorScheme={
                                             transaction_status === 'Cancelled'
                                                 ? 'red'
-                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                : transaction_status.includes('Confirmation')
                                                     ? 'purple'
-                                                    : transaction_status.includes('Awaiting Payment')
+                                                    : transaction_status === 'Awaiting Payment'
                                                         ? 'blue'
                                                         : 'green'
                                         }
@@ -328,9 +328,9 @@ const TransactionDetailPage = () => {
                                         <p className={`
                                     ${transaction_status === 'Cancelled'
                                                 ? 'text-red-500'
-                                                : transaction_status === 'Awaiting Admin Confirmation'
+                                                : transaction_status.includes('Confirmation')
                                                     ? 'text-purple-500'
-                                                    : transaction_status.includes('Awaiting Payment')
+                                                    : transaction_status === 'Awaiting Payment'
                                                         ? 'text-blue-500'
                                                         : 'text-green-500'}
                                     
@@ -352,9 +352,33 @@ const TransactionDetailPage = () => {
                                 <p className='font-medium pt-3'>Products details :</p>
                                 {
                                     invoice.includes('/CSTM') ?
-                                        <div className='m-4'>
-                                            <img className='w-[100px]' src={`http://localhost:8000${doctor_prescription}`} alt="" />
-                                        </div>
+                                        transaction_status === 'Awaiting Admin Confirmation' ?
+                                            <div className='m-4'>
+                                                <img className='w-[100px]' src={`http://localhost:8000${doctor_prescription}`} alt="" />
+                                            </div>
+                                            :
+                                            detail.map((val, idx) => {
+                                                return (
+                                                    <div key={idx} className='pt-1'>
+                                                        <div className='flex'>
+                                                            <div>
+                                                                {
+                                                                    <img className='w-[100px]' src={val.product_image.includes('http') ? val.product_image : `http://localhost:8000${val.product_image}`} alt="" />
+                                                                }
+                                                            </div>
+                                                            <div className='flex items-center'>
+                                                                <div>
+                                                                    <p>{val.product_name}</p>
+                                                                    <div className='flex'>
+                                                                        <p className='text-[14px] mr-2'>{`${val.quantity} ${val.product_unit} x`}</p>
+                                                                        <p className='text-[14px]'>Rp{val.product_price.toLocaleString('id')},-</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })
                                         :
                                         detail.map((val, idx) => {
                                             return (
@@ -370,7 +394,7 @@ const TransactionDetailPage = () => {
                                                             <div>
                                                                 <p>{val.product_name}</p>
                                                                 <div className='flex'>
-                                                                    <p className='text-[14px] mr-2'>{`${val.quantity} x`}</p>
+                                                                    <p className='text-[14px] mr-2'>{`${val.quantity} ${val.product_unit} x`}</p>
                                                                     <p className='text-[14px]'>Rp{val.product_price.toLocaleString('id')},-</p>
                                                                 </div>
                                                             </div>

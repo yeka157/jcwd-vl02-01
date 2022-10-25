@@ -142,30 +142,40 @@ export default function AdminCategoryPage() {
 				<Tr key={id + idx}>
 					<Td className="text-[rgb(67,67,67)]">{idx + 1}.</Td>
 					<Td className="text-[rgb(67,67,67)]">{val.category_name}</Td>
-					<Td>
+					<Td className='flex justify-end'>
 						<div className="inline">
-							<Tooltip hasArrow label="edit" placement="right" shouldWrapChildren>
-								<AiFillEdit size={17} color="rgb(67,67,67,0.8)" className="cursor-pointer" 
-									onClick={() => {
-										onOpenEditCategory();
-										setSelectedCategory(prev => prev = val.category_name);
-										setSelectedCategoryIndex(prev => prev = val.category_id);
-										getCategoryData();
-									}}
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="teal"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenEditCategory();
+									setSelectedCategory(prev => prev = val.category_name);
+									setSelectedCategoryIndex(prev => prev = val.category_id);
+									getCategoryData();
+								}}
+							>
+								Edit
+							</Button>
 						</div>
 						<div className="inline">
-							<Tooltip hasArrow label="delete" placement="right" shouldWrapChildren>
-								<AiFillDelete size={17} color="rgb(67,67,67,0.8)" className="cursor-pointer ml-5" 
-									onClick={() => {
-										onOpenDeleteConfirmation();
-										setSelectedCategory(prev => prev = val.category_name);
-										setSelectedCategoryIndex(prev => prev = val.category_id);
-										getCategoryData();
-									}} 
-								/>
-							</Tooltip>
+							<Button
+								size={'xs'}
+								colorScheme="red"
+								variant={'outline'}
+								className="mr-2"
+								style={{ borderRadius: '0' }}
+								onClick={() => {
+									onOpenDeleteConfirmation();
+									setSelectedCategory(prev => prev = val.category_name);
+									setSelectedCategoryIndex(prev => prev = val.category_id);
+									getCategoryData();
+								}}
+							>
+								Delete
+							</Button>
 						</div>
 					</Td>
 				</Tr>
@@ -233,8 +243,8 @@ export default function AdminCategoryPage() {
 				<ModalBody pb={2}>
 					<FormControl>
 						<Input
+							borderRadius={0}
 							className="text-borderHijau"
-							borderRadius="md"
 							size="sm"
 							ref={initialRef}
 							placeholder={selectedCategory}
@@ -248,6 +258,7 @@ export default function AdminCategoryPage() {
 
 				<ModalFooter>
 					<Button
+						borderRadius={0}
 						size="sm"
 						colorScheme="teal"
 						mr={3}
@@ -258,7 +269,7 @@ export default function AdminCategoryPage() {
 					>
 						Save
 					</Button>
-					<Button size="sm" onClick={onCloseEditCategory}>
+					<Button borderRadius={0} size="sm" onClick={onCloseEditCategory}>
 						Cancel
 					</Button>
 				</ModalFooter>
@@ -278,6 +289,7 @@ export default function AdminCategoryPage() {
 
 				<ModalFooter>
 					<Button
+						borderRadius={0}
 						size="sm"
 						colorScheme="red"
 						mr={3}
@@ -288,7 +300,11 @@ export default function AdminCategoryPage() {
 					>
 						Delete
 					</Button>
-					<Button size="sm" onClick={onCloseDeleteConfirmation}>
+					<Button 
+						borderRadius={0}
+						size="sm" 
+						onClick={onCloseDeleteConfirmation}
+					>
 						Cancel
 					</Button>
 				</ModalFooter>
@@ -336,7 +352,7 @@ export default function AdminCategoryPage() {
 							<Tr>
 								<Th>No.</Th>
 								<Th>Category Name</Th>
-								<Th>Action</Th>
+								<Th className='flex justify-end mr-10'>Action</Th>
 							</Tr>
 						</Thead>
 						<Tbody>{displayCategoryData()}</Tbody>
