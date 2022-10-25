@@ -7,7 +7,7 @@ export const cartSlice = createSlice({
     initialState,
     reducers : {
         userCart : (state, action) => {
-            console.log('ini action payload:', action.payload);
+            // console.log('ini action payload:', action.payload);
             return action.payload        
         },
         cartLogOut: (state, action) => {

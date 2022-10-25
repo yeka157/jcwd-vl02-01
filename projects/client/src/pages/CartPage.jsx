@@ -7,7 +7,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useToast, Spinner } from '@chakra-ui/react';
 import { FaCartPlus } from "react-icons/fa";
-import { getUser, userLogin } from '../slices/userSlice';
+import { getUser } from '../slices/userSlice';
+import { userCart } from '../slices/cartSlices';
 import { useDispatch, useSelector } from 'react-redux';
 
 const CartPage = (props) => {
@@ -34,7 +35,7 @@ const CartPage = (props) => {
 
             if (resCart.data.succes) {
                 setCartData(resCart.data.cartData);
-                dispatch(userLogin({...user, cart: resCart.data.cartData}));
+                dispatch(userCart(resCart.data.cartData))
                 setLoading(false)
             }
 

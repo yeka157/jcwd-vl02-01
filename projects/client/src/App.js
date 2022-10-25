@@ -19,6 +19,7 @@ import ChangePassword from './pages/ChangePasswordPages';
 import NotFoundPage from './pages/NotFoundPage';
 import NavbarComponent from './components/NavbarComponent';
 import { userAddress } from './slices/addressSlice';
+import { userCart } from "./slices/cartSlices";
 import ProductListPage from './pages/ProductListPage';
 import PrescriptionPage from './pages/PrescriptionPage';
 import CartPage from './pages/CartPage';
@@ -59,6 +60,7 @@ function App() {
           Cookies.set('sehatToken', resUser.data.token, { expires: COOKIE_EXP });
           delete resUser.data.token
           dispatch(userLogin(resUser.data.dataUser));
+          dispatch(userCart(resUser.data.cart))
           setUserData(resUser.data.dataUser);
         }
       }

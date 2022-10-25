@@ -10,11 +10,12 @@ import axios from 'axios';
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux';
 import { getAddress } from '../slices/addressSlice';
+import { getCart } from '../slices/cartSlices';
 import { useNavigate } from 'react-router-dom';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
 import { RiErrorWarningLine } from "react-icons/ri";
 import { useDispatch } from 'react-redux';
-import { userLogin } from '../slices/userSlice';
+import { userCart } from '../slices/cartSlices';
 
 const CheckoutPage = (props) => {
 
@@ -28,11 +29,12 @@ const CheckoutPage = (props) => {
 
     const user = useSelector(getUser);
     const addressList = useSelector(getAddress);
+    const cart = useSelector(getCart)
     const toast = useToast();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    console.log(user);
+    console.log('ini cart:', cart);
 
 
     useEffect(() => {
@@ -154,15 +156,13 @@ const CheckoutPage = (props) => {
             if (resOrder.data.success) {
                 let temp = [];
 
-                user.cart.forEach(val => {
-                    item.forEach(value => {
-                        if (val.cart_id !== value.cart_id) {
-                            temp.push(val);
-                        }
-                    })
+                cart.forEach(val => {
+                    if (val.is_selected === 0) {
+                        temp.push(val);
+                    }
                 });
               
-                dispatch(userLogin({...user, cart: temp}))
+                dispatch(userCart(temp));
                 updateStock();
                 setDisableBtn(false);
                 setBtnSpinner(false);

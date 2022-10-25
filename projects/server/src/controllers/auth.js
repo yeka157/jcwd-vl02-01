@@ -163,12 +163,11 @@ module.exports = {
             if (resUser.length > 0) {
                 let token = createToken({ ...resUser[0] });
 
-                let data = {...resUser[0], cart: cartUser}
-
                 res.status(200).send({
                     success: true,
                     massage: 'Login success',
-                    dataUser: data,
+                    dataUser: resUser[0],
+                    cart: cartUser,
                     token,
                 });
 
@@ -199,16 +198,14 @@ module.exports = {
             if (resUser.length > 0) {
                 let token = createToken({ ...resUser[0] });
 
-                let data = {...resUser[0], cart: cartUser}
-
                 res.status(200).send({
                     success: true,
-                    massage: 'Login success',
-                    dataUser: data,
+                    massage: 'Keep login success',
+                    dataUser: resUser[0],
+                    cart: cartUser,
                     token,
                 });
-
-            } 
+            }
 
         } catch (error) {
             res.status(500).send({
