@@ -1,16 +1,5 @@
-import React, { useState, useRef, useEffect, useId } from 'react';
+import React from 'react';
 import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	Box,
-	Table,
-	Thead,
-	Tbody,
-	Tr,
-	Th,
-	Td,
-	TableContainer,
 	Button,
 	Modal,
 	ModalOverlay,
@@ -19,22 +8,9 @@ import {
 	ModalFooter,
 	ModalBody,
 	ModalCloseButton,
-	useDisclosure,
-	Menu,
-	MenuButton,
-	MenuList,
-	MenuItem,
-	useToast,
-	Badge,
-	Input,
-	NumberInput,
-	NumberInputField,
-	FormControl,
-	FormLabel,
 } from '@chakra-ui/react';
 
 export default function TransactionPreviewComponent({selectedTransaction, isOpen, onClose, initialFocusRef, finalFocusRef}) {
-	console.log(selectedTransaction)
   return (
     <div>
       <Modal isCentered size={'xl'} className="bg-bgWhite" initialFocusRef={initialFocusRef} finalFocusRef={finalFocusRef} isOpen={isOpen} onClose={onClose}>

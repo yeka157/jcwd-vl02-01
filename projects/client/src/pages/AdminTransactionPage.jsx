@@ -67,7 +67,7 @@ export default function AdminTransactionPage() {
 	// VAR
 	const itemsPerPage = 10;
 	const transactionStatus = ['Cancelled', 'Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed', 'Shipped', 'Order Confirmed'];
-	const whiteListedStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment Confirmation'];
+	const whiteListedStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment Confirmation', "Processed"];
 	const whiteListedCancelStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed'];
 	const token = Cookies.get('sehatToken');
 
@@ -109,12 +109,10 @@ export default function AdminTransactionPage() {
 	};
 
 	const btnSubmitDateRange = () => {
-		if (!dateRange.from || !dateRange.to) {
-			console.log('wrong format');
-		} else {
+		if (dateRange.from || dateRange.to) {
 			setFilters((prev) => (prev = { ...prev, from: dateRange.from, to: dateRange.to }));
 			onCloseSelectDate();
-		}
+		} 
 	};
 
 	const getTotalData = async () => {
@@ -141,7 +139,7 @@ export default function AdminTransactionPage() {
 				return 'purple';
 				break;
 			case 'Processed':
-				return 'blue';
+				return 'purple';
 				break;
 			case 'Cancelled':
 				return 'red';
@@ -467,7 +465,7 @@ export default function AdminTransactionPage() {
 		<div>
 			{
 				selectedTransaction?.transaction_status === 'Awaiting Payment Confirmation' && (
-					<div>
+					<>
 						<Box className='border border-gray-300'>
 							<div className='flex justify-center align-middle my-5'>
 								<a href={`http://localhost:8000${selectedTransaction?.payment_proof}`} target="_blank">
@@ -500,7 +498,27 @@ export default function AdminTransactionPage() {
 								Reject
 							</Button>
 						</div>
-					</div>
+					</>
+				)
+			}
+			{
+				selectedTransaction?.transaction_status === 'Processed' && (
+					<>
+						<h1 className='text-sm text-center font-bold mt-5 text-borderHijau'>ORDER INVOICE {selectedTransaction.invoice} IS READY TO SHIP</h1>
+						<div className='flex justify-center mt-5'>
+							<Button className='mr-2' borderRadius={0} colorScheme={'teal'} size="sm" 
+								onClick={() => {
+									updateTransactionStatus('confirm');
+									let temp = transactionList;
+									temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Shipped'});
+									setTransactionList((prev) => prev = temp);
+									onCloseModalAction();
+								}}
+							>
+								Continue to shipping process
+							</Button>
+						</div>
+					</>
 				)
 			}
 		</div>
@@ -518,58 +536,59 @@ export default function AdminTransactionPage() {
 				<ModalFooter>
 					{
 						selectedTransaction?.doctor_prescription && selectedTransaction?.transaction_status === 'Awaiting Admin Confirmation' ? (
-							<Button
-								borderRadius={0}
-								className="mr-3"
-								colorScheme={'teal'}
-								size="sm"
-								onClick={() => {
-									console.log(ingredientsList);
-									let promise = [];
-									const handleDoctorPrescription = async () => {
-										for (let i = 0; i < ingredientsList.length; i++) {
-											promise.push(
-												await axios.patch(`http://localhost:8000/api/transaction/confirm_prescription/${ingredientsList[i]?.productDetails.product_id}`, ingredientsList[i], {
-													headers: {
-														Authorization: `Bearer ${token}`,
-													},
-												})
-											);
-										}
-										await Promise.all(promise);
-									};
-									const resolvePromise = async () => {
-										await handleDoctorPrescription();
-									};
+							<>
+								<Button
+									borderRadius={0}
+									className="mr-3"
+									colorScheme={'teal'}
+									size="sm"
+									onClick={() => {
+										let promise = [];
+										const handleDoctorPrescription = async () => {
+											for (let i = 0; i < ingredientsList.length; i++) {
+												promise.push(
+													await axios.patch(`http://localhost:8000/api/transaction/confirm_prescription/${ingredientsList[i]?.productDetails.product_id}`, ingredientsList[i], {
+														headers: {
+															Authorization: `Bearer ${token}`,
+														},
+													})
+												);
+											}
+											await Promise.all(promise);
+										};
+										const resolvePromise = async () => {
+											await handleDoctorPrescription();
+										};
 
-									const updateTotalPurchase = async () => {
-										await axios.patch(`http://localhost:8000/api/transaction/update_total_purchase/${selectedTransaction?.transaction_id}`, 
-										{
-											total_purchase: countTotalPurchase()
-										}, 
-										{
-											headers: {
-												Authorization: `Bearer ${token}`,
-											},
-										})
-									};
-									
-									resolvePromise();
-									updateTotalPurchase();
-									onCloseModalAction();
-									let temp = transactionList;
-									temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase()});
-									setTransactionList((prev) => prev = temp);
-								}}
-							>
-								Confirm Order
-							</Button>
+										const updateTotalPurchase = async () => {
+											await axios.patch(`http://localhost:8000/api/transaction/update_total_purchase/${selectedTransaction?.transaction_id}`, 
+											{
+												total_purchase: countTotalPurchase()
+											}, 
+											{
+												headers: {
+													Authorization: `Bearer ${token}`,
+												},
+											})
+										};
+										
+										resolvePromise();
+										updateTotalPurchase();
+										onCloseModalAction();
+										let temp = transactionList;
+										temp.splice(selectedTransactionIndex, 1, {...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase()});
+										setTransactionList((prev) => prev = temp);
+									}}
+								>
+									Confirm Order
+								</Button>
+								<Button borderRadius={0} size="sm" onClick={onCloseModalAction}>
+									Close
+								</Button>
+							</>
 						)
 						: ''
 					}
-					<Button borderRadius={0} size="sm" onClick={onCloseModalAction}>
-						Close
-					</Button>
 				</ModalFooter>
 			</ModalContent>
 		</Modal>
@@ -673,6 +692,7 @@ export default function AdminTransactionPage() {
 			getTransactions();
 			getTotalData();
 		}
+		getTransactions();
 	}, [filters]);
 
 	return (
