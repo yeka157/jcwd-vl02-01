@@ -192,6 +192,7 @@ module.exports = {
 				count: resCount[0].count,
 				massage: 'Get data success',
 			});
+			
 		} catch (error) {
 			console.log(error);
 			res.status(500).send({ success: false, message: error });

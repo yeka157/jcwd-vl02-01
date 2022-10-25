@@ -155,13 +155,20 @@ module.exports = {
             WHERE ${credential.includes('@' && '.co') ? `email = ${dbConf.escape(credential)}` : `username = ${dbConf.escape(credential)}`}
             AND password = ${dbConf.escape((hashPassword(password)))};`);
 
+            let cartUser = await dbQuery(`SELECT c.cart_id, p.default_unit, c.product_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, c.is_selected, c.quantity from carts c
+            JOIN products p ON p.product_id = c.product_id
+            JOIN stock s ON s.product_id = c.product_id
+            WHERE c.user_id = ${resUser[0].user_id};`)
+
             if (resUser.length > 0) {
                 let token = createToken({ ...resUser[0] });
+
+                let data = {...resUser[0], cart: cartUser}
 
                 res.status(200).send({
                     success: true,
                     massage: 'Login success',
-                    dataUser: resUser[0],
+                    dataUser: data,
                     token,
                 });
 
@@ -184,18 +191,24 @@ module.exports = {
     keepLogin: async (req, res) => {
         try {
             let resUser = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status, birthdate, gender, profile_picture from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
+            let cartUser = await dbQuery(`SELECT c.cart_id, p.default_unit, c.product_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, c.is_selected, c.quantity from carts c
+            JOIN products p ON p.product_id = c.product_id
+            JOIN stock s ON s.product_id = c.product_id
+            WHERE c.user_id = ${req.dataToken.user_id};`)
 
             if (resUser.length > 0) {
                 let token = createToken({ ...resUser[0] });
 
+                let data = {...resUser[0], cart: cartUser}
 
                 res.status(200).send({
                     success: true,
-                    massage: 'Keep login success',
-                    dataUser: resUser[0],
+                    massage: 'Login success',
+                    dataUser: data,
                     token,
                 });
-            }
+
+            } 
 
         } catch (error) {
             res.status(500).send({
