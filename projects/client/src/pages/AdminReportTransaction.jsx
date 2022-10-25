@@ -52,25 +52,33 @@ export default function AdminReportTransaction() {
     Tooltip,
     Legend
   );
-  const yLabels = {
-    150000: `Rp150.000,-`,
-    200000: "Rp200.000,-",
-    1000000: "Rp1.000.000,-",
-    500000: "Rp500.000,-",
-    250000: "Rp250.000,-",
-    50000: "Rp50.000,-",
-  };
-  const data = {
-    labels: ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"],
-    datasets: [
-      {
-        label: "Sales",
-        data: [150000, 200000, 1000000, 500000, 250000, 50000, 150000],
-        borderColor: "rgb(255,99,132)",
-        backgroundColor: "rgba(255,99,132,0.5)",
+  const options = {responsive: true,
+  plugins : {
+    title: {
+      display: true,
+      text: "Transaction Report",
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: "Total Sales (in Rp)",
       },
-    ],
-  };
+      // ticks: {
+      //   callback: function (value, index, values) {
+      //     return yLabels[value];
+      //   },
+      // },
+    },
+    x: {
+      title: {
+        display: true,
+        text: "Date",
+      },
+    },
+  }}
   const [filters, setFilters] = React.useState({
     date_from: "",
     date_to: "",
@@ -78,18 +86,83 @@ export default function AdminReportTransaction() {
     order: "",
   });
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [totalData, setTotalData] = React.useState(0);
   const [dateFrom, setDateFrom] = React.useState("");
   const [dateTo, setDateTo] = React.useState("");
   const [dataChart, setDataChart] = React.useState([]);
+  const [labelChart, setLabelChart] = React.useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnClosePopover = async () => {};
-  const resetFilter = async () => {};
+
+  const btnClosePopover = async () => {
+    try {
+      if (dateFrom && dateTo) {
+        if (dateFrom >= dateTo) {
+          setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+          //toast
+        } else {
+          setCurrentPage((prev) => (prev = 1));
+          setFilters((prev) => ({...prev, date_from : dateFrom, date_to : dateTo}));
+        }
+      } else {
+        setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+      }
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const resetFilter = async () => {
+    try {
+      setFilters((prev) => (prev = {date_from : '', date_to : '', sort : '', order : ''}));
+      setCurrentPage((prev) => prev = 1);
+      getData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getTotalData = async () => {
+    try {
+      let total = await Axios.get(API_URL + `/admin/total_report?report=transaction`);
+      setTotalData((prev) => prev = total.data.count);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const getData = async () => {
     try {
+      if (!filters.date_from && !filters.date_to && filters.sort && filters.order) {
+        let temp = [];
+        for (let filter in filters) {
+          if (filters[filter] !== '') {
+            temp.push(`${filter}=${filters[filter]}`);
+          }
+        }
+        const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
+        if (result.data.note === 'data found') {
+          setDataChart((prev) => (prev = result.data.dataMap));
+          setLabelChart((prev) => (prev = result.data.data));
+          return;
+        }
+      }
+      if (filters.date_from || filters.date_to || filters.sort || filters.order) {
+        let temp = [];
+        for (let filter in filters) {
+          if (filters[filter] !== '') {
+            temp.push(`${filter}=${filters[filter]}`);
+          }
+        }
+        const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
+        if (result.data.note === 'data found') {
+          setDataChart((prev) => (prev = result.data.dataMap));
+          setLabelChart((prev) => (prev = result.data.data));
+          return;
+        }
+      }
       let getRes = await Axios.get(API_URL + "/admin/get_transaction_report");
-      setDataChart((prev) => (prev = getRes.data));
-      console.log(getRes);
-      console.log(dataChart);
+      if (getRes.data.note === 'data found') {
+        setDataChart((prev) => (prev = getRes.data.dataMap));
+        setLabelChart((prev) => (prev = getRes.data.data));
+      }
     } catch (error) {
       console.log(error);
     }
@@ -97,7 +170,23 @@ export default function AdminReportTransaction() {
 
   React.useEffect(() => {
     getData();
-  }, []);
+  }, [currentPage]);
+
+  React.useEffect(() => {
+    if (filters.date_from || filters.date_to) {
+      setTotalData((prev) => prev = dataChart.length);
+    }
+  }, [dataChart, filters.date_from, filters.date_to]);
+
+  React.useEffect(() => {
+    if (filters.date_from === '' && filters.date_to === '' && filters.sort === '' && filters.order === '') {
+      getTotalData();
+      getData();
+    } else {
+      getData();
+    }
+  }, [filters]);
+
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
@@ -130,38 +219,14 @@ export default function AdminReportTransaction() {
       </div>
       {/* Chart */}
       <div className="mt-3">
+        {Object.keys(labelChart).length > 0 &&
         <Line
-          options={{
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: "Total Sales (in Rp)",
-                },
-                ticks: {
-                  callback: function (value, index, values) {
-                    return yLabels[value];
-                  },
-                },
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: "Date",
-                },
-              },
-            },
-            title: {
-              display: true,
-              text: "Transaction Report",
-            },
-          }}
-          data={data}
+          options={options}
+          data={labelChart}
           height={"80%"}
           redraw={true}
         />
+        }
       </div>
       <div className="container mx-auto lg:mt-3 text-[rgb(49,53,65,0.75)] lg:grid justify-items-end ">
         <div className="space-x-3">
@@ -329,7 +394,7 @@ export default function AdminReportTransaction() {
             <Tbody>
               {dataChart.map((val, idx) => {
                 return (
-                  <Tr>
+                  <Tr key={idx+1}>
                     <Td>{idx + 1}</Td>
                     <Td>
                       {new Date(val.date).toLocaleDateString("en-GB", {

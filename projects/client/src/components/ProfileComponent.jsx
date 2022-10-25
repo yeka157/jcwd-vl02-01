@@ -168,6 +168,9 @@ export default function ProfileComponent(props) {
 		}
 	}, [email, props.email, usersData]);
 
+  React.useEffect(() => {
+    getData();
+  }, []);
 
 	const getData = async () => {
 		try {
