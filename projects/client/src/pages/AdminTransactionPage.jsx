@@ -232,7 +232,6 @@ export default function AdminTransactionPage() {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-
 			setTransactionList((prev) => (prev = result.data.transactions));
 			setTotalData((prev) => (prev = result.data.count));
 		} catch (error) {
