@@ -40,24 +40,7 @@ export default function TransactionListPage() {
     const [loading, setLoading] = useState(true);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const itemsPerPage = 4;
-
-
-    const getTotalData = async () => {
-        try {
-            const token = Cookies.get('sehatToken')
-
-            const totalData = await axios.get(`${API_URL}/transaction/count`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            setTotalData((prev) => (prev = totalData.data.total_data));
-        } catch (error) {
-
-        }
-    }
+    const itemsPerPage = 7;
 
     const getTransactions = async () => {
         try {
@@ -78,6 +61,7 @@ export default function TransactionListPage() {
                     }
                 });
                 setTransactionList((prev) => (prev = result.data.transactions));
+                setTotalData((prev) => (prev = result.data.count));
                 setLoading(false);
                 return;
             };
@@ -97,6 +81,7 @@ export default function TransactionListPage() {
                 });
                 if (result.data.success) {
                     setTransactionList((prev) => (prev = result.data.transactions));
+                    setTotalData((prev) => (prev = result.data.count));
                     setLoading(false);
                 }
 
@@ -110,6 +95,7 @@ export default function TransactionListPage() {
             });
 
             setTransactionList((prev) => (prev = result.data.transactions));
+            setTotalData((prev) => (prev = result.data.count));
             setLoading(false);
 
         } catch (error) {
@@ -137,15 +123,8 @@ export default function TransactionListPage() {
     }, [currentPage]);
 
     useEffect(() => {
-        if (filters.invoice || filters.transaction_status || filters.from || filters.to) {
-            setTotalData((prev) => (prev = transactionList.length));
-        }
-    }, [transactionList])
-
-    useEffect(() => {
         if (filters.invoice == '' && filters.transaction_status == '' && filters.from == '' && filters.to == '' && filters.sort == '' && filters.order == '') {
             getTransactions();
-            getTotalData();
             return;
         };
 
