@@ -6,6 +6,8 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { useNavigate } from 'react-router-dom';
+import { ImHistory } from 'react-icons/im';
+import { VscGraphLine } from 'react-icons/vsc';
 
 export default function AdminReportPage() {
     const navigate = useNavigate();
@@ -31,17 +33,18 @@ export default function AdminReportPage() {
         </Breadcrumb>
       </div>
 
-      <div className="container mx-auto mt-[5vh] justify-center items-center content-center flex flex-col lg:flex-row space-y-5 lg:space-y-0">
+      <div className="container mx-auto mt-[5vh] justify-evenly items-center content-center flex flex-col lg:flex-row space-y-5 lg:space-y-0">
         <Box
           w="xs"
           borderWidth="1px"
           overflow="hidden"
           fontWeight="semibold"
           lineHeight="tight"
-          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer min-h-[50vh] flex flex-col items-center justify-center space-y-5"
           onClick={() => navigate('/admin/report/stock')}
         >
             <h1>Stock History</h1>
+            <ImHistory className="w-8 h-auto"/>
         </Box>
         <Box
           w="xs"
@@ -49,10 +52,11 @@ export default function AdminReportPage() {
           overflow="hidden"
           fontWeight="semibold"
           lineHeight="tight"
-          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer min-h-[50vh] flex flex-col items-center justify-center space-y-5"
           onClick={() => navigate('/admin/report/sales')}
         >
             <h1>Sales Report</h1>
+            <VscGraphLine className="w-8 h-auto"/>
         </Box>
       </div>
     </div>
