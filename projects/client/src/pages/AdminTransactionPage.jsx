@@ -110,11 +110,15 @@ export default function AdminTransactionPage() {
 		const handleStockRecovery = async () => {
 			for (let i = 0; i < transaction_detail?.length; i++) {
 				promise.push(
-					await axios.patch(`${API_URL}/transaction/stock_recovery/${transaction_detail[i]?.product_id}`, {data: transaction_detail[i]}, {
-						headers: {
-							Authorization: `Bearer ${token}`,
-						},
-					})
+					await axios.patch(
+						`${API_URL}/transaction/stock_recovery/${transaction_detail[i]?.product_id}`,
+						{ data: transaction_detail[i] },
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						}
+					)
 				);
 			}
 			await Promise.all(promise);
@@ -198,6 +202,7 @@ export default function AdminTransactionPage() {
 					},
 				});
 				setTransactionList((prev) => (prev = result.data.transactions));
+				setTotalData((prev) => (prev = result.data.count));
 				return;
 			}
 
@@ -216,6 +221,7 @@ export default function AdminTransactionPage() {
 				});
 				if (result.data.success) {
 					setTransactionList((prev) => (prev = result.data.transactions));
+					setTotalData((prev) => (prev = result.data.count));
 				}
 
 				return;
@@ -228,15 +234,19 @@ export default function AdminTransactionPage() {
 			});
 
 			setTransactionList((prev) => (prev = result.data.transactions));
+			setTotalData((prev) => (prev = result.data.count));
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	const maxStockAvailable = (unit) => {
+	const maxStockAvailable = (unit, display) => {
 		let conversionUnit = ['Tablet', 'Kapsul', 'Milliliter'];
 		if (!conversionUnit.includes(unit)) {
 			return productStock[0]?.product_stock;
+		}
+		if (display) {
+			return productStock[0]?.product_conversion_stock;
 		}
 		return productStock[0]?.product_conversion_stock + productStock[0]?.product_netto * productStock[0]?.product_stock;
 	};
@@ -375,13 +385,20 @@ export default function AdminTransactionPage() {
 			{productInputList.length > 0 && (
 				<>
 					<hr className="mt-2" />
-					<h1 className={`text-red-500 text-xs text-center my-2 ${isProductInserted() || ingredients?.quantity <= maxStockAvailable(ingredients?.product_unit) ? 'hidden' : ''}`}>
+					<h1
+						className={`text-red-500 text-xs text-center my-2 ${
+							(ingredients?.quantity !== 0 && isProductInserted()) || ingredients?.quantity <= maxStockAvailable(ingredients?.product_unit) ? 'hidden' : ''
+						}`}
+					>
 						Insufficient stock: {maxStockAvailable(ingredients?.product_unit) + ' ' + ingredients?.product_unit + ' left'}
 					</h1>
-					<h1 className={`text-red-500 text-xs text-center my-2 ${!isProductInserted() ? 'hidden' : ''}`}>Product is already on the list!</h1>
-					<h1 className={`text-gray-500 text-xs text-center my-2 ${isProductInserted() || ingredients?.quantity > maxStockAvailable(ingredients?.product_unit) ? 'hidden' : ''}`}>
-						Available stock : {maxStockAvailable(ingredients?.product_unit) + ' ' + ingredients?.product_unit}
-					</h1>
+					{ingredients?.quantity < maxStockAvailable(ingredients?.product_unit) && !isProductInserted() ? (
+						<h1 className={`text-gray-500 text-xs text-center my-2`}>Available stock : {maxStockAvailable(ingredients?.product_unit, true) + ' ' + ingredients?.product_unit}</h1>
+					) : isProductInserted() && ingredientsList?.length > 0 ? (
+						<h1 className={`text-red-500 text-xs text-center my-2`}>Product is already on the list!</h1>
+					) : (
+						''
+					)}
 					<hr />
 				</>
 			)}
@@ -623,7 +640,6 @@ export default function AdminTransactionPage() {
 									let temp = transactionList;
 									temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase() });
 									setTransactionList((prev) => (prev = temp));
-									getTransactions();
 								}}
 							>
 								Confirm Order
@@ -717,12 +733,10 @@ export default function AdminTransactionPage() {
 				<ModalHeader fontSize="md">Cancel order</ModalHeader>
 				<ModalCloseButton />
 				<ModalBody pb={2}>
-					<h1 className='text-sm font-semibold text-center mb-5'>
-						Cancel order {transactionList[selectedTransactionIndex]?.invoice}?
-					</h1>
-					<div className='flex justify-center my-5'>
+					<h1 className="text-sm font-semibold text-center mb-5">Cancel order {transactionList[selectedTransactionIndex]?.invoice}?</h1>
+					<div className="flex justify-center my-5">
 						<Button
-							className='flex'
+							className="flex"
 							borderRadius={0}
 							size="sm"
 							colorScheme="red"
