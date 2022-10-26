@@ -40,7 +40,7 @@ export default function AdminReportPage() {
           overflow="hidden"
           fontWeight="semibold"
           lineHeight="tight"
-          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer min-h-[50vh] flex flex-col items-center justify-center space-y-5"
+          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer min-h-[50vh] min-w-[20vw] flex flex-col items-center justify-center space-y-5"
           onClick={() => navigate('/admin/report/stock')}
         >
             <h1>Stock History</h1>
@@ -52,7 +52,7 @@ export default function AdminReportPage() {
           overflow="hidden"
           fontWeight="semibold"
           lineHeight="tight"
-          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer min-h-[50vh] flex flex-col items-center justify-center space-y-5"
+          className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer min-h-[50vh] min-w-[20vw] flex flex-col items-center justify-center space-y-5"
           onClick={() => navigate('/admin/report/sales')}
         >
             <h1>Sales Report</h1>

@@ -22,7 +22,6 @@ export default function ProductDetailsPage() {
   const [skeleton, setSkeleton] = React.useState(true);
   const [query, setQuery] = React.useState(0);
 
-  console.log(data);
 
   const getStock = React.useCallback(
     async(id) => {
@@ -122,13 +121,22 @@ export default function ProductDetailsPage() {
     }, 1500);
   }, []);
 
+  React.useEffect(() => {
+    console.log(data);
+    // if (data.product_image.includes('imgProduct')) {
+    //   console.log(true);
+    // } else {
+    //   console.log(false);
+    // }
+  }, [data]);
+
   return (
     <div className="bg-bgWhite">
       <div className="max-w-[1400px] mx-auto border-borderHijau border-x min-h-[50vh]">
         <div className="px-5 py-4 lg:flex lg:justify-between">
           <div className="w-[75%] h-[60%]">
-          <img
-            src={data.product_image}
+            <img
+            src={data.product_image?.includes('imgProduct') ? `http://localhost:8000/${data.product_image}` : data.product_image}
             alt="obat-img"
             className=""
           />

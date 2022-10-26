@@ -23,7 +23,6 @@ export default function RecommendedComponent(props) {
 
     React.useEffect(() => {
         if (!arrNum.length) {
-            console.log("test");
             selectRandomProduct();
         }
     }, [arrNum]);

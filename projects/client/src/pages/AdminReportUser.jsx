@@ -40,6 +40,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import Pagination from "../components/Pagination";
 
 export default function AdminReportUser() {
   ChartJS.register(
@@ -85,6 +86,7 @@ export default function AdminReportUser() {
         }
       }
     }}
+  const itemsPerPage = 10;
   const btnClosePopover = async () => {
     try {
       if (dateFrom && dateTo) {
@@ -116,8 +118,8 @@ export default function AdminReportUser() {
 
   const getTotalData = async () => {
     try {
-      let total = await Axios.get(API_URL + '/admin/total_report?report=user');
-      setTotalData((prev) => prev = total.data.count);
+      let total = await Axios.get(API_URL + '/admin/get_user_table');
+      setTotalData((prev) => prev = total.data.length);
     } catch (error) {
       console.log(error);
     }
@@ -134,9 +136,10 @@ export default function AdminReportUser() {
         }
         console.log(temp.join('&'));
         const result = await Axios.get(API_URL + `/admin/get_user_report?${temp.join('&')}`);
+        const dataTable = await Axios.get(API_URL + `/admin/get_user_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage -1)}&${temp.join("&")}`);
         console.log(result.data);
         if (result.data.found) {
-          setDataChart((prev) => (prev = result.data.dataMap));
+          setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         } else {
@@ -151,8 +154,9 @@ export default function AdminReportUser() {
           }
         }
         const result = await Axios.get(API_URL + `/admin/get_user_report?${temp.join('&')}`);
+        const dataTable = await Axios.get(API_URL + `/admin/get_user_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage -1)}&${temp.join("&")}`);
         if (result.data.found) {
-          setDataChart((prev) => (prev = result.data.dataMap));
+          setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         } else {
@@ -160,8 +164,9 @@ export default function AdminReportUser() {
         }
       }
       let getRes = await Axios.get(API_URL + "/admin/get_user_report");
+      const dataTable = await Axios.get(API_URL + `/admin/get_user_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage -1)}`);
       if (getRes.data.found) {
-        setDataChart(getRes.data.dataMap);
+        setDataChart(dataTable.data.dataMap);
         setLabelChart(getRes.data.data);
       } else {
         //toast data not found
@@ -418,6 +423,7 @@ export default function AdminReportUser() {
           </Table>
         </TableContainer>
       </div>
+      <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     </div>
   );
 }

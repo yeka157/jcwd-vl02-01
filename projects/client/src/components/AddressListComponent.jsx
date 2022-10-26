@@ -35,6 +35,7 @@ export default function AddressListComponent(props) {
   const [dataCity, setDataCity] = React.useState([]);
   const [provinceId, setProvinceId] = React.useState("");
   const [cityId, setCityId] = React.useState(props.city_id);
+  const [receiver, setReceiver] = React.useState(props.receiver);
   const cancelRef = React.useRef();
   const toast = useToast();
   const dispatch = useDispatch();
@@ -99,7 +100,8 @@ export default function AddressListComponent(props) {
           city : editCity,
           city_id : cityId,
           address_detail : editAddress,
-          district : editDistrict
+          district : editDistrict,
+          receiver
         }, {
           headers : {
             'Authorization' : `Bearer ${token}`
@@ -142,8 +144,7 @@ export default function AddressListComponent(props) {
     }
   }
   React.useEffect(() => {
-    // getDataProvince();
-    // console.log(props.city_id);
+    console.log(props.receiver);
   }, []);
 
   return (
@@ -204,6 +205,14 @@ export default function AddressListComponent(props) {
             </FormControl>
           </Td>
           <Td className='px-1'>
+            <FormControl>
+              <Input
+                defaultValue={props.receiver}
+                onChange={(e) => setReceiver(e.target.value)}
+              />
+            </FormControl>
+          </Td>
+          <Td className='px-1'>
             <div className="flex space-x-3">
               <MdCancel onClick={() => setSelectedEdit(0)} className='h-9 hoverIcons font-medium text-red-600'/>
               <MdSave className="h-9 hoverIcons font-medium text-blue-500" onClick={() => btnSave(selectedEdit)}/>
@@ -217,6 +226,7 @@ export default function AddressListComponent(props) {
           <Td className='px-1'>{props.city}</Td>
           <Td className='px-1'>{props.district}</Td>
           <Td className='px-1'>{props.address}</Td>
+          <Td className="px-1">{props.receiver ? props.receiver : '-'}</Td>
           <Td className='px-1'>
             <div className="flex space-x-3">
               <FiEdit
@@ -279,9 +289,9 @@ export default function AddressListComponent(props) {
       <Td className='px-1'>
         {/* Main address button */}
         {props.main ? 
-        <ButtonComponent text='Main Address' class='border border-borderHijau rounded-full cursor-default text-black disabled' brightness='100' py='2' px='1'/>
+        <ButtonComponent text='Main Address' class='border border-borderHijau  w-full rounded-xl cursor-default text-black disabled' brightness='100' py='2' px='1'/>
         : 
-        <ButtonComponent text='Set Main Address' class='border border-borderHijau rounded-full hover:bg-hijauBtn hover:text-white text-black' brightness='90' py='2' px='1' onclick={() => btnSetMainAddress(props.id)}/>
+        <ButtonComponent text='Set Main Address' class='border border-borderHijau w-full rounded-xl hover:bg-hijauBtn hover:text-white text-black' brightness='90' py='2' px='1' onclick={() => btnSetMainAddress(props.id)}/>
         }
       </Td>
     </Tr>
