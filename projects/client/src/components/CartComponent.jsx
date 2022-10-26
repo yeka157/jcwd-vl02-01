@@ -20,7 +20,7 @@ import {
 
 const CartComponent = (props) => {
 
-    const [selected, setSelected] = ([]);
+    const [selected, setSelected] = useState([]);
 
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure()
@@ -75,8 +75,8 @@ const CartComponent = (props) => {
 
             if (resDelete.data.succes) {
                 props.getData();
+                setSelected([]);
                 onClose();
-                setSelected('');
             }
 
         } catch (error) {
@@ -112,7 +112,7 @@ const CartComponent = (props) => {
                 </div>
 
                 <div className='lg:w-[180px] w-[75px] mx-4'>
-                <img src={props.data.product_image.includes('http') ? props.data.product_image : `http://localhost:8000$/{props.data.product_image}`} alt="" />
+                    <img src={props.data.product_image.includes('http') ? props.data.product_image : `http://localhost:8000$/{props.data.product_image}`} alt="" />
                 </div>
 
                 <div className='flex items-center w-[300px] lg:w-[220px]'>
@@ -143,7 +143,7 @@ const CartComponent = (props) => {
                                     </ModalBody>
                                     <ModalFooter>
                                         <Button className='mx-2' colorScheme={'red'} onClick={btnDelete}>Delete</Button>
-                                        <Button onClick={() => { setSelected(props.data) }}>Close</Button>
+                                        <Button onClick={() => { setSelected([]); onClose(); }}>Close</Button>
                                     </ModalFooter>
                                 </ModalContent>
                             </Modal>

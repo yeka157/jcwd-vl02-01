@@ -72,8 +72,11 @@ const RegisterPage = () => {
 
     }, [username]);
 
+    console.log(usersData);
+
     useEffect(() => {
-        let findPhoneNumber = usersData.findIndex(val => val.phone_number === phoneNumber);
+        let findPhoneNumber = usersData.findIndex(val => val.phone_number == phoneNumber);
+        console.log(findPhoneNumber);
 
         if (phoneNumber) {
             if (phoneNumber.length > 9) {

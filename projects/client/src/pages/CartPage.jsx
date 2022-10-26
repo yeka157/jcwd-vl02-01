@@ -7,6 +7,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useToast, Spinner } from '@chakra-ui/react';
 import { FaCartPlus } from "react-icons/fa";
+import { getUser } from '../slices/userSlice';
+import { userCart } from '../slices/cartSlices';
+import { useDispatch, useSelector } from 'react-redux';
 
 const CartPage = (props) => {
 
@@ -14,9 +17,11 @@ const CartPage = (props) => {
 
     const [cartData, setCartData] = useState([]);
     const [loading, setLoading] = useState(true)
-    const navigate = useNavigate();
-    const toast = useToast();
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const toast = useToast();
+    const user = useSelector(getUser);
 
     const getCartData = async () => {
         try {
@@ -30,6 +35,7 @@ const CartPage = (props) => {
 
             if (resCart.data.succes) {
                 setCartData(resCart.data.cartData);
+                dispatch(userCart(resCart.data.cartData))
                 setLoading(false)
             }
 
