@@ -127,9 +127,15 @@ const CartPage = (props) => {
                                 </div>
                         }
 
-                        <div className='mt-[120px]'>
-                            <Pagination getProductData={getCartData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-                        </div>
+                        {
+                            cartData.length > 0 ?
+                                <Pagination getProductData={getCartData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                                :
+                                null
+                        }
+
+
+
 
                     </div>
 
