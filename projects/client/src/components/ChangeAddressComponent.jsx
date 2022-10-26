@@ -32,6 +32,7 @@ const ChangeAddressComponent = (props) => {
     const [city, setCity] = useState('');
     const [cityId, setCityId] = useState('');
     const [district, setDistrict] = useState('');
+    const [receiver, setReceiver] = useState('');
     const [addressDetail, setAddressDetail] = useState('');
     const [addAddressToggle, setAddAddressToggle] = useState(false);
 
@@ -95,7 +96,8 @@ const ChangeAddressComponent = (props) => {
                     city,
                     city_id: cityId,
                     address_detail: addressDetail,
-                    district
+                    district,
+                    receiver
                 }, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -192,6 +194,10 @@ const ChangeAddressComponent = (props) => {
                     <FormControl>
                         <FormLabel>Details</FormLabel>
                         <Input placeholder='Address details' onChange={(e) => setAddressDetail(e.target.value)} />
+                    </FormControl>
+                    <FormControl className='mt-2'>
+                        <FormLabel>Receiver</FormLabel>
+                        <Input placeholder='Receiver name' onChange={(e) => setReceiver(e.target.value)} />
                     </FormControl>
                 </ModalBody>
                 <ModalFooter className='space-x-3'>

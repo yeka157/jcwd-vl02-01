@@ -152,7 +152,7 @@ const CartComponent = (props) => {
 
                     <div className='hidden lg:flex items-center w-[200px] lg:w-[400px] mx-[12px]'>
                         <div>
-                            <p className='font-bold text-hijauBtn'>RP{(props.data.product_price * props.data.quantity).toLocaleString('id')},-</p>
+                            <p className='font-bold text-hijauBtn'>Rp{(props.data.product_price * props.data.quantity).toLocaleString('id')},-</p>
                         </div>
                     </div>
 

@@ -72,7 +72,6 @@ const RegisterPage = () => {
 
     }, [username]);
 
-    console.log(usersData);
 
     useEffect(() => {
         let findPhoneNumber = usersData.findIndex(val => val.phone_number == phoneNumber);
