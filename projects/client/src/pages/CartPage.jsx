@@ -51,8 +51,13 @@ const CartPage = (props) => {
     }
 
     useEffect(() => {
+        if (totalData < 5 ) {
+            setCurrentPage(1);
+            getCartData();
+            return;
+        }
         getCartData();
-    }, [currentPage]);
+    }, [currentPage, totalData]);
 
     const printTotalPurchase = () => {
         let total = 0;
@@ -107,7 +112,7 @@ const CartPage = (props) => {
                                         {
                                             cartData.map((val, idx) => {
                                                 return (
-                                                    <CartComponent key={idx} data={val} getData={getCartData} cart={cartData} />
+                                                    <CartComponent key={idx} data={val} getData={getCartData} cart={cartData} totalData={totalData} setCurrentPage={setCurrentPage}/>
                                                 )
                                             })
                                         }
@@ -128,7 +133,7 @@ const CartPage = (props) => {
                         }
 
                         {
-                            cartData.length > 0 ?
+                            totalData > 0 ?
                                 <Pagination getProductData={getCartData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
                                 :
                                 null

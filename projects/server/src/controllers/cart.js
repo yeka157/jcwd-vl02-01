@@ -34,13 +34,7 @@ module.exports = {
     chekItem: async (req, res) => {
         try {
 
-            let resCart = await dbQuery(`SELECT * from carts WHERE cart_id = ${req.params.cart_id}`);
-
-            if (resCart[0].is_selected == 0) {
-                await dbQuery(`UPDATE carts c SET is_selected = 1 WHERE cart_id = ${req.params.cart_id};`);
-            } else {
-                await dbQuery(`UPDATE carts c SET is_selected = 0 WHERE cart_id = ${req.params.cart_id};`);
-            };
+            await dbQuery(`UPDATE carts SET is_selected = ${req.body.status}  WHERE cart_id = ${req.params.cart_id};`);
 
             res.status(200).send({
                 succes: true,
@@ -130,21 +124,21 @@ module.exports = {
             })
         }
     },
-    addCart: async (req, res) => {
+    addCart : async (req,res) => {
         try {
             let get = await dbQuery(`Select * from carts WHERE product_id = ${dbConf.escape(req.body.product_id)} AND user_id = ${req.dataToken.user_id};`);
             if (get.length > 0) {
                 let update = await dbQuery(`UPDATE carts c SET quantity = c.quantity + ${dbConf.escape(req.body.quantity)} WHERE c.product_id = ${dbConf.escape(req.body.product_id)} AND c.user_id = ${req.dataToken.user_id};`);
                 let getNew = await dbQuery(`Select * from carts WHERE product_id = ${dbConf.escape(req.body.product_id)} AND user_id = ${req.dataToken.user_id};`);
-                res.status(200).send({ success: true, message: "Success", cart: getNew });
+                res.status(200).send({success : true, message : "Success", cart : getNew});
             } else {
                 let add = await dbQuery(`INSERT INTO carts
                 (user_id, product_id, quantity, is_selected) 
                 VALUES (${req.dataToken.user_id}, ${dbConf.escape(req.body.product_id)}, ${dbConf.escape(req.body.quantity)}, 1);`);
                 if (add.insertId) {
                     res.status(200).send({
-                        success: true,
-                        message: "Success",
+                        success : true,
+                        message : "Success",
                         add
                     });
                 }

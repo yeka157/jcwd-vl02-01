@@ -137,6 +137,7 @@ const PrescriptionPage = (props) => {
                 city_id: address.city_id,
                 district: address.district,
                 address_detail: address.address_detail,
+                receiver: address.receiver
             }));
 
             if (user.user_id) {
@@ -244,7 +245,7 @@ const PrescriptionPage = (props) => {
                                     addressList.length > 0 ?
                                         address.address_id ?
                                             <div className='py-3'>
-                                                <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                                <p className='font-bold text-hijauBtn'>{`${address.receiver} - (+62)${user.phone_number}`}</p>
                                                 <p>{address.address_detail}</p>
                                                 <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
                                             </div>

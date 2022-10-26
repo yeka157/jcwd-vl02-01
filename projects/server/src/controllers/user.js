@@ -55,18 +55,18 @@ module.exports = {
         try {
             let getData = await dbQuery(`Select * from address WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
             if (getData.length > 0) {
-                let addData = await dbQuery(`INSERT INTO address (user_id, province, city, city_id, address_detail, district, main_address) VALUES 
+                let addData = await dbQuery(`INSERT INTO address (user_id, province, city, city_id, address_detail, district, main_address, receiver) VALUES 
                 (${dbConf.escape(req.dataToken.user_id)}, ${dbConf.escape(req.body.province)}, ${dbConf.escape(req.body.city)}, ${dbConf.escape(req.body.city_id)}, ${dbConf.escape(req.body.address_detail)}, 
-                ${dbConf.escape(req.body.district)}, 0)`);
+                ${dbConf.escape(req.body.district)}, 0, ${dbConf.escape(req.body.receiver)})`);
                 if (addData.insertId) {
                     res.status(200).send({ success: true });
                 } else {
                     res.status(500).send({ success: false });
                 }
             } else {
-                let addData = await dbQuery(`INSERT INTO address (user_id, province, city, city_id, address_detail, district, main_address) VALUES 
+                let addData = await dbQuery(`INSERT INTO address (user_id, province, city, city_id, address_detail, district, main_address, receiver) VALUES 
                 (${dbConf.escape(req.dataToken.user_id)}, ${dbConf.escape(req.body.province)}, ${dbConf.escape(req.body.city)}, ${dbConf.escape(req.body.city_id)}, ${dbConf.escape(req.body.address_detail)}, 
-                ${dbConf.escape(req.body.district)}, 1)`);
+                ${dbConf.escape(req.body.district)}, 1, ${dbConf.escape(req.body.receiver)})`);
                 if (addData.insertId) {
                     res.status(200).send({ success: true });
                 } else {

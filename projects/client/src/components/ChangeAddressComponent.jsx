@@ -140,6 +140,7 @@ const ChangeAddressComponent = (props) => {
                                     return (
                                         <div className='border rounded-lg my-2 cursor-pointer hover:bg-hijauBtn hover:text-white' onClick={() => btnChangeAddress(val)}>
                                             <div className='p-2'>
+                                                <p className='text-btnHijau'>{val.receiver}</p>
                                                 <p className='text-btnHijau'>{val.address_detail}</p>
                                                 <p className='text-btnHijau'>{`${val.city}, ${val.province}`}</p>
                                             </div>

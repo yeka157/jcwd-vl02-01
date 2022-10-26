@@ -41,7 +41,7 @@ const TransactionDetailPage = () => {
     const user = useSelector(getUser);
     const filePickerRef = useRef(null);
 
-    const { transaction_id, address_detail, district, city, province, delivery_charge, delivery_option, doctor_prescription, invoice, order_date, detail, transaction_status, total_purchase } = transactionData;
+    const { transaction_id, address_detail, district, city, province, delivery_charge, delivery_option, receiver, doctor_prescription, invoice, order_date, detail, transaction_status, total_purchase } = transactionData;
 
     const getData = async () => {
         try {
@@ -419,7 +419,7 @@ const TransactionDetailPage = () => {
                                     <div className='ml-4'>
                                         <p>: {delivery_option}</p>
                                         <p>: Rp{parseInt(delivery_charge).toLocaleString('id')},-</p>
-                                        <p>: {user.name} - (+62){user.phone_number}</p>
+                                        <p>: {receiver} - (+62){user.phone_number}</p>
                                         <p className='pl-2'>{address_detail}</p>
                                         <p className='pl-2'>{district}, {city}</p>
                                         <p className='pl-2'> {province}</p>

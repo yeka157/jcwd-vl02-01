@@ -142,7 +142,8 @@ const CheckoutPage = (props) => {
                 city_id: address.city_id,
                 district: address.district,
                 address_detail: address.address_detail,
-                transaction_detail: item
+                transaction_detail: item,
+                receiver: address.receiver
             }
 
             let resOrder = await axios.post(API_URL + `/transaction/add_transaction`, data, {
