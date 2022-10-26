@@ -84,19 +84,11 @@ const CartComponent = (props) => {
         }
     };
 
-    const onCheckBox = async (cart_id, value) => {
+    const onCheckBox = async (cart_id) => {
         try {
 
-            let result = {};
-            if (value == 1) {
-                result = await axios.patch(API_URL + `/cart/check_item/${cart_id}`, { status: 0 });
-            } else {
-                result = await axios.patch(API_URL + `/cart/check_item/${cart_id}`, { status: 1 });
-            }
-
-            if (result.data.succes) {
-                props.getData();
-            }
+            let resCheck = await axios.patch(API_URL + `/cart/check_item/${cart_id}`, {});
+            props.getData();
 
         } catch (error) {
             console.log(error);
@@ -108,7 +100,7 @@ const CartComponent = (props) => {
         <div className='lg:flex border-b py-4'>
             <div className='my-5 flex lg:w-2/3'>
                 <div className='flex items-center'>
-                    <input type="checkbox" className='w-[20px] h-[20px] accent-hijauBtn' onClick={() => onCheckBox(props.data.cart_id, props.data.is_selected)} defaultChecked={props.data.is_selected == 1 ? true : false} />
+                    <input type="checkbox" className='w-[20px] h-[20px] accent-hijauBtn' onClick={() => onCheckBox(props.data.cart_id)} checked={props.data.is_selected == 1 ? true : false} />
                 </div>
 
                 <div className='lg:w-[180px] w-[75px] mx-4'>
@@ -118,7 +110,7 @@ const CartComponent = (props) => {
                 <div className='flex items-center w-[300px] lg:w-[220px]'>
                     <div>
                         <p className='text-hijauBtn'>{props.data.product_name}</p>
-                        <p className='font-bold text-hijauBtn'>RP{props.data.product_price.toLocaleString('id')},-</p>
+                        <p className='font-bold text-hijauBtn'>Rp{props.data.product_price.toLocaleString('id')},-</p>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CartComponent from '../components/CartComponent';
 import { useState } from 'react';
 import { API_URL } from '../helper';
@@ -7,27 +7,31 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useToast, Spinner } from '@chakra-ui/react';
 import { FaCartPlus } from "react-icons/fa";
-import { getUser } from '../slices/userSlice';
 import { userCart } from '../slices/cartSlices';
 import { useDispatch, useSelector } from 'react-redux';
+import Pagination from '../components/Pagination';
 
 const CartPage = (props) => {
 
     // APKG1-27
 
     const [cartData, setCartData] = useState([]);
-    const [loading, setLoading] = useState(true)
+    const [totalPurchase, setTotalPurchase] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [totalData, setTotalData] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const toast = useToast();
-    const user = useSelector(getUser);
+
+    const itemsPerPage = 4;
 
     const getCartData = async () => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resCart = await axios.get(API_URL + '/cart/get_cart_data', {
+            let resCart = await axios.get(API_URL + `/cart/get_cart_data?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage - 1)}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -35,6 +39,8 @@ const CartPage = (props) => {
 
             if (resCart.data.succes) {
                 setCartData(resCart.data.cartData);
+                setTotalData(resCart.data.count);
+                setTotalPurchase(resCart.data.purchase);
                 dispatch(userCart(resCart.data.cartData))
                 setLoading(false)
             }
@@ -44,15 +50,15 @@ const CartPage = (props) => {
         }
     }
 
-    useState(() => {
+    useEffect(() => {
         getCartData();
-    }, []);
+    }, [currentPage]);
 
     const printTotalPurchase = () => {
         let total = 0;
 
-        if (cartData.length > 0) {
-            cartData.forEach(val => {
+        if (totalPurchase.length > 0) {
+            totalPurchase.forEach(val => {
                 if (val.is_selected == 1) {
                     total += (val.product_price * val.quantity)
                 }
@@ -120,6 +126,11 @@ const CartPage = (props) => {
                                     </div>
                                 </div>
                         }
+
+                        <div className='mt-[120px]'>
+                            <Pagination getProductData={getCartData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                        </div>
+
                     </div>
 
                     {/* Checkout Component */}

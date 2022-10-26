@@ -224,7 +224,7 @@ const CheckoutPage = (props) => {
                                     addressList.length > 0 ?
                                         address.address_id ?
                                             <div className='py-3'>
-                                                <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                                <p className='font-bold text-hijauBtn'>{`${address.receiver} - (+62)${user.phone_number}`}</p>
                                                 <p>{address.address_detail}</p>
                                                 <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
                                             </div>
@@ -257,6 +257,7 @@ const CheckoutPage = (props) => {
                             })
                         }
 
+                        
                     </div>
 
                     {/* APKG1-29 Checkout Component */}
