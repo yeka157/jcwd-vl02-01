@@ -43,13 +43,14 @@ export default function AddressTableComponent(props) {
               <Th className='px-1'>City</Th>
               <Th className='px-1'>District</Th>
               <Th className='px-1'>Address Details</Th>
+              <Th className='px-1'>Receiver Name</Th>
               <Th></Th>
             </Tr>
           </Thead>
           <Tbody>
             {props.data.map((val, idx) => {
               return (
-                <AddressListComponent city={val.city} province={val.province} district={val.district} address={val.address_detail} no={idx+1} id={val.address_id} city_id={val.city_id} main={val.main_address}/>
+                <AddressListComponent city={val.city} province={val.province} district={val.district} address={val.address_detail} no={idx+1} id={val.address_id} city_id={val.city_id} main={val.main_address} receiver={val.receiver}/>
               )
             })}
           </Tbody>

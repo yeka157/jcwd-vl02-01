@@ -18,6 +18,7 @@ export default function AddressComponent() {
   const [cityId, setCityId] = React.useState('');
   const [city, setCity] = React.useState('');
   const [province, setProvince] = React.useState('');
+  const [receiver, setReceiver] = React.useState('');
   const toast = useToast();
   const dispatch = useDispatch();
 
@@ -46,7 +47,7 @@ export default function AddressComponent() {
 
   const btnSaveAddress = async () => {
     try {
-      if (!provinceId || !cityId || !district || !address) {
+      if (!provinceId || !cityId || !district || !address || !receiver) {
         toast({
           title: 'Please complete the address form',
           description: 'Make sure to fill the entire form',
@@ -62,7 +63,8 @@ export default function AddressComponent() {
           city,
           city_id: cityId,
           address_detail: address,
-          district
+          district,
+          receiver
         }, {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -154,6 +156,10 @@ export default function AddressComponent() {
                 <FormControl>
                   <FormLabel>Details</FormLabel>
                   <Input placeholder='Address details' onChange={(e) => setAddress(e.target.value)} />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Receiver</FormLabel>
+                  <Input placeholder='Receiver name' onChange={(e) => setReceiver(e.target.value)} />
                 </FormControl>
               </ModalBody>
               <ModalFooter className='space-x-3'>

@@ -298,5 +298,138 @@ module.exports = {
             console.log(error);
             res.status(500).send(error);
         }
+    },
+    getProductTable : async (req,res) => {
+        try {
+            let dateRange = {
+                from : 0,
+                to : 0
+            }
+            if (req.query.date_from && req.query.date_to) {
+                dateRange = {
+                    from : req.query.date_from,
+                    to : req.query.date_to
+                }
+            } else {
+                dateRange = {
+                    from : new Date().getFullYear()-1 + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate(),
+                    to : new Date().getFullYear()  + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate()
+                };
+            }
+            let sort_table = 'count(*)';
+            let order_table = 'desc';
+            if (req.query.sort && req.query.order) {
+                if (req.query.sort === 'sales') {
+                    sort_table = 'd.product_price * count(*)';
+                    order_table = req.query.order
+                } else if (req.query.sort === 'date') {
+                    sort_table = 'date';
+                    order_table = req.query.order;
+                }
+            }
+            let time = ' 23:59:59';
+            let getData_table = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, d.product_name, 
+            d.product_price, count(*) as total_qty, d.product_unit, 
+            d.product_price * count(*) as total_price
+            from transactions t 
+            JOIN transaction_detail d ON d.transaction_id =t.transaction_id 
+            WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+            AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
+            GROUP BY d.product_name, date order by ${sort_table} ${order_table}
+            ${req.query.limit ? 'LIMIT ' + req.query.limit + ' OFFSET ' + req.query.offset : ''};`);
+            if (getData_table.length > 0) {
+                res.status(200).send({success : true, length : getData_table.length, dataMap : getData_table});
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
+    },
+    getUserTable : async(req,res) => {
+        try {
+            let dateRange = {
+                from : 0,
+                to : 0
+            }
+            if (req.query.date_from && req.query.date_to) {
+                dateRange = {
+                    from : req.query.date_from,
+                    to : req.query.date_to
+                }
+            } else {
+                dateRange = {
+                    from : new Date().getFullYear()-1 + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
+                    to : new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate()
+                }
+            }
+            let sort_table = 'count(*)'
+            let order_table = 'desc';
+            if (req.query.sort && req.query.order) {
+                if (req.query.sort === 'sales') {
+                    sort_table = 'SUM(total_purchase)';
+                    order_table = req.query.order;
+                } else if (req.query.sort === 'date') {
+                    sort_table = 'date';
+                    order_table = req.query.order;
+                }
+            }
+            let time = ' 23:59:59';
+            let getData_table = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, u.username, count(*) as total, sum(total_purchase) as subtotal
+            from transactions t 
+            JOIN users u ON t.user_id = u.user_id
+            WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+            AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
+            GROUP BY u.username, t.order_date
+            order by ${sort_table} ${order_table}
+            ${req.query.limit ? 'LIMIT ' + req.query.limit + ' OFFSET ' + req.query.offset : ''};`);
+            if (getData_table.length > 0) {
+                res.status(200).send({success : true, length : getData_table.length, dataMap : getData_table});
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
+    },
+    getTransactionTable : async (req,res) => {
+        try {
+            let dateRange = {
+                from : 0,
+                to : 0,
+            }
+            let sort = 'date';
+            let order = 'desc';
+            if (req.query.sort && req.query.order) {
+                if (req.query.sort === 'sales') {
+                    sort = 'SUM(total_purchase-delivery_charge)'
+                } else {
+                    sort = req.query.sort;
+                }
+                order = req.query.order;
+            } 
+            if (req.query.date_from && req.query.date_to) {
+                dateRange = {
+                    from : req.query.date_from,
+                    to : req.query.date_to
+                }
+            } else {
+                dateRange = {
+                    from : new Date().getFullYear()-1 + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate(),
+                    to : new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate()
+                };
+            }
+            let time = ' 23:59:59';
+            let getData_table = await dbQuery(`Select count(*) as total_transaction, DATE_FORMAT(order_date, '%Y-%m-%d') as date, 
+            SUM(total_purchase-delivery_charge) as total_sales from transactions 
+            WHERE (transaction_status = 'Shipped' OR transaction_status = 'Order confirmed') 
+            AND order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)} 
+            GROUP BY date order by ${sort} ${order}
+            ${req.query.limit ? 'LIMIT ' + req.query.limit + ' OFFSET ' + req.query.offset : ''};`);
+            if (getData_table.length > 0) {
+                res.status(200).send({success : true, length : getData_table.length, dataMap : getData_table});
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send(error);
+        }
     }
 }

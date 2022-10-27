@@ -41,6 +41,7 @@ import { BsCalendarDate } from "react-icons/bs";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import { API_URL } from "../helper";
 import Axios from "axios";
+import Pagination from "../components/Pagination";
 
 export default function AdminReportTransaction() {
   ChartJS.register(
@@ -66,11 +67,6 @@ export default function AdminReportTransaction() {
         display: true,
         text: "Total Sales (in Rp)",
       },
-      // ticks: {
-      //   callback: function (value, index, values) {
-      //     return yLabels[value];
-      //   },
-      // },
     },
     x: {
       title: {
@@ -92,6 +88,7 @@ export default function AdminReportTransaction() {
   const [dataChart, setDataChart] = React.useState([]);
   const [labelChart, setLabelChart] = React.useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const itemsPerPage = 10;
 
   const btnClosePopover = async () => {
     try {
@@ -122,8 +119,8 @@ export default function AdminReportTransaction() {
   };
   const getTotalData = async () => {
     try {
-      let total = await Axios.get(API_URL + `/admin/total_report?report=transaction`);
-      setTotalData((prev) => prev = total.data.count);
+      let total = await Axios.get(API_URL + `/admin/get_transaction_table`);
+      setTotalData((prev) => prev = total.data.length);
     } catch (error) {
       console.log(error);
     }
@@ -138,8 +135,9 @@ export default function AdminReportTransaction() {
           }
         }
         const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
+        const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}&${temp.join("&")}`);
         if (result.data.note === 'data found') {
-          setDataChart((prev) => (prev = result.data.dataMap));
+          setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         }
@@ -152,15 +150,17 @@ export default function AdminReportTransaction() {
           }
         }
         const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
+        const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}&${temp.join("&")}`);
         if (result.data.note === 'data found') {
-          setDataChart((prev) => (prev = result.data.dataMap));
+          setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         }
       }
       let getRes = await Axios.get(API_URL + "/admin/get_transaction_report");
+      const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}`);
       if (getRes.data.note === 'data found') {
-        setDataChart((prev) => (prev = getRes.data.dataMap));
+        setDataChart((prev) => (prev = dataTable.data.dataMap));
         setLabelChart((prev) => (prev = getRes.data.data));
       }
     } catch (error) {
@@ -405,7 +405,7 @@ export default function AdminReportTransaction() {
                       })}
                     </Td>
                     <Td>{val.total_transaction}</Td>
-                    <Td>Rp{val.total_sales.toLocaleString("id")},-</Td>
+                    <Td>Rp{val.total_sales?.toLocaleString("id")},-</Td>
                   </Tr>
                 );
               })}
@@ -414,6 +414,7 @@ export default function AdminReportTransaction() {
           </Table>
         </TableContainer>
       </div>
+      <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     </div>
   );
 }
