@@ -14,6 +14,7 @@ route.patch('/edit_main_address/:id', readToken, userController.changeMainAddres
 route.delete('/delete_address/:id', readToken, userController.deleteAddress);
 route.get('/get_address', readToken, userController.getAddress);
 route.get('/get_main_address', readToken, userController.getMainAddress);
+route.post('/add_address_delivery', readToken, userController.addAddressDelivery)
 
 
 module.exports = route;

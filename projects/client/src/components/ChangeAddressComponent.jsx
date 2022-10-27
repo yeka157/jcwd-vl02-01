@@ -80,7 +80,7 @@ const ChangeAddressComponent = (props) => {
 
     const btnSaveAddress = async () => {
         try {
-            if (!provinceId || !cityId || !district || !addressDetail) {
+            if (!provinceId || !cityId || !district || !addressDetail || !receiver) {
                 toast({
                     title: 'Please complete the address form',
                     description: 'Make sure to fill the entire form',
@@ -91,7 +91,7 @@ const ChangeAddressComponent = (props) => {
                 })
             } else {
                 let token = Cookies.get('sehatToken');
-                let res = await axios.post(API_URL + '/user/add_address', {
+                let res = await axios.post(API_URL + '/user/add_address_delivery', {
                     province,
                     city,
                     city_id: cityId,
@@ -118,7 +118,7 @@ const ChangeAddressComponent = (props) => {
                         position: 'top'
                     })
                     setAddAddressToggle(!addAddressToggle);
-                    props.getMainAddress();
+                    props.setAddress(res.data.newAddress);
                 }
             }
         } catch (error) {

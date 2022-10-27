@@ -161,5 +161,30 @@ module.exports = {
                 massage: "Failed"
             })
         }
+    },
+    addAddressDelivery: async (req, res) => {
+        try {
+            let addData = await dbQuery(`INSERT INTO address (user_id, province, city, city_id, address_detail, district, main_address, receiver) VALUES 
+                (${dbConf.escape(req.dataToken.user_id)}, ${dbConf.escape(req.body.province)}, ${dbConf.escape(req.body.city)}, ${dbConf.escape(req.body.city_id)}, ${dbConf.escape(req.body.address_detail)}, 
+                ${dbConf.escape(req.body.district)}, 0, ${dbConf.escape(req.body.receiver)})`);
+
+                console.log(addData.insertId);
+
+                if (addData.insertId > 0) {
+                    let resAddress = await dbQuery(`SELECT * from address WHERE address_id = ${addData.insertId};`);
+
+                    res.status(200).send({
+                        success: true,
+                        newAddress: resAddress[0]
+                    })
+                }
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                success: false,
+                massage: "Failed"
+            })
+        }
     }
 }
