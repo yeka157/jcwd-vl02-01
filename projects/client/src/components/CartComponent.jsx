@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { API_URL } from '../helper';
+import { useNavigate } from 'react-router-dom';
 import {
     useToast,
     Modal,
@@ -23,7 +24,9 @@ const CartComponent = (props) => {
     const [selected, setSelected] = useState([]);
 
     const toast = useToast();
-    const { isOpen, onOpen, onClose } = useDisclosure()
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
+    const navigate = useNavigate();
 
     const onDec = async (idCart) => {
         try {
@@ -73,10 +76,10 @@ const CartComponent = (props) => {
 
             let resDelete = await axios.delete(API_URL + `/cart/delete_item/${props.data.cart_id}`);
 
-            if (resDelete.data.succes) {
-                props.getData();
-                setSelected([]);
+            if (resDelete.data.succes) {  
                 onClose();
+                setSelected([]);
+                props.getData();
             }
 
         } catch (error) {
@@ -108,7 +111,7 @@ const CartComponent = (props) => {
         <div className='lg:flex border-b py-4'>
             <div className='my-5 flex lg:w-2/3'>
                 <div className='flex items-center'>
-                    <input type="checkbox" className='w-[20px] h-[20px] accent-hijauBtn' onClick={() => onCheckBox(props.data.cart_id, props.data.is_selected)} defaultChecked={props.data.is_selected == 1 ? true : false} />
+                    <input type="checkbox" className='w-[20px] h-[20px] accent-hijauBtn' onClick={() => onCheckBox(props.data.cart_id, props.data.is_selected)} checked={props.data.is_selected == 1 ? true : false} />
                 </div>
 
                 <div className='lg:w-[180px] w-[75px] mx-4'>
@@ -118,7 +121,7 @@ const CartComponent = (props) => {
                 <div className='flex items-center w-[300px] lg:w-[220px]'>
                     <div>
                         <p className='text-hijauBtn'>{props.data.product_name}</p>
-                        <p className='font-bold text-hijauBtn'>RP{props.data.product_price.toLocaleString('id')},-</p>
+                        <p className='font-bold text-hijauBtn'>Rp{props.data.product_price.toLocaleString('id')},-</p>
                     </div>
                 </div>
             </div>
@@ -152,7 +155,7 @@ const CartComponent = (props) => {
 
                     <div className='hidden lg:flex items-center w-[200px] lg:w-[400px] mx-[12px]'>
                         <div>
-                            <p className='font-bold text-hijauBtn'>RP{(props.data.product_price * props.data.quantity).toLocaleString('id')},-</p>
+                            <p className='font-bold text-hijauBtn'>Rp{(props.data.product_price * props.data.quantity).toLocaleString('id')},-</p>
                         </div>
                     </div>
 

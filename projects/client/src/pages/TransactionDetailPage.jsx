@@ -41,7 +41,7 @@ const TransactionDetailPage = () => {
     const user = useSelector(getUser);
     const filePickerRef = useRef(null);
 
-    const { transaction_id, address_detail, district, city, province, delivery_charge, delivery_option, doctor_prescription, invoice, order_date, detail, transaction_status, total_purchase } = transactionData;
+    const { transaction_id, address_detail, district, city, province, delivery_charge, delivery_option, receiver, doctor_prescription, invoice, order_date, detail, transaction_status, total_purchase } = transactionData;
 
     const getData = async () => {
         try {
@@ -110,8 +110,6 @@ const TransactionDetailPage = () => {
             console.log(error);
         }
     };
-
-    console.log(detail);
 
     const stockRecovery = async () => {
         try {
@@ -354,31 +352,43 @@ const TransactionDetailPage = () => {
                                     invoice.includes('/CSTM') ?
                                         transaction_status === 'Awaiting Admin Confirmation' ?
                                             <div className='m-4'>
-                                                <img className='w-[100px]' src={`http://localhost:8000${doctor_prescription}`} alt="" />
+                                                <img className='w-[350px]' src={`http://localhost:8000${doctor_prescription}`} alt="" />
                                             </div>
                                             :
-                                            detail.map((val, idx) => {
-                                                return (
-                                                    <div key={idx} className='pt-1'>
-                                                        <div className='flex'>
-                                                            <div>
-                                                                {
-                                                                    <img className='w-[100px]' src={val.product_image.includes('http') ? val.product_image : `http://localhost:8000${val.product_image}`} alt="" />
-                                                                }
-                                                            </div>
-                                                            <div className='flex items-center'>
-                                                                <div>
-                                                                    <p>{val.product_name}</p>
+                                            <div className='flex'>
+                                                <div className='m-4'>
+                                                    <img className='w-[300px]' src={`http://localhost:8000${doctor_prescription}`} alt="" />
+                                                </div>
+
+                                                <div>
+                                                    {
+                                                        detail.map((val, idx) => {
+                                                            return (
+                                                                <div key={idx} className='pt-1'>
                                                                     <div className='flex'>
-                                                                        <p className='text-[14px] mr-2'>{`${val.quantity} ${val.product_unit} x`}</p>
-                                                                        <p className='text-[14px]'>Rp{val.product_price.toLocaleString('id')},-</p>
+                                                                        <div>
+                                                                            {
+                                                                                <img className='w-[100px]' src={val.product_image.includes('http') ? val.product_image : `http://localhost:8000${val.product_image}`} alt="" />
+                                                                            }
+                                                                        </div>
+                                                                        <div className='flex items-center'>
+                                                                            <div>
+                                                                                <p>{val.product_name}</p>
+                                                                                <div className='flex'>
+                                                                                    <p className='text-[14px] mr-2'>{`${val.quantity} ${val.product_unit} x`}</p>
+                                                                                    <p className='text-[14px]'>Rp{val.product_price.toLocaleString('id')},-</p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
+                                                            )
+                                                        })
+                                                    }
+                                                </div>
+
+                                            </div>
+
                                         :
                                         detail.map((val, idx) => {
                                             return (
@@ -419,7 +429,7 @@ const TransactionDetailPage = () => {
                                     <div className='ml-4'>
                                         <p>: {delivery_option}</p>
                                         <p>: Rp{parseInt(delivery_charge).toLocaleString('id')},-</p>
-                                        <p>: {user.name} - (+62){user.phone_number}</p>
+                                        <p>: {receiver} - (+62){user.phone_number}</p>
                                         <p className='pl-2'>{address_detail}</p>
                                         <p className='pl-2'>{district}, {city}</p>
                                         <p className='pl-2'> {province}</p>

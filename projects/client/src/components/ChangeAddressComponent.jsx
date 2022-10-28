@@ -32,6 +32,7 @@ const ChangeAddressComponent = (props) => {
     const [city, setCity] = useState('');
     const [cityId, setCityId] = useState('');
     const [district, setDistrict] = useState('');
+    const [receiver, setReceiver] = useState('');
     const [addressDetail, setAddressDetail] = useState('');
     const [addAddressToggle, setAddAddressToggle] = useState(false);
 
@@ -79,7 +80,7 @@ const ChangeAddressComponent = (props) => {
 
     const btnSaveAddress = async () => {
         try {
-            if (!provinceId || !cityId || !district || !addressDetail) {
+            if (!provinceId || !cityId || !district || !addressDetail || !receiver) {
                 toast({
                     title: 'Please complete the address form',
                     description: 'Make sure to fill the entire form',
@@ -90,12 +91,13 @@ const ChangeAddressComponent = (props) => {
                 })
             } else {
                 let token = Cookies.get('sehatToken');
-                let res = await axios.post(API_URL + '/user/add_address', {
+                let res = await axios.post(API_URL + '/user/add_address_delivery', {
                     province,
                     city,
                     city_id: cityId,
                     address_detail: addressDetail,
-                    district
+                    district,
+                    receiver
                 }, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -116,7 +118,7 @@ const ChangeAddressComponent = (props) => {
                         position: 'top'
                     })
                     setAddAddressToggle(!addAddressToggle);
-                    props.getMainAddress();
+                    props.setAddress(res.data.newAddress);
                 }
             }
         } catch (error) {
@@ -138,6 +140,7 @@ const ChangeAddressComponent = (props) => {
                                     return (
                                         <div className='border rounded-lg my-2 cursor-pointer hover:bg-hijauBtn hover:text-white' onClick={() => btnChangeAddress(val)}>
                                             <div className='p-2'>
+                                                <p className='text-btnHijau'>{val.receiver}</p>
                                                 <p className='text-btnHijau'>{val.address_detail}</p>
                                                 <p className='text-btnHijau'>{`${val.city}, ${val.province}`}</p>
                                             </div>
@@ -192,6 +195,10 @@ const ChangeAddressComponent = (props) => {
                     <FormControl>
                         <FormLabel>Details</FormLabel>
                         <Input placeholder='Address details' onChange={(e) => setAddressDetail(e.target.value)} />
+                    </FormControl>
+                    <FormControl className='mt-2'>
+                        <FormLabel>Receiver</FormLabel>
+                        <Input placeholder='Receiver name' onChange={(e) => setReceiver(e.target.value)} />
                     </FormControl>
                 </ModalBody>
                 <ModalFooter className='space-x-3'>

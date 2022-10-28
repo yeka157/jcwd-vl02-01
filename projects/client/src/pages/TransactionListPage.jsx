@@ -27,8 +27,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { MdDateRange } from "react-icons/md";
 import Pagination from '../components/Pagination';
-import { useNavigate } from "react-router-dom";
-
 
 export default function TransactionListPage() {
 
@@ -40,7 +38,9 @@ export default function TransactionListPage() {
     const [loading, setLoading] = useState(true);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+
     const itemsPerPage = 7;
+
 
     const getTransactions = async () => {
         try {
