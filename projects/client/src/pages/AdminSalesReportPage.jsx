@@ -10,7 +10,9 @@ export default function AdminSalesReportPage() {
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
-        <h1 className="font-bold text-lg text-hijauBtn text-center">
+        <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
+						navigate('/admin');
+					}}>
           SEHATBOS.COM <span className="font-normal">| SALES REPORT</span>
         </h1>
       </div>

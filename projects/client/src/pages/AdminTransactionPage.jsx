@@ -37,7 +37,7 @@ import { API_URL } from '../helper';
 import { HiOutlineChevronDown } from 'react-icons/hi';
 import { BsCalendar2Event } from 'react-icons/bs';
 import Pagination from '../components/Pagination';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import TransactionPreviewComponent from '../components/TransactionPreviewComponent';
 
@@ -61,6 +61,7 @@ export default function AdminTransactionPage() {
 	const [totalData, setTotalData] = useState(0);
 	const initialRef = useRef(null);
 	const finalRef = useRef(null);
+	const { search } = useLocation();
 	const id = useId();
 	const toast = useToast();
 	const navigate = useNavigate();
@@ -72,6 +73,25 @@ export default function AdminTransactionPage() {
 	const whiteListedCancelStatus = ['Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed'];
 	const token = Cookies.get('sehatToken');
 
+	// const getQueryUrl = () => {
+    //     return search.replace('?', '')
+    //     .split('&')
+    //     .map(param => {
+	// 		let temp = {};
+	// 		temp.param.split('=')[0] = param.split('=')[1];
+	// 		let nama = param.split('=')[0];
+	// 		let val = param.split('=')[1];
+	// 		temp = {...temp, nama : val};
+    //         return temp;
+    //     })
+    // }
+    // console.log(getQueryUrl().map((val, idx) => {
+    //     if (val[idx] === 'status') {
+    //         // code
+    //     }
+    //     return val
+    // }))
+	
 	const resetFilter = () => {
 		setFilters((prev) => (prev = { invoice: '', transaction_status: '', from: '', to: '', sort: '', order: '' }));
 		setDateRange((prev) => (prev = { from: '', to: '' }));

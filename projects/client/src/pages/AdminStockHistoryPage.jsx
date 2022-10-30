@@ -32,6 +32,8 @@ import SearchBar from "../components/SearchBar";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import { BsCalendarDate } from "react-icons/bs";
 import Pagination from "../components/Pagination";
+import * as XLSX from 'xlsx';
+import { useNavigate } from "react-router-dom";
 
 export default function AdminStockHistoryPage() {
   const [history, setHistory] = React.useState([]);
@@ -48,7 +50,7 @@ export default function AdminStockHistoryPage() {
   const [totalData, setTotalData] = React.useState(0);
   const { onOpen, onClose, isOpen } = useDisclosure();
   const itemsPerPage = 10;
-
+  const navigate = useNavigate();
   const getData = async () => {
     try {
       if (
@@ -70,8 +72,9 @@ export default function AdminStockHistoryPage() {
               itemsPerPage * (currentPage - 1)
             }&${temp.join("&")}`
         );
-        if (result.data.length) {
-          setHistory((prev) => (prev = result.data));
+        if (result.data.data.length) {
+          setHistory((prev) => (prev = result.data.data));
+          setTotalData((prev) => (prev = result.data.count))
           return;
         }
       }
@@ -95,8 +98,9 @@ export default function AdminStockHistoryPage() {
               itemsPerPage * (currentPage - 1)
             }&${temp.join("&")}`
         );
-        if (result.data.length) {
-          setHistory((prev) => (prev = result.data));
+        if (result.data.data.length) {
+          setHistory((prev) => (prev = result.data.data));
+          setTotalData((prev) => (prev = result.data.count));
           return;
         }
       }
@@ -106,8 +110,9 @@ export default function AdminStockHistoryPage() {
             itemsPerPage * (currentPage - 1)
           }`
       );
-      if (data.data.length) {
-        setHistory((prev) => (prev = data.data));
+      if (data.data.data.length) {
+        setHistory((prev) => (prev = data.data.data));
+        setTotalData((prev) => (prev = data.data.count));
       }
     } catch (error) {
       console.log(error);
@@ -158,6 +163,15 @@ export default function AdminStockHistoryPage() {
     }
   };
 
+  const exportData = async () => {
+    const dataExport = await Axios.get(API_URL + '/admin/get_stock_history?sort=date&order=asc');
+    const fields = Object.keys(dataExport.data.data[0]);
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(dataExport.data.data, {headers : fields});
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'StockHistory');
+    XLSX.writeFile(workbook, 'StockHistory.xlsx');
+  }
+
   React.useEffect(() => {
     getData();
   }, [currentPage]);
@@ -166,7 +180,7 @@ export default function AdminStockHistoryPage() {
     if (filters.product_name || filters.date_from || filters.date_to) {
       setTotalData((prev) => prev = history.length);
     }
-  }, [history, filters.product_name, filters.date_from, filters.date_to]);
+  }, [filters]);
 
   React.useEffect(() => {
     if (filters.product_name === '' && filters.sort === '' && filters.order === '' && filters.date_from === '' && filters.date_to === '') {
@@ -180,13 +194,15 @@ export default function AdminStockHistoryPage() {
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
-        <h1 className="font-bold text-lg text-hijauBtn text-center">
+        <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
+						navigate('/admin');
+					}}>
           SEHATBOS.COM <span className="font-normal">| STOCK HISTORY</span>
         </h1>
       </div>
 
       <div className="container mx-auto mt-[5vh] grid justify-items-start">
-        <h1 className="font-bold text-lg">Sales Report</h1>
+        <h1 className="font-bold text-lg">Stock History</h1>
         <Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
           <BreadcrumbItem>
             <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
@@ -337,7 +353,7 @@ export default function AdminStockHistoryPage() {
             <Tbody>
               {history.map((val, idx) => {
                 return (
-                  <Tr>
+                  <Tr key={idx+1}>
                     <Td>{idx + 1}</Td>
                     <Td>
                       {new Date(val.date).toLocaleDateString("en-GB", {
@@ -371,6 +387,20 @@ export default function AdminStockHistoryPage() {
             </Tbody>
           </Table>
         </TableContainer>
+      </div>
+      <div className="my-2 flex justify-end">
+      <Button
+            style={{ borderColor: "gray" }}
+            borderRadius={"0"}
+            color="gray"
+            variant="outline"
+            size={"sm"}
+            onClick={exportData}
+            className='hover:!bg-hijauBtn hover:!text-white'
+          >
+            Download
+          </Button>
+      
       </div>
       <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
     </div>

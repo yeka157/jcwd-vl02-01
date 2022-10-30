@@ -17,30 +17,36 @@ module.exports = {
             const offset = req.query.offset;
             const limit = req.query.limit;
             const productName = req.query.product_name;
-            let getQuery = 'Select * from reports '
+            let getQuery = 'Select * from reports ';
+            let getCount = 'Select * from reports ';
             if (Object.keys(date).length === 0 && productName) {
                 getQuery += `WHERE product_name LIKE "%${productName}%" `
+                getCount += `WHERE product_name LIKE "%${productName}%" `
             }
             if (Object.keys(date).length > 0 && productName) {
                 getQuery += `WHERE product_name LIKE "%${productName}%" AND date between ${dbConf.escape(date.from)} AND ${dbConf.escape(date.to + time)} `
+                getCount += `WHERE product_name LIKE "%${productName}%" AND date between ${dbConf.escape(date.from)} AND ${dbConf.escape(date.to + time)} `
             }
 
             if (Object.keys(date).length > 0 && !productName) {
                 getQuery += `WHERE date between ${dbConf.escape(date.from)} AND ${dbConf.escape(date.to + time)} `
+                getCount += `WHERE date between ${dbConf.escape(date.from)} AND ${dbConf.escape(date.to + time)} `
             }
 
             if (sort) {
                 getQuery += `order by ${sort} ${order} `
+                getCount += `order by ${sort} ${order} `
             } else {
                 getQuery += `order by date desc `
+                getCount += `order by date desc `
             }
-
             if (limit) {
                 getQuery += `LIMIT ${limit} OFFSET ${offset}`
             }
             let getData = await dbQuery(`${getQuery};`);
-            if (getData.length > 0) {
-                res.status(200).send(getData);
+            let dataCount = await dbQuery(`${getCount};`);
+            if (getData.length > 0 && dataCount.length > 0) {
+                res.status(200).send({data : getData, count : dataCount.length});
             }
         } catch (error) {
             console.log(error);
@@ -63,7 +69,7 @@ module.exports = {
                 to : 0,
             }
             let sort = 'date';
-            let order = 'desc';
+            let order = 'asc';
             if (req.query.sort && req.query.order) {
                 if (req.query.sort === 'sales') {
                     sort = 'SUM(total_purchase-delivery_charge)'
@@ -397,7 +403,7 @@ module.exports = {
                 to : 0,
             }
             let sort = 'date';
-            let order = 'desc';
+            let order = 'asc';
             if (req.query.sort && req.query.order) {
                 if (req.query.sort === 'sales') {
                     sort = 'SUM(total_purchase-delivery_charge)'

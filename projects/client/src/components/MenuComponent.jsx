@@ -12,9 +12,9 @@ export default function MenuComponent() {
 
   const getProduct = async () => {
     try {
-      let result = await Axios.get(API_URL + "/product?limit=4&offset=0");
-      if ((await result).data.success) {
-        setData((prev) => (prev = result.data.products));
+      let result = await Axios.get(API_URL + "/product/bestseller");
+      if (result.data.length === 4) {
+        setData((prev) => (prev = result.data));
       }
     } catch (error) {
       console.log(error);
@@ -29,7 +29,7 @@ export default function MenuComponent() {
     <div className="bg-[rgb(2,93,103,0.25)] min-h-screen px-20 py-36">
       <h1 className="text-4xl">Most Loved, best picks</h1>
       <div className="sm:flex sm:items-center sm:justify-between my-3 space-y-2">
-        <h6 className="text-xs sm:text-sm">
+        <h6 className="text-sm">
           Not sure what's the correct one for you?
         </h6>
         <div className="flex items-center space-x-2 hover:underline cursor-pointer">
@@ -41,7 +41,7 @@ export default function MenuComponent() {
       </div>
       <div className="flex justify-center items-center">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 2xl:grid-cols-4 py-8">
-          {data.map((val) => {
+          {data?.map((val) => {
             return (
               <CarouselComponent
                 foto={val.product_image}
