@@ -31,26 +31,17 @@ module.exports = {
 
             if (sort) {
                 getQuery += `order by ${sort} ${order} `
+            } else {
+                getQuery += `order by date desc `
             }
 
             if (limit) {
                 getQuery += `LIMIT ${limit} OFFSET ${offset}`
             }
-            console.log(getQuery);
             let getData = await dbQuery(`${getQuery};`);
-            console.log(getData);
             if (getData.length > 0) {
                 res.status(200).send(getData);
             }
-            // let getData = await dbQuery(`Select * from reports ${productName && Object.keys(date).length === 0? `WHERE product_name LIKE "%${productName}%"` : ''}
-            // ${productName && Object.keys(date).length > 0 ? `WHERE product_name LIKE "%${productName}%" AND date BETWEEN ${date.from} AND ${date.to} 23:59:59`: ''}
-            // ${!productName && Object.keys(date).length > 0 ? `WHERE date BETWEEN ${date.from} AND ${date.to} ${time}`: ''}
-            // ${sort ? 'order by '+ date + ' ' + order : '' }
-            // ${limit ? 'LIMIT ' + limit + ' OFFSET ' + offset : ''};`);
-            // console.table(getData);
-            // if (getData.length) {
-            //     res.status(200).send(getData);
-            // }
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
@@ -67,24 +58,63 @@ module.exports = {
     },
     getTransactionReport: async (req, res) => {
         try {
-            if (req.query.filters) {
-                let dateRange = {
-                    from : req.query.filters.date_from,
-                    to : req.query.filters.date_to
+            let dateRange = {
+                from : 0,
+                to : 0,
+            }
+            let sort = 'date';
+            let order = 'desc';
+            if (req.query.sort && req.query.order) {
+                if (req.query.sort === 'sales') {
+                    sort = 'SUM(total_purchase-delivery_charge)'
+                } else {
+                    sort = req.query.sort;
+                }
+                order = req.query.order;
+            } 
+            if (req.query.date_from && req.query.date_to) {
+                dateRange = {
+                    from : req.query.date_from,
+                    to : req.query.date_to
                 }
             } else {
-                let dateRange = {
-                    from : new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + (new Date().getDate()-7),
+                dateRange = {
+                    from : new Date().getFullYear()-1 + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate(),
                     to : new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate()
                 };
-                let time = ' 23:59:59';
-                let getData = await dbQuery(`Select count(*) as total_transaction, DATE_FORMAT(order_date, '%Y-%m-%d') as date, 
-                SUM(total_purchase-delivery_charge) as total_sales from transactions 
-                WHERE (transaction_status = 'Shipped' OR transaction_status = 'Order confirmed') 
-                AND order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)} 
-                GROUP BY order_date ;`);
-                res.status(200).send(getData);
             }
+            let time = ' 23:59:59';
+            let getData = await dbQuery(`Select count(*) as total_transaction, DATE_FORMAT(order_date, '%Y-%m-%d') as date, 
+            SUM(total_purchase-delivery_charge) as total_sales from transactions 
+            WHERE (transaction_status = 'Shipped' OR transaction_status = 'Order confirmed') 
+            AND order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)} 
+            GROUP BY date order by ${sort} ${order} limit 10;`);
+            let getData_table = await dbQuery(`Select count(*) as total_transaction, DATE_FORMAT(order_date, '%Y-%m-%d') as date, 
+            SUM(total_purchase-delivery_charge) as total_sales from transactions 
+            WHERE (transaction_status = 'Shipped' OR transaction_status = 'Order confirmed') 
+            AND order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)} 
+            GROUP BY date order by ${sort} ${order};`);
+            let data = {
+                labels : [],
+                datasets : [
+                    {
+                        label : 'Total purchased',
+                        data : [],
+                        borderColor : 'rgb(2,93,103,0.1)',
+                        backgroundColor : 'rgb(2,93,103,0.5)'
+                    }
+                ]
+            };
+            getData.forEach((val) => {
+                data.labels.push(new Date(val.date).toLocaleDateString("en-GB", {
+                    weekday : 'short',
+                    day : 'numeric',
+                    month : 'short',
+                    year : 'numeric'
+                }));
+                data.datasets[0].data.push(val.total_sales);
+            });
+            res.status(200).send({success : true, dataMap : getData_table, data, note : 'data found'});
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
@@ -92,27 +122,69 @@ module.exports = {
     },
     getProductReport: async (req, res) => {
         try {
-            if (req.query.filters) {
-                let dateRange = {
-                    from : req.query.filters.date_from,
-                    to : req.query.filters.date_to
+            let dateRange = {
+                from : 0,
+                to : 0
+            }
+            if (req.query.date_from && req.query.date_to) {
+                dateRange = {
+                    from : req.query.date_from,
+                    to : req.query.date_to
                 }
             } else {
-                let dateRange = {
-                    from : new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + (new Date().getDate()-7),
-                    to : new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate()
+                dateRange = {
+                    from : new Date().getFullYear()-1 + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate(),
+                    to : new Date().getFullYear()  + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate()
                 };
-                let time = ' 23:59:59';
-                let getData = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, d.product_name, 
-                d.product_price, count(*) as total_qty, d.product_unit, 
-                d.product_price * count(*) as total_price
-                from transactions t 
-                JOIN transaction_detail d ON d.transaction_id =t.transaction_id 
-                WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
-                AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
-                GROUP BY t.order_date, d.product_name;`);
-                res.status(200).send(getData);
             }
+            let sort = 'count(*)';
+            let sort_table = 'count(*)';
+            let order = 'desc';
+            let order_table = 'desc';
+            if (req.query.sort && req.query.order) {
+                if (req.query.sort === 'sales') {
+                    sort = 'd.product_price * count(*)';
+                    sort_table = 'd.product_price * count(*)';
+                    order = req.query.order;
+                    order_table = req.query.order
+                } else if (req.query.sort === 'date') {
+                    sort_table = 'date';
+                    order_table = req.query.order;
+                }
+            }
+            let time = ' 23:59:59';
+            let getData = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, d.product_name, 
+            d.product_price, count(*) as total_qty, d.product_unit, 
+            d.product_price * count(*) as total_price
+            from transactions t 
+            JOIN transaction_detail d ON d.transaction_id =t.transaction_id 
+            WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+            AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
+            GROUP BY d.product_name order by ${sort} ${order};`);
+            let getData_table = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, d.product_name, 
+            d.product_price, count(*) as total_qty, d.product_unit, 
+            d.product_price * count(*) as total_price
+            from transactions t 
+            JOIN transaction_detail d ON d.transaction_id =t.transaction_id 
+            WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+            AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
+            GROUP BY d.product_name, date order by ${sort_table} ${order_table};`);
+            let data = {
+                labels : [],
+                datasets : [
+                    {
+                        label : 'Total purchased',
+                        data : [],
+                        borderColor : 'rgb(2,93,103,0.1)',
+                        backgroundColor : 'rgb(2,93,103,0.5)'
+                    }
+                ]
+            };
+            getData.forEach((val) => {
+                data.labels.push(val.product_name);
+                data.datasets[0].data.push(val.total_qty);
+            })
+            res.status(200).send({success : true, dataMap : getData_table, data, note : 'data found'});
         } catch (error) {
             console.log(error);
             res.status(500).send(error);
@@ -120,40 +192,111 @@ module.exports = {
     },
     getUserReport: async (req, res) => {
         try {
-            if (req.query.filters) {
-
+            let dateRange = {
+                from : 0,
+                to : 0
+            }
+            if (req.query.date_from && req.query.date_to) {
+                dateRange = {
+                    from : req.query.date_from,
+                    to : req.query.date_to
+                }
             } else {
-                let dateRange = {
-                    from : new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + (new Date().getDate()-10),
-                    to : new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate()
-                };
-                let time = ' 23:59:59';
+                dateRange = {
+                    from : new Date().getFullYear()-1 + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate(),
+                    to : new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate()
+                }
+            }
+            let sort = 'count(*)';
+            let sort_table = 'count(*)'
+            let order = 'desc';
+            let order_table = 'desc';
+            if (req.query.sort && req.query.order) {
+                if (req.query.sort === 'sales') {
+                    sort = 'SUM(total_purchase)';
+                    sort_table = 'SUM(total_purchase)';
+                    order = req.query.order;
+                    order_table = req.query.order;
+                } else if (req.query.sort === 'date') {
+                    sort_table = 'date';
+                    order_table = req.query.order;
+                }
+            }
+            let time = ' 23:59:59';
+            let getData = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, u.username, count(*) as total, sum(total_purchase) as subtotal
+            from transactions t 
+            JOIN users u ON t.user_id = u.user_id
+            WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+            AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
+            GROUP BY u.username
+            order by ${sort} ${order}
+            limit 5;`);
+            let getData_table = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, u.username, count(*) as total, sum(total_purchase) as subtotal
+            from transactions t 
+            JOIN users u ON t.user_id = u.user_id
+            WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+            AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
+            GROUP BY u.username, t.order_date
+            order by ${sort_table} ${order_table};`);
+            let data = {
+                labels : [],
+                datasets : [
+                    {
+                        label : 'Transaction Made',
+                        data : [],
+                        borderColor :'rgb(2,93,103,0.1)',
+                        backgroundColor : 'rgb(2,93,103,0.5)'
+                    }
+                ]
+            };
+            getData.forEach((val) => {
+                data.labels.push(val.username);
+                data.datasets[0].data.push(val.total);
+            });
+            res.status(200).send({success : true, dataMap : getData_table, data, found : true});
+        } catch (error) {
+            res.status(500).send(error);
+            console.log(error);
+        }
+    },
+    getTotalReport : async (req,res) => {
+        try {
+            let dateRange = {
+                from : new Date().getFullYear()-1,
+                to : new Date().getFullYear()
+            };
+            let time = ' 23:59:59';
+            let data = 0;
+            if (req.query.report === 'transaction') {
+                let getData = await dbQuery(`Select count(*) as total_transaction, DATE_FORMAT(order_date, '%Y-%m-%d') as date, 
+                SUM(total_purchase-delivery_charge) as total_sales from transactions 
+                WHERE (transaction_status = 'Shipped' OR transaction_status = 'Order confirmed') 
+                AND order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)} 
+                GROUP BY order_date;`);
+                data = getData.length;
+            } else if (req.query.report === 'user') {
                 let getData = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, u.username, count(*) as total, sum(total_purchase) as subtotal
                 from transactions t 
                 JOIN users u ON t.user_id = u.user_id
                 WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
                 AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
-                GROUP BY t.order_date;`);
-                let data = {
-                    labels : [],
-                    datasets : [
-                        {
-                            label : 'Transaction Made',
-                            data : [],
-                            borderColor :'rgb(255,99,132)',
-                            backgroundColor : 'rgba(255,99,132,0.5)'
-                        }
-                    ]
-                };
-                getData.forEach((val) => {
-                    data.labels.push(val.username);
-                    data.datasets[0].data.push(val.total);
-                });
-                res.status(200).send({success : true, dataMap : getData, data});
+                GROUP BY u.username`);
+                data = getData.length;
+            } else if (req.query.report === 'product') {
+                let getData = await dbQuery(`Select DATE_FORMAT(t.order_date,'%Y-%m-%d') as date, d.product_name, 
+                d.product_price, count(*) as total_qty, d.product_unit, 
+                d.product_price * count(*) as total_price
+                from transactions t 
+                JOIN transaction_detail d ON d.transaction_id =t.transaction_id 
+                WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+                AND t.order_date BETWEEN ${dbConf.escape(dateRange.from)} AND ${dbConf.escape(dateRange.to + time)}
+                GROUP BY d.product_name;`);
+                data = getData.length;
             }
+            res.status(200).send({success : true, count : data});
         } catch (error) {
-            res.status(500).send(error);
             console.log(error);
+            res.status(500).send(error);
         }
     }
 }

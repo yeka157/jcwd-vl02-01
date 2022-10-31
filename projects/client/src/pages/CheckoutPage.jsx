@@ -1,6 +1,6 @@
 import React from 'react';
 import { MdLocationOn } from "react-icons/md";
-import { Select, useToast, Spinner } from '@chakra-ui/react';
+import { Select, useToast, Spinner, Skeleton, Stack } from '@chakra-ui/react';
 import CheckoutComponent from '../components/CheckoutComponent';
 import { useState } from 'react';
 import { API_URL } from '../helper';
@@ -22,6 +22,7 @@ const CheckoutPage = (props) => {
     const [address, setAddress] = useState({});
     const [btnSpinner, setBtnSpinner] = useState(false);
     const [disableBtn, setDisableBtn] = useState(false);
+    const [loading, setLoading] = useState(true)
 
     const user = useSelector(getUser);
     const addressList = useSelector(getAddress);
@@ -30,9 +31,8 @@ const CheckoutPage = (props) => {
 
     useEffect(() => {
         getData();
-        if (addressList.length > 0) {
-            getMainAddress();
-        }
+        getMainAddress();
+
     }, []);
 
     let getData = async () => {
@@ -67,6 +67,7 @@ const CheckoutPage = (props) => {
             if (resAddress.data.success) {
                 setAddress(resAddress.data.address);
                 getDeliveryService(resAddress.data.address.city_id);
+                setLoading(false)
 
             }
         } catch (error) {
@@ -197,23 +198,31 @@ const CheckoutPage = (props) => {
                                 <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
                                 <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
                             </div>
-                            {addressList.length > 0 ?
-                                address.address_id ?
-                                    <div className='py-3'>
-                                        <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
-                                        <p>{address.address_detail}</p>
-                                        <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                    </div>
+                            {
+                                loading ?
+                                    <Stack>
+                                        <Skeleton height='20px' width='400px' />
+                                        <Skeleton height='20px' width='400px' />
+                                        <Skeleton height='20px' width='400px' />
+                                    </Stack>
                                     :
-                                    <div className='flex'>
-                                        <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
-                                        <p className='text-red-500'>You have no main address yet, please choose address manually</p>
-                                    </div>
-                                :
-                                <div className='flex items-center pb-7'>
-                                    <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
-                                    <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
-                                </div>
+                                    addressList.length > 0 ?
+                                        address.address_id ?
+                                            <div className='py-3'>
+                                                <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                                <p>{address.address_detail}</p>
+                                                <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
+                                            </div>
+                                            :
+                                            <div className='flex'>
+                                                <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                                <p className='text-red-500'>You have no main address yet, please choose address manually</p>
+                                            </div>
+                                        :
+                                        <div className='flex items-center pb-7'>
+                                            <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                            <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
+                                        </div>
                             }
 
                             <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />

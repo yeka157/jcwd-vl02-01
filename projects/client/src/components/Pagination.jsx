@@ -1,60 +1,65 @@
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
- 
+
 export default function Pagination({ totalData, itemsPerPage, currentPage, setCurrentPage, getProductData }) {
 	const [range, setRange] = useState({ start: 1, end: itemsPerPage });
 
-  const totalPage = Math.ceil(totalData / itemsPerPage);
+	const totalPage = Math.ceil(totalData / itemsPerPage);
 
-  const loopPagination = (totalPage) => {
-    let result = [];
-    for (let i = 0; i < totalPage; i ++) {
-      result.push(
-        <button 
-          key={i}
-          aria-current="page" 
-          className={`relative inline-flex items-center border ${currentPage === i + 1 ? 'z-10 font-bold border-borderHijau bg-borderHijau text-white' : 'border-gray-300 border-y hover:bg-muted hover:text-gray-700' }  px-4 py-2 text-sm font-medium focus:z-20`}
+	const loopPagination = (totalPage) => {
+		let result = [];
+		for (let i = 0; i < totalPage; i++) {
+			result.push(
+				<button
+					key={i}
+					aria-current="page"
+					className={`relative inline-flex items-center border ${
+						currentPage === i + 1 ? 'z-10 font-bold border-borderHijau bg-borderHijau text-white' : 'border-gray-300 border-y hover:bg-muted hover:text-gray-700'
+					}  px-4 py-2 text-sm font-medium focus:z-20`}
 					onClick={() => {
 						if (i + 1 > currentPage && i + 1 !== currentPage) {
-							setCurrentPage(prev => i + 1);
+							setCurrentPage((prev) => i + 1);
 							// getProductData();
 						}
 
 						if (i + 1 < currentPage && i + 1 !== currentPage) {
-							setCurrentPage(prev => i + 1);
+							setCurrentPage((prev) => i + 1);
 							// getProductData();
 						}
 					}}
 				>
-          {i + 1}
-        </button>
-      ) 
-    }
+					{i + 1}
+				</button>
+			);
+		}
 
-    return result.map(val => {
-      return val
-    })
-  }
+		return result.map((val) => {
+			return val;
+		});
+	};
 
 	return (
 		<div className="container items-center justify-between border-t border-gray-300 px-5 py-5 sm:px-6">
 			<div className="flex-1 justify-between sm:hidden">
-				<button 
-					className={`${currentPage === '1' ? 'disabled cursor-default hover:disabled' : ''} relative inline-flex items-center border hover:bg-muted hover:text-gray-700 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700`}
+				<button
+					className={`${
+						currentPage === '1' ? 'disabled cursor-default hover:disabled' : ''
+					} relative inline-flex items-center border hover:bg-muted hover:text-gray-700 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700`}
 					onClick={() => {
 						if (currentPage !== 1) {
-							setCurrentPage(prev => prev -= 1)
+							setCurrentPage((prev) => (prev -= 1));
 							// getProductData();
 						}
 					}}
 				>
 					Previous
 				</button>
-				<button 
-					className={`${currentPage === totalPage ? 'disabled cursor-default hover:disabled' : ''} relative inline-flex items-center border hover:bg-muted hover:text-gray-700 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700`}
+				<button
+					className={`${
+						currentPage === totalPage ? 'disabled cursor-default hover:disabled' : ''
+					} relative inline-flex items-center border hover:bg-muted hover:text-gray-700 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700`}
 					onClick={() => {
 						if (currentPage !== totalPage) {
-							setCurrentPage(prev => prev += 1)
+							setCurrentPage((prev) => (prev += 1));
 							// getProductData();
 						}
 					}}
@@ -66,22 +71,24 @@ export default function Pagination({ totalData, itemsPerPage, currentPage, setCu
 				<div>
 					<p className="text-md text-gray-500">
 						Showing
-						<span className="font-bold"> { totalData ? range.start + (itemsPerPage * (currentPage - 1)) : 0} </span>
+						<span className="font-bold"> {totalData ? range.start + itemsPerPage * (currentPage - 1) : 0} </span>
 						to
-						<span className="font-bold"> {totalData >= itemsPerPage &&  itemsPerPage * currentPage < totalData ? itemsPerPage * currentPage : totalData} </span>
+						<span className="font-bold"> {totalData >= itemsPerPage && itemsPerPage * currentPage < totalData ? itemsPerPage * currentPage : totalData} </span>
 						of
 						<span className="font-bold"> {totalData} </span>
 						results
 					</p>
 				</div>
-				
+
 				<div>
 					<nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-						<button 
-							className={`${currentPage == 1 ? 'disabled cursor-not-allowed hover:disabled' : 'hover:bg-muted hover:text-gray-700'} relative inline-flex items-center border border-gray-300 px-2 py-2 text-sm font-medium text-gray-500 focus:z-20`}
+						<button
+							className={`${
+								currentPage == 1 ? 'disabled cursor-not-allowed hover:disabled' : 'hover:bg-muted hover:text-gray-700'
+							} relative inline-flex items-center border border-gray-300 px-2 py-2 text-sm font-medium text-gray-500 focus:z-20`}
 							onClick={() => {
 								if (currentPage !== 1) {
-									setCurrentPage(prev => prev -= 1)
+									setCurrentPage((prev) => (prev -= 1));
 									// getProductData();
 								}
 							}}
@@ -93,14 +100,16 @@ export default function Pagination({ totalData, itemsPerPage, currentPage, setCu
 						</button>
 
 						{loopPagination(totalPage)}
-						
+
 						{/* <span className="relative inline-flex items-center border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">...</span> */}
-						
-						<button 
-							className={`${currentPage == totalPage ? 'disabled cursor-not-allowed hover:disabled' : 'hover:bg-muted hover:text-gray-700'} relative inline-flex items-center border border-gray-300 px-2 py-2 text-sm font-medium text-gray-500 focus:z-20`}
+
+						<button
+							className={`${
+								currentPage == totalPage ? 'disabled cursor-not-allowed hover:disabled' : 'hover:bg-muted hover:text-gray-700'
+							} relative inline-flex items-center border border-gray-300 px-2 py-2 text-sm font-medium text-gray-500 focus:z-20`}
 							onClick={() => {
 								if (currentPage !== totalPage) {
-									setCurrentPage(prev => prev += 1);
+									setCurrentPage((prev) => (prev += 1));
 									// getProductData();
 								}
 							}}
@@ -112,7 +121,6 @@ export default function Pagination({ totalData, itemsPerPage, currentPage, setCu
 						</button>
 					</nav>
 				</div>
-				
 			</div>
 		</div>
 	);

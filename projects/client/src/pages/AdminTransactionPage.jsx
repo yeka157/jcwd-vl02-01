@@ -31,15 +31,17 @@ import {
 	NumberInputField,
 	FormControl,
 	FormLabel,
+	Spinner,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { API_URL } from '../helper';
 import { HiOutlineChevronDown } from 'react-icons/hi';
 import { BsCalendar2Event } from 'react-icons/bs';
 import Pagination from '../components/Pagination';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import TransactionPreviewComponent from '../components/TransactionPreviewComponent';
+import HeadComponent from '../components/HeadComponent';
 
 export default function AdminTransactionPage() {
 	// HOOKS
@@ -47,6 +49,8 @@ export default function AdminTransactionPage() {
 	const { isOpen: isOpenModalAction, onOpen: onOpenModalAction, onClose: onCloseModalAction } = useDisclosure();
 	const { isOpen: isOpenModalPreview, onOpen: onOpenModalPreview, onClose: onCloseModalPreview } = useDisclosure();
 	const { isOpen: isOpenCancelConfirmation, onOpen: onOpenCancelConfirmation, onClose: onCloseCancelConfirmation } = useDisclosure();
+
+	const [isLoading, setIsLoading] = useState(false);
 	const [dateRange, setDateRange] = useState({ from: '', to: '' });
 	const [filters, setFilters] = useState({ invoice: '', transaction_status: '', from: '', to: '', sort: '', order: '' });
 	const [transactionList, setTransactionList] = useState([]);
@@ -79,49 +83,124 @@ export default function AdminTransactionPage() {
 	};
 
 	const updateTransactionStatus = async (action) => {
-		let index = transactionStatus.findIndex((val) => val === selectedTransaction?.transaction_status);
-		if (action === 'reject') {
-			index -= 1;
-		}
-		if (action === 'confirm') {
-			index += 1;
-		}
-		if (action === 'cancel') {
-			index = 0;
+		let confirmationMessage = '';
+		switch (selectedTransaction?.transaction_status) {
+			case 'Awaiting Payment Confirmation':
+				confirmationMessage = 'Payment confirmed!';
+				break;
+			case 'Processed':
+				confirmationMessage = 'Order shipped!';
+				break;
+			default:
+				break;
 		}
 
-		let updateStatus = await axios.patch(
-			`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
-			{ newStatus: transactionStatus[index] },
-			{
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
+		try {
+			let index = transactionStatus.findIndex((val) => val === selectedTransaction?.transaction_status);
+			if (action === 'reject') {
+				index -= 1;
 			}
-		);
+			if (action === 'confirm') {
+				index += 1;
+			}
+			if (action === 'cancel') {
+				index = 0;
+			}
 
-		if (updateStatus.data.success) {
-			console.log(transactionStatus[index]);
+			let updateStatus = await axios.patch(
+				`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
+				{ newStatus: transactionStatus[index] },
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
+			if (!updateStatus.data.success && action !== 'cancel') {
+				toast({
+					size: 'xs',
+					title: `Something went wrong, please try again later!`,
+					position: 'top-right',
+					status: 'error',
+					isClosable: true,
+				});
+				return;
+			}
+
+			if (action !== 'cancel') {
+				toast({
+					size: 'xs',
+					title: confirmationMessage,
+					position: 'top-right',
+					status: 'success',
+					isClosable: true,
+				});
+			}
+		} catch (error) {
+			console.log(error);
+			if (action !== 'cancel') {
+				toast({
+					size: 'xs',
+					title: `Something went wrong, please try again later!`,
+					position: 'top-right',
+					status: 'error',
+					isClosable: true,
+				});
+			}
 		}
 	};
 
 	const btnCancelTransaction = async (transaction_detail) => {
 		let promise = [];
 		const handleStockRecovery = async () => {
-			for (let i = 0; i < transaction_detail?.length; i++) {
-				promise.push(
-					await axios.patch(
-						`${API_URL}/transaction/stock_recovery/${transaction_detail[i]?.product_id}`,
-						{ data: transaction_detail[i] },
-						{
-							headers: {
-								Authorization: `Bearer ${token}`,
-							},
-						}
-					)
-				);
+			try {
+				for (let i = 0; i < transaction_detail?.length; i++) {
+					promise.push(
+						await axios.patch(
+							`${API_URL}/transaction/stock_recovery/${transaction_detail[i]?.product_id}`,
+							{ data: transaction_detail[i] },
+							{
+								headers: {
+									Authorization: `Bearer ${token}`,
+								},
+							}
+						)
+					);
+				}
+				let result = await Promise.all(promise);
+				let isSuccess = [];
+				result.forEach((val) => {
+					isSuccess.push(val.data.success);
+				});
+
+				if (isSuccess.includes(false)) {
+					toast({
+						size: 'xs',
+						title: `Something went wrong, please try again later!`,
+						position: 'top-right',
+						status: 'error',
+						isClosable: true,
+					});
+					return;
+				}
+				toast({
+					size: 'xs',
+					title: `Order cancelation success!`,
+					position: 'top-right',
+					status: 'success',
+					isClosable: true,
+				});
+			} catch (error) {
+				console.log(error);
+				toast({
+					size: 'xs',
+					title: `Something went wrong, please try again later!`,
+					position: 'top-right',
+					status: 'error',
+					isClosable: true,
+				});
 			}
-			await Promise.all(promise);
 		};
 		const resolvePromise = async () => {
 			await handleStockRecovery();
@@ -310,7 +389,7 @@ export default function AdminTransactionPage() {
 		<>
 			<Box className="border !border-b-0 !border-gray-300 container flex justify-center py-5">
 				<a href={`http://localhost:8000${selectedTransaction?.doctor_prescription}`} target="_blank">
-					<img className="min-w-[250px] max-w-[450px]" src={`http://localhost:8000/${selectedTransaction?.doctor_prescription}`} alt="doctor_prescription" />
+					<img className="min-w-[250px] max-w-[350px]" src={`http://localhost:8000/${selectedTransaction?.doctor_prescription}`} alt="doctor_prescription" />
 				</a>
 			</Box>
 			<Box className="border !border-b-0 !border-gray-300 container flex justify-center">
@@ -474,7 +553,7 @@ export default function AdminTransactionPage() {
 					</NumberInput>
 
 					<Button
-						disabled={ingredients?.quantity > maxStockAvailable(ingredients.product_unit) || ingredients?.quantity === 0 || isProductInserted()}
+						disabled={ingredients?.quantity > maxStockAvailable(ingredients.product_unit) || ingredients?.quantity == 0 || isProductInserted()}
 						borderRadius={0}
 						className="my-2"
 						colorScheme={'teal'}
@@ -512,7 +591,7 @@ export default function AdminTransactionPage() {
 					<Box className="border border-gray-300">
 						<div className="flex justify-center align-middle my-5">
 							<a href={`http://localhost:8000${selectedTransaction?.payment_proof}`} target="_blank">
-								<img className="max-w-[250px]" src={`http://localhost:8000/${selectedTransaction?.payment_proof}`} alt="doctor_prescription" />
+								<img className="max-w-[250px]" src={`http://localhost:8000/${selectedTransaction?.payment_proof}`} alt="payment_confirmation" />
 							</a>
 						</div>
 					</Box>
@@ -578,7 +657,6 @@ export default function AdminTransactionPage() {
 
 	const modalWindow = (
 		<Modal
-			isCentered
 			size={selectedTransaction?.doctor_prescription ? '2xl' : 'xl'}
 			className="bg-bgWhite"
 			initialFocusRef={initialRef}
@@ -604,6 +682,7 @@ export default function AdminTransactionPage() {
 								onClick={() => {
 									let promise = [];
 									const handleDoctorPrescription = async () => {
+										setIsLoading((prev) => (prev = !prev));
 										for (let i = 0; i < ingredientsList.length; i++) {
 											promise.push(
 												await axios.patch(`http://localhost:8000/api/transaction/confirm_prescription/${ingredientsList[i]?.productDetails.product_id}`, ingredientsList[i], {
@@ -620,28 +699,60 @@ export default function AdminTransactionPage() {
 									};
 
 									const updateTotalPurchase = async () => {
-										await axios.patch(
-											`http://localhost:8000/api/transaction/update_total_purchase/${selectedTransaction?.transaction_id}`,
-											{
-												total_purchase: countTotalPurchase(),
-											},
-											{
-												headers: {
-													Authorization: `Bearer ${token}`,
+										try {
+											let update = await axios.patch(
+												`http://localhost:8000/api/transaction/update_total_purchase/${selectedTransaction?.transaction_id}`,
+												{
+													total_purchase: countTotalPurchase(),
 												},
+												{
+													headers: {
+														Authorization: `Bearer ${token}`,
+													},
+												}
+											);
+											if (update.data.success) {
+												setTimeout(() => {
+													setIsLoading((prev) => (prev = !prev));
+													onCloseModalAction();
+													toast({
+														size: 'xs',
+														title: `Order confirmed`,
+														position: 'top-right',
+														status: 'success',
+														isClosable: true,
+													});
+													let temp = transactionList;
+													temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase() });
+													setTransactionList((prev) => (prev = temp));
+												}, 1500);
+												return;
 											}
-										);
+
+											toast({
+												size: 'xs',
+												title: `Something went wrong, please try again later!`,
+												position: 'top-right',
+												status: 'error',
+												isClosable: true,
+											});
+										} catch (error) {
+											console.log(error);
+											toast({
+												size: 'xs',
+												title: `Something went wrong, please try again later!`,
+												position: 'top-right',
+												status: 'error',
+												isClosable: true,
+											});
+										}
 									};
 
 									resolvePromise();
 									updateTotalPurchase();
-									onCloseModalAction();
-									let temp = transactionList;
-									temp.splice(selectedTransactionIndex, 1, { ...selectedTransaction, transaction_status: 'Awaiting Payment', total_purchase: countTotalPurchase() });
-									setTransactionList((prev) => (prev = temp));
 								}}
 							>
-								Confirm Order
+								{isLoading ? <Spinner size="sm" /> : 'Confirm Order'}
 							</Button>
 							<Button borderRadius={0} size="sm" onClick={onCloseModalAction}>
 								Close
@@ -775,12 +886,6 @@ export default function AdminTransactionPage() {
 	}, [currentPage]);
 
 	useEffect(() => {
-		if (filters.invoice || filters.transaction_status || filters.from || filters.to) {
-			setTotalData((prev) => (prev = transactionList.length));
-		}
-	}, [transactionList]);
-
-	useEffect(() => {
 		if (filters.invoice == '' && filters.transaction_status == '' && filters.from == '' && filters.to == '' && filters.sort == '' && filters.order == '') {
 			getTransactions();
 			getTotalData();
@@ -789,267 +894,270 @@ export default function AdminTransactionPage() {
 	}, [filters]);
 
 	return (
-		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
-			{modalSelectDate}
-			{modalWindow}
-			{modalDeleteConfirmation}
-			<TransactionPreviewComponent selectedTransaction={selectedTransaction} isOpen={isOpenModalPreview} onClose={onCloseModalPreview} initialFocusRef={initialRef} finalFocusRef={finalRef} />
+		<>
+			<HeadComponent title={'SEHATBOS | Admin Transaction'} description={'Admin Transaction'} type={'website'}/>
+			<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
+				{modalSelectDate}
+				{modalWindow}
+				{modalDeleteConfirmation}
+				<TransactionPreviewComponent selectedTransaction={selectedTransaction} isOpen={isOpenModalPreview} onClose={onCloseModalPreview} initialFocusRef={initialRef} finalFocusRef={finalRef} />
 
-			<div className="container mx-auto mt-[2.5vh]">
-				<h1
-					className="font-bold text-lg text-hijauBtn text-center cursor-pointer"
-					onClick={() => {
-						navigate('/admin');
-					}}
-				>
-					SEHATBOS.COM <span className="font-normal">| TRANSACTION HISTORY</span>
-				</h1>
-			</div>
+				<div className="container mx-auto mt-[2.5vh]">
+					<h1
+						className="font-bold text-lg text-hijauBtn text-center cursor-pointer"
+						onClick={() => {
+							navigate('/admin');
+						}}
+					>
+						SEHATBOS.COM <span className="font-normal">| TRANSACTION HISTORY</span>
+					</h1>
+				</div>
 
-			<div className="container mx-auto mt-[5vh] grid justify-items-start">
-				<h1 className="font-bold text-lg">Transaction List</h1>
-				<Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
-					<BreadcrumbItem>
-						<BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-					</BreadcrumbItem>
+				<div className="container mx-auto mt-[5vh] grid justify-items-start">
+					<h1 className="font-bold text-lg">Transaction List</h1>
+					<Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
+						<BreadcrumbItem>
+							<BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+						</BreadcrumbItem>
 
-					<BreadcrumbItem>
-						<BreadcrumbLink>Transaction</BreadcrumbLink>
-					</BreadcrumbItem>
-				</Breadcrumb>
-			</div>
+						<BreadcrumbItem>
+							<BreadcrumbLink>Transaction</BreadcrumbLink>
+						</BreadcrumbItem>
+					</Breadcrumb>
+				</div>
 
-			<div className="flex">
-				<div className="mb-3 xl:w-96">
-					<div className="input-group relative flex flex-wrap items-stretch w-full">
-						<div className="inline mt-5">
-							<input
-								style={{ borderRadius: 0 }}
-								value={filters.invoice}
-								type="search"
-								className="form-control relative flex-auto w-[200px] block px-3 py-1.5 text-sm font-normal text-gray-700 bg-bgWhite bg-clip-padding border border-solid border-gray-500 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-bgWhite focus:border-borderHijau focus:outline-none"
-								placeholder={'Search by Invoice ID'}
-								aria-label="Search"
-								aria-describedby="button-addon3"
-								onChange={(e) => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, invoice: e.target.value }));
-								}}
-							/>
+				<div className="flex">
+					<div className="mb-3 xl:w-96">
+						<div className="input-group relative flex flex-wrap items-stretch w-full">
+							<div className="inline mt-5">
+								<input
+									style={{ borderRadius: 0 }}
+									value={filters.invoice}
+									type="search"
+									className="form-control relative flex-auto w-[200px] block px-3 py-1.5 text-sm font-normal text-gray-700 bg-bgWhite bg-clip-padding border border-solid border-gray-500 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-bgWhite focus:border-borderHijau focus:outline-none"
+									placeholder={'Search by Invoice ID'}
+									aria-label="Search"
+									aria-describedby="button-addon3"
+									onChange={(e) => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, invoice: e.target.value }));
+									}}
+								/>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<div className={`container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end`}>
-				<div>
-					<Menu>
-						<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
-							{filters.transaction_status ? filters.transaction_status : 'Transaction Status'}
-						</MenuButton>
-						<MenuList>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setFilters((prev) => ({ ...prev, transaction_status: '' }));
-									setCurrentPage((prev) => (prev = 1));
-								}}
-							>
-								None
-							</MenuItem>
-							{transactionStatus.map((val, idx) => {
-								return (
-									<MenuItem
-										key={Math.random() + id}
-										className="text-xs"
-										onClick={() => {
-											setFilters((prev) => ({ ...prev, transaction_status: val }));
-											setCurrentPage((prev) => (prev = 1));
-										}}
-									>
-										{val}
-									</MenuItem>
-								);
-							})}
-						</MenuList>
-					</Menu>
-					<Menu>
-						<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
-							{filters.sort === '' ? 'Sort' : `${filters.sort} (${filters.order})`}
-						</MenuButton>
-						<MenuList>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: '', order: '' }));
-								}}
-							>
-								None
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Invoice', order: 'asc' }));
-								}}
-							>
-								{'Invoice Number (Ascending)'}
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Invoice', order: 'desc' }));
-								}}
-							>
-								{'Invoice Number (Descending)'}
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Date', order: 'asc' }));
-								}}
-							>
-								{'Date (Ascending)'}
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Date', order: 'desc' }));
-								}}
-							>
-								{'Date (Descending)'}
-							</MenuItem>
-						</MenuList>
-					</Menu>
-
-					<Button className="mr-3 mt-3 md:mt-0 lg:mt-0" style={{ borderColor: 'gray' }} borderRadius={'0'} color="gray" variant="outline" size={'sm'} onClick={onOpenSelectDate}>
-						{filters.from ? new Date(filters.from).toLocaleDateString('id') + ' - ' + new Date(filters.to).toLocaleDateString('id') : 'By date range'}
-						<BsCalendar2Event className="ml-3" />
-					</Button>
-
-					<Button
-						className="mt-3 md:mt-0 lg:mt-0"
-						style={{ borderColor: 'gray' }}
-						disabled={!filters.invoice && !filters.transaction_status && !filters.from && !filters.to && !filters.sort && !filters.order}
-						borderRadius={'0'}
-						color="gray"
-						variant="outline"
-						size={'sm'}
-						onClick={resetFilter}
-					>
-						Reset Filter
-					</Button>
-				</div>
-			</div>
-
-			<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
-				<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
-					<h1 className="inline">Transaction</h1>
-				</Box>
-			</div>
-			<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-5">
-				<TableContainer w="100vw" fontSize={'xs'}>
-					<Table size="sm">
-						<Thead>
-							<Tr>
-								<Th>No.</Th>
-								<Th>Date</Th>
-								<Th>Invoice ID</Th>
-								<Th>Status</Th>
-								<Th>Preview</Th>
-								<Th>Action</Th>
-							</Tr>
-						</Thead>
-						<Tbody>
-							{transactionList.length > 0 &&
-								transactionList?.map((val, idx) => {
+				<div className={`container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end`}>
+					<div>
+						<Menu>
+							<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
+								{filters.transaction_status ? filters.transaction_status : 'Transaction Status'}
+							</MenuButton>
+							<MenuList>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setFilters((prev) => ({ ...prev, transaction_status: '' }));
+										setCurrentPage((prev) => (prev = 1));
+									}}
+								>
+									None
+								</MenuItem>
+								{transactionStatus.map((val, idx) => {
 									return (
-										<Tr key={id + idx}>
-											<Td className="text-[rgb(67,67,67)]">{idx + 1}</Td>
-											<Td className="text-[rgb(67,67,67)]">{new Date(val.order_date).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Td>
-											<Td className="text-[rgb(67,67,67)]">{val.invoice}</Td>
-											{/* <Td className="text-[rgb(67,67,67)]"> {val.total_purchase ? 'Rp' + val.total_purchase?.toLocaleString('id') + ',-' : '-'}</Td> */}
-											<Td className="text-[rgb(67,67,67)]">
-												<Badge variant={'solid'} colorScheme={badgeColor(val.transaction_status)}>
-													{val.transaction_status}
-												</Badge>
-											</Td>
-											<Td className="text-[rgb(67,67,67)]">
-												<Button
-													size={'xs'}
-													colorScheme="blue"
-													variant={'outline'}
-													className="mr-2"
-													style={{ borderRadius: '0' }}
-													onClick={() => {
-														onOpenModalPreview();
-														setSelectedTransaction((prev) => (prev = val));
-														setSelectedTransactionIndex((prev) => (prev = idx));
-													}}
-												>
-													Preview
-												</Button>
-											</Td>
-											<Td className="text-[rgb(67,67,67)]">
-												{whiteListedStatus.includes(val.transaction_status) && (
-													<Button
-														size={'xs'}
-														colorScheme="purple"
-														variant={'outline'}
-														className={`mr-2`}
-														style={{ borderRadius: '0' }}
-														onClick={() => {
-															onOpenModalAction();
-															setSelectedTransaction((prev) => (prev = val));
-															setSelectedTransactionIndex((prev) => (prev = idx));
-														}}
-													>
-														Handle
-													</Button>
-												)}
-												{whiteListedCancelStatus.includes(val.transaction_status) && (
-													<Button
-														size={'xs'}
-														colorScheme="red"
-														variant={'outline'}
-														style={{ borderRadius: '0' }}
-														onClick={() => {
-															onOpenCancelConfirmation();
-															setSelectedTransaction((prev) => (prev = val));
-															setSelectedTransactionIndex((prev) => (prev = idx));
-														}}
-													>
-														Cancel
-													</Button>
-												)}
-											</Td>
-										</Tr>
+										<MenuItem
+											key={Math.random() + id}
+											className="text-xs"
+											onClick={() => {
+												setFilters((prev) => ({ ...prev, transaction_status: val }));
+												setCurrentPage((prev) => (prev = 1));
+											}}
+										>
+											{val}
+										</MenuItem>
 									);
 								})}
-						</Tbody>
-					</Table>
-				</TableContainer>
-			</div>
-			<div className="flex container mx-auto mb-5">
-				<h1 className="mr-2 font-semibold text-sm text-gray-500">Status Color:</h1>
-				<Badge variant={'solid'} colorScheme={'purple'} className="mr-2">
-					HANDLING
-				</Badge>
-				<Badge variant={'solid'} colorScheme={'blue'} className="mr-2">
-					WAITING
-				</Badge>
-				<Badge variant={'solid'} colorScheme={'green'} className="mr-2">
-					COMPLETED
-				</Badge>
-				<Badge variant={'solid'} colorScheme={'red'}>
-					CANCELLED
-				</Badge>
-			</div>
-			<Pagination getProductData={getTransactions} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-		</main>
+							</MenuList>
+						</Menu>
+						<Menu>
+							<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
+								{filters.sort === '' ? 'Sort' : `${filters.sort} (${filters.order})`}
+							</MenuButton>
+							<MenuList>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: '', order: '' }));
+									}}
+								>
+									None
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Invoice', order: 'asc' }));
+									}}
+								>
+									{'Invoice Number (Ascending)'}
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Invoice', order: 'desc' }));
+									}}
+								>
+									{'Invoice Number (Descending)'}
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Date', order: 'asc' }));
+									}}
+								>
+									{'Date (Ascending)'}
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Date', order: 'desc' }));
+									}}
+								>
+									{'Date (Descending)'}
+								</MenuItem>
+							</MenuList>
+						</Menu>
+
+						<Button className="mr-3 mt-3 md:mt-0 lg:mt-0" style={{ borderColor: 'gray' }} borderRadius={'0'} color="gray" variant="outline" size={'sm'} onClick={onOpenSelectDate}>
+							{filters.from ? new Date(filters.from).toLocaleDateString('id') + ' - ' + new Date(filters.to).toLocaleDateString('id') : 'By date range'}
+							<BsCalendar2Event className="ml-3" />
+						</Button>
+
+						<Button
+							className="mt-3 md:mt-0 lg:mt-0"
+							style={{ borderColor: 'gray' }}
+							disabled={!filters.invoice && !filters.transaction_status && !filters.from && !filters.to && !filters.sort && !filters.order}
+							borderRadius={'0'}
+							color="gray"
+							variant="outline"
+							size={'sm'}
+							onClick={resetFilter}
+						>
+							Reset Filter
+						</Button>
+					</div>
+				</div>
+
+				<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
+					<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
+						<h1 className="inline">Transaction</h1>
+					</Box>
+				</div>
+				<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-5">
+					<TableContainer w="100vw" fontSize={'xs'}>
+						<Table size="sm">
+							<Thead>
+								<Tr>
+									<Th>No.</Th>
+									<Th>Date</Th>
+									<Th>Invoice ID</Th>
+									<Th>Status</Th>
+									<Th>Preview</Th>
+									<Th>Action</Th>
+								</Tr>
+							</Thead>
+							<Tbody>
+								{transactionList.length > 0 &&
+									transactionList?.map((val, idx) => {
+										return (
+											<Tr key={id + idx}>
+												<Td className="text-[rgb(67,67,67)]">{idx + 1}</Td>
+												<Td className="text-[rgb(67,67,67)]">{new Date(val.order_date).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</Td>
+												<Td className="text-[rgb(67,67,67)]">{val.invoice}</Td>
+												{/* <Td className="text-[rgb(67,67,67)]"> {val.total_purchase ? 'Rp' + val.total_purchase?.toLocaleString('id') + ',-' : '-'}</Td> */}
+												<Td className="text-[rgb(67,67,67)]">
+													<Badge variant={'solid'} colorScheme={badgeColor(val.transaction_status)}>
+														{val.transaction_status}
+													</Badge>
+												</Td>
+												<Td className="text-[rgb(67,67,67)]">
+													<Button
+														size={'xs'}
+														colorScheme="blue"
+														variant={'outline'}
+														className="mr-2"
+														style={{ borderRadius: '0' }}
+														onClick={() => {
+															onOpenModalPreview();
+															setSelectedTransaction((prev) => (prev = val));
+															setSelectedTransactionIndex((prev) => (prev = idx));
+														}}
+													>
+														Preview
+													</Button>
+												</Td>
+												<Td className="text-[rgb(67,67,67)]">
+													{whiteListedStatus.includes(val.transaction_status) && (
+														<Button
+															size={'xs'}
+															colorScheme="purple"
+															variant={'outline'}
+															className={`mr-2`}
+															style={{ borderRadius: '0' }}
+															onClick={() => {
+																onOpenModalAction();
+																setSelectedTransaction((prev) => (prev = val));
+																setSelectedTransactionIndex((prev) => (prev = idx));
+															}}
+														>
+															Handle
+														</Button>
+													)}
+													{whiteListedCancelStatus.includes(val.transaction_status) && (
+														<Button
+															size={'xs'}
+															colorScheme="red"
+															variant={'outline'}
+															style={{ borderRadius: '0' }}
+															onClick={() => {
+																onOpenCancelConfirmation();
+																setSelectedTransaction((prev) => (prev = val));
+																setSelectedTransactionIndex((prev) => (prev = idx));
+															}}
+														>
+															Cancel
+														</Button>
+													)}
+												</Td>
+											</Tr>
+										);
+									})}
+							</Tbody>
+						</Table>
+					</TableContainer>
+				</div>
+				<div className="flex container mx-auto mb-5">
+					<h1 className="mr-2 font-semibold text-sm text-gray-500">Status Color:</h1>
+					<Badge variant={'solid'} colorScheme={'purple'} className="mr-2">
+						HANDLING
+					</Badge>
+					<Badge variant={'solid'} colorScheme={'blue'} className="mr-2">
+						WAITING
+					</Badge>
+					<Badge variant={'solid'} colorScheme={'green'} className="mr-2">
+						COMPLETED
+					</Badge>
+					<Badge variant={'solid'} colorScheme={'red'}>
+						CANCELLED
+					</Badge>
+				</div>
+				<Pagination getProductData={getTransactions} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+			</main>
+		</>
 	);
 }

@@ -26,7 +26,7 @@ export default function MenuComponent() {
     }, []);
 
   return (
-    <div className='bg-bgHijau min-h-screen px-20 py-36'>
+    <div className='bg-[rgb(2,93,103,0.25)] min-h-screen px-20 py-36'>
         <h1 className='text-4xl'>Most Loved, best picks</h1>
         <div className='sm:flex sm:items-center sm:justify-between my-3 space-y-2'>
             <h6 className='text-xs sm:text-sm'>

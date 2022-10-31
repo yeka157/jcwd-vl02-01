@@ -1,7 +1,37 @@
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from '@chakra-ui/react';
+import Cookies from 'js-cookie';
 import React from 'react';
 import AddressListComponent from './AddressListComponent';
+import Axios from 'axios';
+import { API_URL } from '../helper';
+import { useDispatch } from 'react-redux';
+import { userAddress } from '../slices/addressSlice';
+
 export default function AddressTableComponent(props) {
+  const dispatch = useDispatch();
+
+  const getAddressData = async () => {
+    try {
+      let token = Cookies.get('sehatToken');
+      if (token) {
+        let response = await Axios.get(API_URL + '/user/get_address', {
+          headers : {
+            'Authorization' : `Bearer ${token}`
+          }
+        })
+        if (response.data) {
+          dispatch(userAddress(response.data))
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  React.useEffect(() => {
+    getAddressData();
+  }, []);
+  
   return (
     <div className='w-full'>
         <TableContainer>

@@ -91,9 +91,26 @@ export default function AddressComponent() {
     }
   }
 
-
+  const getAddressData = async () => {
+    try {
+      let token = Cookies.get('sehatToken');
+      if (token) {
+        let response = await Axios.get(API_URL + '/user/get_address', {
+          headers : {
+            'Authorization' : `Bearer ${token}`
+          }
+        })
+        if (response.data) {
+          dispatch(userAddress(response.data))
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   React.useEffect(() => {
     getDataProvince();
+    getAddressData();
   }, []);
 
   return (
