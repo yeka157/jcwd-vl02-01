@@ -6,12 +6,21 @@ module.exports = {
             let resCart = await dbQuery(`SELECT c.cart_id, p.default_unit, c.product_id, p.product_name, p.product_price, p.product_image, s.product_stock, p.product_description, c.is_selected, c.quantity from carts c
             JOIN products p ON p.product_id = c.product_id
             JOIN stock s ON s.product_id = c.product_id
-            WHERE c.user_id = ${req.dataToken.user_id};`);
+            WHERE c.user_id = ${req.dataToken.user_id}
+            LIMIT ${req.query.limit} OFFSET ${req.query.offset};`);
+
+            let resPurchase = await dbQuery(`SELECT c.is_selected, p.product_price, c.quantity from carts c 
+            JOIN products p ON p.product_id = c.product_id
+            WHERE user_id = ${req.dataToken.user_id}`);
+
+            resCount = await dbQuery(`Select COUNT(*) as count from carts WHERE user_id = ${req.dataToken.user_id}`)
 
             res.status(200).send({
                 succes: true,
                 massage: "Get cart success",
                 cartData: resCart,
+                count: resCount[0].count,
+                purchase: resPurchase
             })
 
         } catch (error) {
@@ -99,12 +108,21 @@ module.exports = {
             let resChecked = await dbQuery(`SELECT c.cart_id, s.stock_id, c.product_id, p.default_unit, p.product_name, p.product_price, p.product_image, p.product_description, s.product_stock, c.is_selected, c.quantity from carts c
             JOIN products p ON c.product_id = p.product_id
             JOIN stock s ON c.product_id = s.product_id
-            WHERE user_id = ${req.dataToken.user_id} AND c.is_selected = 1;`);
+            WHERE user_id = ${req.dataToken.user_id} AND c.is_selected = 1
+            LIMIT ${req.query.limit} OFFSET ${req.query.offset};`);
+
+            let resPurchase = await dbQuery(`SELECT c.is_selected, p.product_price, c.quantity from carts c 
+            JOIN products p ON p.product_id = c.product_id
+            WHERE user_id = ${req.dataToken.user_id} AND is_selected = 1`);
+
+            let resCount = await dbQuery(`Select COUNT(*) as count from carts WHERE user_id = ${req.dataToken.user_id} AND is_selected = 1`);
 
             res.status(200).send({
                 succes: true,
                 massage: "Success",
-                items: resChecked
+                items: resChecked,
+                count: resCount[0].count,
+                purchase: resPurchase
             })
 
         } catch (error) {

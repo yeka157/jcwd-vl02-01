@@ -28,6 +28,7 @@ export default function ProductListPage() {
   const navigate = useNavigate();
   const itemsPerPage = 12;
   const query = new URLSearchParams(window.location.search);
+
   const getCategory = async () => {
     let getData = await Axios.get(API_URL + "/category/");
     if (getData.data.success) {
@@ -89,8 +90,8 @@ export default function ProductListPage() {
       }
       setFilters((prev) => (prev = { product_name : '', category_name : '', sort : '', order : ''}));
       setCurrentPage(prev => prev = 1) ;
-      // await getProduct();
-      // await getTotalProduct();
+      await getProduct();
+      await getTotalProduct();
     } catch (error) {
       console.log(error);
     }
@@ -115,15 +116,19 @@ export default function ProductListPage() {
 
   // React.useEffect(() => {
   //   if (query.get('category')) {
-  //     setFilters((prev) => ({...prev, ...query}))
+  //     setFilters((prev) => ({...prev, category_name : query.get('category')}));
+  //     setTimeout(() => {
+  //       console.log(filters);
+  //     }, 1000);
   //   } else {
   //     setFilters((prev) => (prev = { product_name : '', category_name : '', sort : '', order : ''}))
   //   }
-  //   console.log(query);
-  //   console.log(filters);
-  // }, [query]);
+  // }, []);
 
   React.useEffect(() => {
+    if (state) {
+      setFilters((prev) => ({...prev, category_name : state.category}));
+    }
     getProduct();
   }, [state]);
 

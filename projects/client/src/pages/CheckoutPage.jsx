@@ -10,9 +10,13 @@ import axios from 'axios';
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux';
 import { getAddress } from '../slices/addressSlice';
+import { getCart } from '../slices/cartSlices';
 import { useNavigate } from 'react-router-dom';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
 import { RiErrorWarningLine } from "react-icons/ri";
+import { useDispatch } from 'react-redux';
+import { userCart } from '../slices/cartSlices';
+import Pagination from '../components/Pagination';
 
 const CheckoutPage = (props) => {
 
@@ -22,24 +26,33 @@ const CheckoutPage = (props) => {
     const [address, setAddress] = useState({});
     const [btnSpinner, setBtnSpinner] = useState(false);
     const [disableBtn, setDisableBtn] = useState(false);
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    const [totalData, setTotalData] = useState(0);
+    const [totalPurchase, setTotalPurchase] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const itemsPerPage = 4;
 
     const user = useSelector(getUser);
     const addressList = useSelector(getAddress);
+    const cart = useSelector(getCart)
     const toast = useToast();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
         getData();
-        getMainAddress();
+    }, [currentPage]);
 
+    useEffect(() => {
+        getMainAddress();
     }, []);
 
     let getData = async () => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resData = await axios.get(API_URL + '/cart/checkouted_item', {
+            let resData = await axios.get(API_URL + `/cart/checkouted_item?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage - 1)}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -47,6 +60,8 @@ const CheckoutPage = (props) => {
 
             if (resData.data.succes) {
                 setItem(resData.data.items);
+                setTotalData(resData.data.count);
+                setTotalPurchase(resData.data.purchase);
             };
 
         } catch (error) {
@@ -108,7 +123,7 @@ const CheckoutPage = (props) => {
     const printSubTotal = () => {
         let total = 0;
 
-        item.forEach(val => {
+        totalPurchase.forEach(val => {
             total += val.quantity * val.product_price
         })
 
@@ -136,7 +151,8 @@ const CheckoutPage = (props) => {
                 city_id: address.city_id,
                 district: address.district,
                 address_detail: address.address_detail,
-                transaction_detail: item
+                transaction_detail: item,
+                receiver: address.receiver
             }
 
             let resOrder = await axios.post(API_URL + `/transaction/add_transaction`, data, {
@@ -146,6 +162,15 @@ const CheckoutPage = (props) => {
             });
 
             if (resOrder.data.success) {
+                let temp = [];
+
+                cart.forEach(val => {
+                    if (val.is_selected === 0) {
+                        temp.push(val);
+                    }
+                });
+
+                dispatch(userCart(temp));
                 updateStock();
                 setDisableBtn(false);
                 setBtnSpinner(false);
@@ -209,7 +234,7 @@ const CheckoutPage = (props) => {
                                     addressList.length > 0 ?
                                         address.address_id ?
                                             <div className='py-3'>
-                                                <p className='font-bold text-hijauBtn'>{`${user.name == null ? user.username : user.name} - (+62)${user.phone_number}`}</p>
+                                                <p className='font-bold text-hijauBtn'>{`${address.receiver} - (+62)${user.phone_number}`}</p>
                                                 <p>{address.address_detail}</p>
                                                 <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
                                             </div>
@@ -241,6 +266,13 @@ const CheckoutPage = (props) => {
                                 )
                             })
                         }
+
+                        {
+                            totalData > 0 &&
+                            <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                        }
+
+
 
                     </div>
 

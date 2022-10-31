@@ -39,11 +39,6 @@ export default function Navbar(props) {
     }
   };
 
-  React.useEffect(() => {
-    // console.log(pathName);
-    // console.log(params.get('category'));
-  })
-
   return (
     <div className={`border-b border-slate-400 ${props.class} ${
       pathName === '/' || 
@@ -66,7 +61,7 @@ export default function Navbar(props) {
         </div>
         <div className="flex justify-center">
           <h1
-            className="text-2xl cursor-pointer font-bold tracking-widest"
+            className="text-2xl cursor-pointer font-bold tracking-widest text-hijauBtn"
             onClick={() => {
               navigate("/");
             }}
@@ -78,6 +73,7 @@ export default function Navbar(props) {
           {user.user_id ? (
             user.role === "CUSTOMER" ? 
             <>
+            <HiOutlineShoppingBag onClick={()=> {navigate('/cart')}} className="cursor-pointer hoverIcons text-black" />
             <Menu>
               <MenuButton as={IconButton} icon={<HiOutlineUser className="cursor-pointer hoverIcons text-black" />} variant='link' px={0} py={0} borderRadius='full'>
                 
@@ -88,7 +84,6 @@ export default function Navbar(props) {
                 <MenuItem icon={<RiLogoutBoxLine/>} onClick={btnLogout}>Logout</MenuItem>
               </MenuList>
             </Menu>
-              <HiOutlineShoppingBag onClick={()=> {navigate('/cart')}} className="cursor-pointer hoverIcons text-black" />
             </>
             :
             <>
@@ -173,23 +168,23 @@ export default function Navbar(props) {
           </h1>
           <h1 className="text-sm">|</h1>
           <h1 className={`hover:underline ${
-            params.get('category') === 'healthNwellness' ? 
+            params.get('category') === 'suplement' ? 
             'font-medium text-base underline leading-[5px] cursor-default disabled' 
             : 
             'text-sm hover:leading-3 cursor-pointer'
-          }`} onClick={() => navigate('/product?category=healthNwellness', {
+          }`} onClick={() => navigate('/product?category=suplement', {
             state : {
               category : 'Suplement'
             }
           })}>
-            HEALTH & WELLNESS
+            SUPLEMENT
           </h1>
           <h1 className="text-sm">|</h1>
           <h1
             className={`hover:underline ${
               pathName === "/product" || pathName === "/product/detail"
                 ? 
-                params.get('category') === "antivirus" || params.get('category') === 'healthNwellness' ? 'text-sm hover:leading-3 cursor-pointer' : 
+                params.get('category') !== null  ? 'text-sm hover:leading-3 cursor-pointer' : 
                 "font-medium text-base underline leading-[5px] cursor-default disabled"
                 : "text-sm hover:leading-3 cursor-pointer"
             }`}
@@ -198,13 +193,52 @@ export default function Navbar(props) {
             PRODUCT LINE
           </h1>
           <h1 className="text-sm">|</h1>
+          <h1 className={`hover:underline ${
+            params.get('category') === 'Fever' ? 
+            'font-medium text-base underline leading-[5px] cursor-default disabled' 
+            : 
+            'text-sm hover:leading-3 cursor-pointer'
+          }`} onClick={() => navigate('/product?category=Fever', {
+            state : {
+              category : 'Fever'
+            }
+          })}>
+            FEVER
+          </h1>
+          <h1 className="text-sm">|</h1>
+          <h1 className={`hover:underline ${
+            params.get('category') === 'Painkiller' ? 
+            'font-medium text-base underline leading-[5px] cursor-default disabled' 
+            : 
+            'text-sm hover:leading-3 cursor-pointer'
+          }`} onClick={() => navigate('/product?category=Painkiller', {
+            state : {
+              category : 'Painkiller'
+            }
+          })}>
+            PAINKILLER
+          </h1>
+          <h1 className="text-sm">|</h1>
+          <h1 className={`hover:underline ${
+            params.get('category') === 'Antibiotics' ? 
+            'font-medium text-base underline leading-[5px] cursor-default disabled' 
+            : 
+            'text-sm hover:leading-3 cursor-pointer'
+          }`} onClick={() => navigate('/product?category=Antibiotics', {
+            state : {
+              category : 'Antibiotics'
+            }
+          })}>
+            ANTIBIOTICS
+          </h1>
+          {/* <h1 className="text-sm">|</h1>
           <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">
             ABOUT US
           </h1>
           <h1 className="text-sm">|</h1>
           <h1 className="text-sm cursor-pointer hover:underline hover:leading-3">
             SCIENCE
-          </h1>
+          </h1> */}
         </div>
       </div>
     </div>

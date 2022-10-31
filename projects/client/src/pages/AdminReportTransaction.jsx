@@ -41,6 +41,9 @@ import { BsCalendarDate } from "react-icons/bs";
 import { HiOutlineChevronDown } from "react-icons/hi";
 import { API_URL } from "../helper";
 import Axios from "axios";
+import Pagination from "../components/Pagination";
+import * as XLSX from 'xlsx';
+import { useNavigate } from "react-router-dom";
 
 export default function AdminReportTransaction() {
   ChartJS.register(
@@ -66,11 +69,6 @@ export default function AdminReportTransaction() {
         display: true,
         text: "Total Sales (in Rp)",
       },
-      // ticks: {
-      //   callback: function (value, index, values) {
-      //     return yLabels[value];
-      //   },
-      // },
     },
     x: {
       title: {
@@ -92,7 +90,8 @@ export default function AdminReportTransaction() {
   const [dataChart, setDataChart] = React.useState([]);
   const [labelChart, setLabelChart] = React.useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const itemsPerPage = 10;
+  const navigate = useNavigate();
   const btnClosePopover = async () => {
     try {
       if (dateFrom && dateTo) {
@@ -122,8 +121,8 @@ export default function AdminReportTransaction() {
   };
   const getTotalData = async () => {
     try {
-      let total = await Axios.get(API_URL + `/admin/total_report?report=transaction`);
-      setTotalData((prev) => prev = total.data.count);
+      let total = await Axios.get(API_URL + `/admin/get_transaction_table`);
+      setTotalData((prev) => prev = total.data.length);
     } catch (error) {
       console.log(error);
     }
@@ -138,8 +137,9 @@ export default function AdminReportTransaction() {
           }
         }
         const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
+        const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}&${temp.join("&")}`);
         if (result.data.note === 'data found') {
-          setDataChart((prev) => (prev = result.data.dataMap));
+          setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         }
@@ -152,15 +152,17 @@ export default function AdminReportTransaction() {
           }
         }
         const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
+        const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}&${temp.join("&")}`);
         if (result.data.note === 'data found') {
-          setDataChart((prev) => (prev = result.data.dataMap));
+          setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         }
       }
       let getRes = await Axios.get(API_URL + "/admin/get_transaction_report");
+      const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}`);
       if (getRes.data.note === 'data found') {
-        setDataChart((prev) => (prev = getRes.data.dataMap));
+        setDataChart((prev) => (prev = dataTable.data.dataMap));
         setLabelChart((prev) => (prev = getRes.data.data));
       }
     } catch (error) {
@@ -168,6 +170,14 @@ export default function AdminReportTransaction() {
     }
   };
 
+  const exportData = async () => {
+    const dataExport = await Axios.get(API_URL + '/admin/get_transaction_table?sort=date&order=asc');
+    const fields = Object.keys(dataExport.data.dataMap[0]);
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(dataExport.data.dataMap, {headers : fields});
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transaction Sales Report');
+    XLSX.writeFile(workbook, 'TransactionReport.xlsx');
+  }
   React.useEffect(() => {
     getData();
   }, [currentPage]);
@@ -190,7 +200,9 @@ export default function AdminReportTransaction() {
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
-        <h1 className="font-bold text-lg text-hijauBtn text-center">
+        <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
+						navigate('/admin');
+					}}>
           SEHATBOS.COM <span className="font-normal">| SALES REPORT</span>
         </h1>
       </div>
@@ -224,7 +236,6 @@ export default function AdminReportTransaction() {
           options={options}
           data={labelChart}
           height={"80%"}
-          redraw={true}
         />
         }
       </div>
@@ -405,7 +416,7 @@ export default function AdminReportTransaction() {
                       })}
                     </Td>
                     <Td>{val.total_transaction}</Td>
-                    <Td>Rp{val.total_sales.toLocaleString("id")},-</Td>
+                    <Td>Rp{val.total_sales?.toLocaleString("id")},-</Td>
                   </Tr>
                 );
               })}
@@ -414,6 +425,21 @@ export default function AdminReportTransaction() {
           </Table>
         </TableContainer>
       </div>
+      <div className="my-2 flex justify-end">
+      <Button
+            style={{ borderColor: "gray" }}
+            borderRadius={"0"}
+            color="gray"
+            variant="outline"
+            size={"sm"}
+            onClick={exportData}
+            className='hover:!bg-hijauBtn hover:!text-white'
+          >
+            Download
+          </Button>
+      
+      </div>
+      <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     </div>
   );
 }
