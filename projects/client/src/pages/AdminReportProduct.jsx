@@ -41,6 +41,8 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import Pagination from "../components/Pagination";
+import * as XLSX from 'xlsx';
+import { useNavigate } from "react-router-dom";
 
 export default function AdminReportProduct() {
   ChartJS.register(
@@ -66,6 +68,7 @@ export default function AdminReportProduct() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const itemsPerPage = 10;
+  const navigate = useNavigate();
   const options = {responsive : true,
     plugins : {
       title : {
@@ -170,6 +173,15 @@ export default function AdminReportProduct() {
     }
   };
 
+  const exportData = async () => {
+    const dataExport = await Axios.get(API_URL + '/admin/get_product_table?sort=date&order=asc');
+    const fields = Object.keys(dataExport.data.dataMap[0]);
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(dataExport.data.dataMap, {headers : fields});
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Product Sales Report');
+    XLSX.writeFile(workbook, 'ProductReport.xlsx');
+  }
+
   React.useEffect(() => {
     getData();
   }, [currentPage]);
@@ -192,7 +204,9 @@ export default function AdminReportProduct() {
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
-        <h1 className="font-bold text-lg text-hijauBtn text-center">
+        <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
+						navigate('/admin');
+					}}>
           SEHATBOS.COM <span className="font-normal">| SALES REPORT</span>
         </h1>
       </div>
@@ -414,6 +428,20 @@ export default function AdminReportProduct() {
             </Tbody>
           </Table>
         </TableContainer>
+      </div>
+      <div className="my-2 flex justify-end">
+      <Button
+            style={{ borderColor: "gray" }}
+            borderRadius={"0"}
+            color="gray"
+            variant="outline"
+            size={"sm"}
+            onClick={exportData}
+            className='hover:!bg-hijauBtn hover:!text-white'
+          >
+            Download
+          </Button>
+      
       </div>
       <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
     </div>
