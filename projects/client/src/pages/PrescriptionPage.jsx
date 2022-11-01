@@ -337,7 +337,7 @@ const PrescriptionPage = (props) => {
                                     </button>
                                 :
                                 <div className='py-1 pt-3 flex'>
-                                    <span className='text-red-500 lg:pb-[8px]'>  To order by prescription please register and verify your account first </span>
+                                    <span className='text-red-500 lg:pb-[8px]'>  To order by prescription please register or verify your account first </span>
                                 </div>
                         }
 
