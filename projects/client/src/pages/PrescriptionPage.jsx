@@ -279,7 +279,7 @@ const PrescriptionPage = (props) => {
                         <div className=' my-4' >
                             <div>
                                 <p className='text-hijauBtn text-[24px] font-bold mb-3'>Upload prescription</p>
-                                <div className='mx-auto border h-screen h-[300px] lg:h-[450px] lg:flex items-center'>
+                                <div className='mx-auto border h-[300px] lg:h-[450px] lg:flex items-center'>
                                     {
                                         prescriptionImage ?
                                             <div className='mx-auto relative'>
