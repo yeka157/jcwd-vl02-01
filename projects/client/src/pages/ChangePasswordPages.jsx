@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AiOutlineKey } from "react-icons/ai";
 import { Spinner, useToast, Input, InputGroup, InputRightElement } from '@chakra-ui/react'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
+import HeadComponent from '../components/HeadComponent';
 
 const ChangePassword = () => {
     const [oldPassword, setOldPassword] = useState('');
@@ -147,71 +148,74 @@ const ChangePassword = () => {
     };
 
     return (
-        <div>
-            {
-                params.token === resetCookie ?
-                    <div className='h-screen w-screen flex items-center'>
-                        <div className='mx-auto lg:h-[650px] lg:border lg:w-[420px] lg:p-[46px] lg:rounded-lg lg:shadow'>
-                            <div>
+        <>
+             <HeadComponent title={'SEHATBOS | Change Password'} description={'Change Password'} type={'website'}/>
+            <div>
+                {
+                    params.token === resetCookie ?
+                        <div className='h-screen w-screen flex items-center'>
+                            <div className='mx-auto lg:h-[650px] lg:border lg:w-[420px] lg:p-[46px] lg:rounded-lg lg:shadow'>
+                                <div>
 
-                                <h1 className=" font-poppins font-bold mb-[24px] text-center text-[32px]">Change Password</h1>
-                                <AiOutlineKey className='text-[100px] mx-auto text-[#015D67]' />
+                                    <h1 className=" font-poppins font-bold mb-[24px] text-center text-[32px]">Change Password</h1>
+                                    <AiOutlineKey className='text-[100px] mx-auto text-[#015D67]' />
 
-                                <p className="pb=[4px] text-[16px]  font-semibold pt-3">Current Password</p>
-                                <InputGroup className='pb-2'>
-                                    <Input
-                                        size="sm"
-                                        backgroundColor="white"
-                                        pr="4.5rem"
-                                        type={oldPasswordType}
-                                        _focusVisible={{ outline: `2px solid #87E4D8` }}
-                                        placeholder="Insert current password"
-                                        _placeholder={{ color: "grey" }}
-                                        onChange={(e) => setOldPassword(e.target.value)}
-                                        value={oldPassword}
+                                    <p className="pb=[4px] text-[16px]  font-semibold pt-3">Current Password</p>
+                                    <InputGroup className='pb-2'>
+                                        <Input
+                                            size="sm"
+                                            backgroundColor="white"
+                                            pr="4.5rem"
+                                            type={oldPasswordType}
+                                            _focusVisible={{ outline: `2px solid #87E4D8` }}
+                                            placeholder="Insert current password"
+                                            _placeholder={{ color: "grey" }}
+                                            onChange={(e) => setOldPassword(e.target.value)}
+                                            value={oldPassword}
+                                        />
+                                        <InputRightElement width="3rem" onClick={() => { setShowOldPassword(!showOldPassword); onShowOldPassword() }}>
+                                            {
+                                                showOldPassword ? <AiFillEyeInvisible className="cursor-pointer mb-[10px]" size={25} color="grey" /> : <AiFillEye className="cursor-pointer mb-[10px]" size={25} color="grey" />
+                                            }
+                                        </InputRightElement>
+                                    </InputGroup>
+
+                                    <PasswordForm
+                                        label={'New password'}
+                                        password={password}
+                                        setPass={setPassword}
+                                        passType={passwordType}
+                                        setPassType={setPasswordType}
+                                        setShowPassword={setShowPassword}
+                                        passStrength={passwordStrength}
+                                        showPass={showPassword}
+                                        confirm={confirmPassword}
+                                        setConfirm={setConfirmPassword}
+                                        confirmType={confirmPasswordType}
+                                        setConfirmType={setConfirmPasswordType}
+                                        confirmIndicator={confirmPassIndicator}
+                                        showConfirm={showConfirmPassword}
+                                        setShowConfirm={setShowConfirmPassword}
                                     />
-                                    <InputRightElement width="3rem" onClick={() => { setShowOldPassword(!showOldPassword); onShowOldPassword() }}>
-                                        {
-                                            showOldPassword ? <AiFillEyeInvisible className="cursor-pointer mb-[10px]" size={25} color="grey" /> : <AiFillEye className="cursor-pointer mb-[10px]" size={25} color="grey" />
-                                        }
-                                    </InputRightElement>
-                                </InputGroup>
 
-                                <PasswordForm
-                                    label={'New password'}
-                                    password={password}
-                                    setPass={setPassword}
-                                    passType={passwordType}
-                                    setPassType={setPasswordType}
-                                    setShowPassword={setShowPassword}
-                                    passStrength={passwordStrength}
-                                    showPass={showPassword}
-                                    confirm={confirmPassword}
-                                    setConfirm={setConfirmPassword}
-                                    confirmType={confirmPasswordType}
-                                    setConfirmType={setConfirmPasswordType}
-                                    confirmIndicator={confirmPassIndicator}
-                                    showConfirm={showConfirmPassword}
-                                    setShowConfirm={setShowConfirmPassword}
-                                />
-
-                                <button onClick={() => { setSpinner(true); setDisableBtn(true); setTimeout(btnSubmit, 2000) }} disabled={disableBtn} class={`w-[312px] text-[16px] mt-[24px] bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]'}  text-white font-bold py-2 px-4 `}>
-                                    {spinner ? <Spinner size='sm' color="grey" /> : 'Submit'}
-                                </button>
-                                
+                                    <button onClick={() => { setSpinner(true); setDisableBtn(true); setTimeout(btnSubmit, 2000) }} disabled={disableBtn} class={`w-[312px] text-[16px] mt-[24px] bg-[#015D67] text-center ${disableBtn ? '' : 'hover:bg-[#033e45]'}  text-white font-bold py-2 px-4 `}>
+                                        {spinner ? <Spinner size='sm' color="grey" /> : 'Submit'}
+                                    </button>
+                                    
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    :
-                    <div className='h-screen w-screen flex items-center'>
-                        <div className='mx-auto'>
-                            <p className='text-center text-[32px] text-poppins'>Oops change password request failed</p>
-                            <FaUserSlash className='text-[130px] text-[#015D67] mx-auto my-[45px]' />
-                            <p className='text-center  text-poppins'>This email  is invalid, try to request another email to recover your password </p>
+                        :
+                        <div className='h-screen w-screen flex items-center'>
+                            <div className='mx-auto'>
+                                <p className='text-center text-[32px] text-poppins'>Oops change password request failed</p>
+                                <FaUserSlash className='text-[130px] text-[#015D67] mx-auto my-[45px]' />
+                                <p className='text-center  text-poppins'>This email  is invalid, try to request another email to recover your password </p>
+                            </div>
                         </div>
-                    </div>
-            }
-        </div>
+                }
+            </div>
+        </>
     )
 
 }

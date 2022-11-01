@@ -43,6 +43,7 @@ import { Bar } from 'react-chartjs-2';
 import Pagination from "../components/Pagination";
 import * as XLSX from 'xlsx';
 import { useNavigate } from "react-router-dom";
+import HeadComponent from "../components/HeadComponent";
 
 export default function AdminReportUser() {
   ChartJS.register(
@@ -207,250 +208,253 @@ export default function AdminReportUser() {
   }, [filters]);
 
   return (
-    <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
-      <div className="container mx-auto mt-[2.5vh]">
-        <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
-						navigate('/admin');
-					}}>
-          SEHATBOS.COM <span className="font-normal">| SALES REPORT</span>
-        </h1>
-      </div>
+    <>
+      <HeadComponent title={'SEHATBOS | Admin Report User'} description={'Admin Report User'} type={'website'}/>
+      <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
+        <div className="container mx-auto mt-[2.5vh]">
+          <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
+              navigate('/admin');
+            }}>
+            SEHATBOS.COM <span className="font-normal">| SALES REPORT</span>
+          </h1>
+        </div>
 
-      <div className="container mx-auto mt-[5vh] grid justify-items-start">
-        <h1 className="font-bold text-lg">Sales Report</h1>
-        <Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
+        <div className="container mx-auto mt-[5vh] grid justify-items-start">
+          <h1 className="font-bold text-lg">Sales Report</h1>
+          <Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/admin/report">Report</BreadcrumbLink>
-          </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin/report">Report</BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/admin/report/sales">
-              Sales Report
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin/report/sales">
+                Sales Report
+              </BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink>User Report</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
+            <BreadcrumbItem>
+              <BreadcrumbLink>User Report</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </div>
 
-      {/* chart */}
-      <div className="mt-3">
-        {Object.keys(labelChart).length > 0 && 
-        <Bar options={options} 
-        height={"80%"} 
-        data={labelChart} 
-        />
-        }
-      </div>
-      <div className="container mx-auto lg:mt-3 text-[rgb(49,53,65,0.75)] lg:grid justify-items-end ">
-        <div className="space-x-3">
-          <Popover isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-            <PopoverTrigger>
-              <Button
-                rightIcon={<BsCalendarDate />}
-                style={{ borderColor: "gray" }}
-                borderRadius={"0"}
-                color="gray"
-                variant="outline"
+        {/* chart */}
+        <div className="mt-3">
+          {Object.keys(labelChart).length > 0 && 
+          <Bar options={options} 
+          height={"80%"} 
+          data={labelChart} 
+          />
+          }
+        </div>
+        <div className="container mx-auto lg:mt-3 text-[rgb(49,53,65,0.75)] lg:grid justify-items-end ">
+          <div className="space-x-3">
+            <Popover isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+              <PopoverTrigger>
+                <Button
+                  rightIcon={<BsCalendarDate />}
+                  style={{ borderColor: "gray" }}
+                  borderRadius={"0"}
+                  color="gray"
+                  variant="outline"
+                  size={"sm"}
+                >
+                  {filters.date_from && filters.date_to
+                    ? filters.date_from + " - " + filters.date_to
+                    : "Date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <PopoverArrow />
+                <PopoverHeader fontWeight="bold">Filter by date</PopoverHeader>
+                <PopoverBody className="flex flex-col items-center space-y-2 mx-5">
+                  <Input
+                    type="date"
+                    onChange={(e) => {
+                      setDateFrom((prev) => (prev = e.target.value));
+                    }}
+                  />
+                  <h1 className="">to</h1>
+                  <Input
+                    type="date"
+                    onChange={(e) => {
+                      setDateTo((prev) => (prev = e.target.value));
+                    }}
+                  />
+                </PopoverBody>
+                <PopoverFooter border="0" pb={4}>
+                  <div className="flex justify-end space-x-5">
+                    <Button colorScheme="blue" onClick={btnClosePopover}>
+                      Close
+                    </Button>
+                  </div>
+                </PopoverFooter>
+              </PopoverContent>
+            </Popover>
+            <Menu>
+              <MenuButton
+                className="text-gray"
+                style={{ borderRadius: 0, border: "1px solid gray" }}
+                as={Button}
+                rightIcon={<HiOutlineChevronDown />}
                 size={"sm"}
               >
-                {filters.date_from && filters.date_to
-                  ? filters.date_from + " - " + filters.date_to
-                  : "Date"}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent>
-              <PopoverArrow />
-              <PopoverHeader fontWeight="bold">Filter by date</PopoverHeader>
-              <PopoverBody className="flex flex-col items-center space-y-2 mx-5">
-                <Input
-                  type="date"
-                  onChange={(e) => {
-                    setDateFrom((prev) => (prev = e.target.value));
+                {filters.sort === ""
+                  ? "Sort"
+                  : `${filters.sort} (${filters.order})`}
+              </MenuButton>
+              <MenuList>
+                <MenuItem
+                  className="text-xs"
+                  onClick={() => {
+                    setCurrentPage((prev) => (prev = 1));
+                    setFilters((prev) => ({ ...prev, sort: "", order: "" }));
                   }}
-                />
-                <h1 className="">to</h1>
-                <Input
-                  type="date"
-                  onChange={(e) => {
-                    setDateTo((prev) => (prev = e.target.value));
+                >
+                  None
+                </MenuItem>
+                <MenuItem
+                  className="text-xs"
+                  onClick={() => {
+                    setCurrentPage((prev) => (prev = 1));
+                    setFilters((prev) => ({
+                      ...prev,
+                      sort: "date",
+                      order: "asc",
+                    }));
                   }}
-                />
-              </PopoverBody>
-              <PopoverFooter border="0" pb={4}>
-                <div className="flex justify-end space-x-5">
-                  <Button colorScheme="blue" onClick={btnClosePopover}>
-                    Close
-                  </Button>
-                </div>
-              </PopoverFooter>
-            </PopoverContent>
-          </Popover>
-          <Menu>
-            <MenuButton
-              className="text-gray"
-              style={{ borderRadius: 0, border: "1px solid gray" }}
-              as={Button}
-              rightIcon={<HiOutlineChevronDown />}
+                >
+                  {"Date (Ascending)"}
+                </MenuItem>
+                <MenuItem
+                  className="text-xs"
+                  onClick={() => {
+                    setCurrentPage((prev) => (prev = 1));
+                    setFilters((prev) => ({
+                      ...prev,
+                      sort: "date",
+                      order: "desc",
+                    }));
+                  }}
+                >
+                  {"Date (Descending)"}
+                </MenuItem>
+                <MenuItem
+                  className="text-xs"
+                  onClick={() => {
+                    setCurrentPage((prev) => (prev = 1));
+                    setFilters((prev) => ({
+                      ...prev,
+                      sort: "sales",
+                      order: "asc",
+                    }));
+                  }}
+                >
+                  {"Total Sales (Ascending)"}
+                </MenuItem>
+                <MenuItem
+                  className="text-xs"
+                  onClick={() => {
+                    setCurrentPage((prev) => (prev = 1));
+                    setFilters((prev) => ({
+                      ...prev,
+                      sort: "sales",
+                      order: "desc",
+                    }));
+                  }}
+                >
+                  {"Total Sales (Descending)"}
+                </MenuItem>
+              </MenuList>
+            </Menu>
+            <Button
+              style={{ borderColor: "gray" }}
+              disabled={
+                !filters.product_name &&
+                !filters.sort &&
+                !filters.order &&
+                !filters.date_from &&
+                !filters.date_to
+              }
+              borderRadius={"0"}
+              color="gray"
+              variant="outline"
               size={"sm"}
+              onClick={resetFilter}
             >
-              {filters.sort === ""
-                ? "Sort"
-                : `${filters.sort} (${filters.order})`}
-            </MenuButton>
-            <MenuList>
-              <MenuItem
-                className="text-xs"
-                onClick={() => {
-                  setCurrentPage((prev) => (prev = 1));
-                  setFilters((prev) => ({ ...prev, sort: "", order: "" }));
-                }}
-              >
-                None
-              </MenuItem>
-              <MenuItem
-                className="text-xs"
-                onClick={() => {
-                  setCurrentPage((prev) => (prev = 1));
-                  setFilters((prev) => ({
-                    ...prev,
-                    sort: "date",
-                    order: "asc",
-                  }));
-                }}
-              >
-                {"Date (Ascending)"}
-              </MenuItem>
-              <MenuItem
-                className="text-xs"
-                onClick={() => {
-                  setCurrentPage((prev) => (prev = 1));
-                  setFilters((prev) => ({
-                    ...prev,
-                    sort: "date",
-                    order: "desc",
-                  }));
-                }}
-              >
-                {"Date (Descending)"}
-              </MenuItem>
-              <MenuItem
-                className="text-xs"
-                onClick={() => {
-                  setCurrentPage((prev) => (prev = 1));
-                  setFilters((prev) => ({
-                    ...prev,
-                    sort: "sales",
-                    order: "asc",
-                  }));
-                }}
-              >
-                {"Total Sales (Ascending)"}
-              </MenuItem>
-              <MenuItem
-                className="text-xs"
-                onClick={() => {
-                  setCurrentPage((prev) => (prev = 1));
-                  setFilters((prev) => ({
-                    ...prev,
-                    sort: "sales",
-                    order: "desc",
-                  }));
-                }}
-              >
-                {"Total Sales (Descending)"}
-              </MenuItem>
-            </MenuList>
-          </Menu>
-          <Button
-            style={{ borderColor: "gray" }}
-            disabled={
-              !filters.product_name &&
-              !filters.sort &&
-              !filters.order &&
-              !filters.date_from &&
-              !filters.date_to
-            }
-            borderRadius={"0"}
-            color="gray"
-            variant="outline"
-            size={"sm"}
-            onClick={resetFilter}
-          >
-            Reset Filter
-          </Button>
+              Reset Filter
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
-        <Box
-          w="100vw"
-          borderWidth="1px"
-          overflow="hidden"
-          fontWeight="semibold"
-          lineHeight="tight"
-          className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite"
-        >
-          <h1 className="inline">User Report</h1>
-        </Box>
-      </div>
-      <div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-[2.5vh]">
-        <TableContainer w="100vw" fontSize="xs">
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th>No.</Th>
-                <Th>Date</Th>
-                <Th>Username</Th>
-                <Th>Total Transaction Made</Th>
-                <Th>Total Amount</Th>
-                {/* <Th>Detail List</Th> */}
-              </Tr>
-            </Thead>
-            <Tbody>
-              {dataChart.map((val, idx) => {
-                return (
-                  <Tr key={idx+1}>
-                    <Td>{idx + 1}</Td>
-                    <Td>
-                      {new Date(val.date).toLocaleDateString("en-GB", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </Td>
-                    <Td>{val.username}</Td>
-                    <Td>{val.total}</Td>
-                    <Td>Rp{val.subtotal.toLocaleString("id")},-</Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </div>
-      <div className="my-2 flex justify-end">
-      <Button
-            style={{ borderColor: "gray" }}
-            borderRadius={"0"}
-            color="gray"
-            variant="outline"
-            size={"sm"}
-            onClick={exportData}
-            className='hover:!bg-hijauBtn hover:!text-white'
+        <div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
+          <Box
+            w="100vw"
+            borderWidth="1px"
+            overflow="hidden"
+            fontWeight="semibold"
+            lineHeight="tight"
+            className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite"
           >
-            Download
-          </Button>
-      
+            <h1 className="inline">User Report</h1>
+          </Box>
+        </div>
+        <div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-[2.5vh]">
+          <TableContainer w="100vw" fontSize="xs">
+            <Table size="sm">
+              <Thead>
+                <Tr>
+                  <Th>No.</Th>
+                  <Th>Date</Th>
+                  <Th>Username</Th>
+                  <Th>Total Transaction Made</Th>
+                  <Th>Total Amount</Th>
+                  {/* <Th>Detail List</Th> */}
+                </Tr>
+              </Thead>
+              <Tbody>
+                {dataChart.map((val, idx) => {
+                  return (
+                    <Tr key={idx+1}>
+                      <Td>{idx + 1}</Td>
+                      <Td>
+                        {new Date(val.date).toLocaleDateString("en-GB", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </Td>
+                      <Td>{val.username}</Td>
+                      <Td>{val.total}</Td>
+                      <Td>Rp{val.subtotal.toLocaleString("id")},-</Td>
+                    </Tr>
+                  );
+                })}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </div>
+        <div className="my-2 flex justify-end">
+        <Button
+              style={{ borderColor: "gray" }}
+              borderRadius={"0"}
+              color="gray"
+              variant="outline"
+              size={"sm"}
+              onClick={exportData}
+              className='hover:!bg-hijauBtn hover:!text-white'
+            >
+              Download
+            </Button>
+        
+        </div>
+        <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
       </div>
-      <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
-    </div>
+    </>
   );
 }

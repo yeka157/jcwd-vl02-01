@@ -13,6 +13,7 @@ import { getAddress } from '../slices/addressSlice';
 import ChangeAddressComponent from '../components/ChangeAddressComponent';
 import { useNavigate } from 'react-router-dom';
 import { RiErrorWarningLine } from "react-icons/ri";
+import HeadComponent from '../components/HeadComponent';
 
 const PrescriptionPage = (props) => {
 
@@ -225,115 +226,118 @@ const PrescriptionPage = (props) => {
 
 
     return (
-        <div className='bg-bgWhite'>
-            <div className='h-screen py-5 px-5 bg-white'>
-                <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
-                    <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>
-                        <div className='border-b'>
-                            <div className='flex pb-2 items-center'>
-                                <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
-                                <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
-                            </div>
-                            {
-                                loading ?
-                                    <Stack>
-                                        <Skeleton height='20px' width='400px'/>
-                                        <Skeleton height='20px' width='400px'/>
-                                        <Skeleton height='20px' width='400px'/>
-                                    </Stack>
-                                    :
-                                    addressList.length > 0 ?
-                                        address.address_id ?
-                                            <div className='py-3'>
-                                                <p className='font-bold text-hijauBtn'>{`${address.receiver} - (+62)${user.phone_number}`}</p>
-                                                <p>{address.address_detail}</p>
-                                                <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                            </div>
-                                            :
-                                            <div className='flex'>
-                                                <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
-                                                <p className='text-red-500'>You have no main address yet, please choose address manually</p>
-                                            </div>
+        <>  
+            <HeadComponent title={'SEHATBOS | Doctor Prescription Page'} description={'Doctor Prescription Page'} type={'website'}/>
+            <div className='bg-bgWhite'>
+                <div className='h-screen py-5 px-5 bg-white'>
+                    <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
+                        <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>
+                            <div className='border-b'>
+                                <div className='flex pb-2 items-center'>
+                                    <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
+                                    <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
+                                </div>
+                                {
+                                    loading ?
+                                        <Stack>
+                                            <Skeleton height='20px' width='400px'/>
+                                            <Skeleton height='20px' width='400px'/>
+                                            <Skeleton height='20px' width='400px'/>
+                                        </Stack>
                                         :
-                                        <div className='flex items-center pb-7'>
-                                            <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
-                                            <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
-                                        </div>
-                            }
-
-                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />
-
-                        </div>
-
-                        {/* Prescription */}
-
-                        <div className=' my-4' >
-                            <div>
-                                <p className='text-hijauBtn text-[24px] font-bold mb-3'>Upload prescription</p>
-                                <div className='mx-auto border h-screen h-[300px] lg:h-[450px] lg:flex items-center'>
-                                    {
-                                        prescriptionImage ?
-                                            <div className='mx-auto relative'>
-                                                <p onClick={() => { setPrescription(''); setSelectedImage(null) }} className='p-2 absolute cursor-pointer'><HiXCircle /></p>
-                                                <img src={selectedImage} className='object-contain h-[400px] p-6' alt="" />
-                                            </div>
-                                            :
-                                            <div className='mx-auto'>
-                                                <AiOutlineUpload className='mx-auto text-hijauBtn text-[120px]' />
-                                                <p className='text-center text-muted text-[24px]'>Upload your prescription here</p>
-                                                <div className='flex justify-center lg:mt-6'>
-                                                    <input onChange={addImage} className='text-white lg:w-[125px] p-2 rounded file:border-none file:bg-btnHijau file:rounded file:text-black file:p-1 file:px-2 file:cursor-pointer' type="file" />
+                                        addressList.length > 0 ?
+                                            address.address_id ?
+                                                <div className='py-3'>
+                                                    <p className='font-bold text-hijauBtn'>{`${address.receiver} - (+62)${user.phone_number}`}</p>
+                                                    <p>{address.address_detail}</p>
+                                                    <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
                                                 </div>
+                                                :
+                                                <div className='flex'>
+                                                    <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                                    <p className='text-red-500'>You have no main address yet, please choose address manually</p>
+                                                </div>
+                                            :
+                                            <div className='flex items-center pb-7'>
+                                                <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                                <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
                                             </div>
-                                    }
+                                }
 
+                                <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />
+
+                            </div>
+
+                            {/* Prescription */}
+
+                            <div className=' my-4' >
+                                <div>
+                                    <p className='text-hijauBtn text-[24px] font-bold mb-3'>Upload prescription</p>
+                                    <div className='mx-auto border h-screen h-[300px] lg:h-[450px] lg:flex items-center'>
+                                        {
+                                            prescriptionImage ?
+                                                <div className='mx-auto relative'>
+                                                    <p onClick={() => { setPrescription(''); setSelectedImage(null) }} className='p-2 absolute cursor-pointer'><HiXCircle /></p>
+                                                    <img src={selectedImage} className='object-contain h-[400px] p-6' alt="" />
+                                                </div>
+                                                :
+                                                <div className='mx-auto'>
+                                                    <AiOutlineUpload className='mx-auto text-hijauBtn text-[120px]' />
+                                                    <p className='text-center text-muted text-[24px]'>Upload your prescription here</p>
+                                                    <div className='flex justify-center lg:mt-6'>
+                                                        <input onChange={addImage} className='text-white lg:w-[125px] p-2 rounded file:border-none file:bg-btnHijau file:rounded file:text-black file:p-1 file:px-2 file:cursor-pointer' type="file" />
+                                                    </div>
+                                                </div>
+                                        }
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Checkout Component */}
-                    <div className='lg:border lg:rounded lg:w-[350px] lg:h-[400px] px-5'>
-                        <p className='hidden lg:block text-poppins text-hijauBtn font-bold pt-5 text-[24px] border-b pb-[16px]'>Order detail</p>
+                        {/* Checkout Component */}
+                        <div className='lg:border lg:rounded lg:w-[350px] lg:h-[400px] px-5'>
+                            <p className='hidden lg:block text-poppins text-hijauBtn font-bold pt-5 text-[24px] border-b pb-[16px]'>Order detail</p>
 
-                        <div className='pt-5'>
-                            <div className='py-1'>
-                                <p className='py-2 text-hijauBtn'>Delivery option</p>
-                                <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
-                                    <option value="default-0" selected>Select option</option>
-                                    {printDeliveryOption()}
-                                </Select>
+                            <div className='pt-5'>
+                                <div className='py-1'>
+                                    <p className='py-2 text-hijauBtn'>Delivery option</p>
+                                    <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
+                                        <option value="default-0" selected>Select option</option>
+                                        {printDeliveryOption()}
+                                    </Select>
+                                </div>
+
+                                <div className='py-1 pt-3 flex justify-between'>
+                                    <p className='text-hijauBtn'>Delivery charge</p>
+                                    <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                </div>
+
+                                <div className='py-1 pt-3 flex'>
+                                    <span className='text-hijauBtn  lg:pb-[8px]'>  Total purchase will be shown in transaction list after admin served your order</span>
+                                </div>
+
                             </div>
 
-                            <div className='py-1 pt-3 flex justify-between'>
-                                <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
-                            </div>
+                            {
+                                addressList.length > 0 ?
+                                    <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`}>
+                                        {btnThrottle ? <Spinner size='xs' /> : 'Order'}
+                                    </button>
+                                    :
+                                    <button className={`mx-auto bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`} disabled>
+                                        Order
+                                    </button>
 
-                            <div className='py-1 pt-3 flex'>
-                                <span className='text-hijauBtn  lg:pb-[8px]'>  Total purchase will be shown in transaction list after admin served your order</span>
-                            </div>
+                            }
+
+
 
                         </div>
-
-                        {
-                            addressList.length > 0 ?
-                                <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`}>
-                                    {btnThrottle ? <Spinner size='xs' /> : 'Order'}
-                                </button>
-                                :
-                                <button className={`mx-auto bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`} disabled>
-                                    Order
-                                </button>
-
-                        }
-
-
-
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

@@ -23,7 +23,7 @@ import axios from 'axios';
 import { API_URL } from '../helper';
 import { getUser } from "../slices/userSlice";
 import { useSelector } from 'react-redux';
-
+import HeadComponent from '../components/HeadComponent';
 
 const TransactionDetailPage = () => {
 
@@ -288,6 +288,7 @@ const TransactionDetailPage = () => {
 
     return (
         <div>
+            <HeadComponent title={'SEHATBOS | Transaction Detail'} description={'Transaction Detail'} type={'website'}/>
             {
                 !loading ?
                     <div className='min-h-screen px-[50px] py-8 pt-[140px]'>

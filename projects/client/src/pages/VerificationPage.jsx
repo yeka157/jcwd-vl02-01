@@ -7,6 +7,7 @@ import axios from 'axios';
 import { API_URL, COOKIE_EXP } from '../helper';
 import { userLogin } from '../slices/userSlice';
 import { useDispatch } from 'react-redux';
+import HeadComponent from "../components/HeadComponent";
 
 const VerificationPage = () => {
 
@@ -42,6 +43,7 @@ const VerificationPage = () => {
 
     return (
         <div>
+            <HeadComponent title={'SEHATBOS | Verification'} description={'Verification'} type={'website'}/>
             {
                 params.token === verifCookie ?
                     <div>

@@ -69,6 +69,8 @@ export default function AdminTransactionPage() {
 	const toast = useToast();
 	const navigate = useNavigate();
 
+	console.log(selectedTransaction)
+
 	// VAR
 	const itemsPerPage = 10;
 	const transactionStatus = ['Cancelled', 'Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed', 'Shipped', 'Order Confirmed'];
