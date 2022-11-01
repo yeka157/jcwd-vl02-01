@@ -30,6 +30,7 @@ import axios from 'axios';
 import { API_URL } from '../helper';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import HeadComponent from '../components/HeadComponent';
 
 export default function AdminCategoryPage() {
 	// HOOKS
@@ -313,52 +314,55 @@ export default function AdminCategoryPage() {
 	);
 
 	return (
-		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
-			<div className="container mx-auto mt-[2.5vh]">
-				<h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => { navigate('/admin') }}>
-					SEHATBOS.COM <span className="font-normal">| CATEGORY</span>
-				</h1>
-			</div>
+		<>
+			<HeadComponent title={'SEHATBOS | Admin Category'} description={'Admin Category'} type={'website'}/>
+			<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
+				<div className="container mx-auto mt-[2.5vh]">
+					<h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => { navigate('/admin') }}>
+						SEHATBOS.COM <span className="font-normal">| CATEGORY</span>
+					</h1>
+				</div>
 
-			<div className="container mx-auto mt-[5vh] grid justify-items-start">
-				<h1 className="font-bold text-lg">Category List</h1>
-				<Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
-					<BreadcrumbItem>
-						<BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-					</BreadcrumbItem>
+				<div className="container mx-auto mt-[5vh] grid justify-items-start">
+					<h1 className="font-bold text-lg">Category List</h1>
+					<Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
+						<BreadcrumbItem>
+							<BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+						</BreadcrumbItem>
 
-					<BreadcrumbItem>
-						<BreadcrumbLink>Category</BreadcrumbLink>
-					</BreadcrumbItem>
-				</Breadcrumb>
-			</div>
-			<div className="container mx-auto mt-[-35px] text-[rgb(49,53,65,0.75)] grid justify-items-end">
-				<Button borderRadius={'0'} bgColor="#025d67" color="#f0f5f6" variant="solid" size={'sm'} _hover={{ bg: '#1F6C75' }} onClick={onOpenAddCategory}>
-					+ add
-				</Button>
-			</div>
-			{modalAddCategory}
-			{modalEditCategory}
-			{modalDeleteConfirmation}
-			<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
-				<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
-					<h1 className="inline">Category</h1>
-				</Box>
-			</div>
-			<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)]">
-				<TableContainer w="100vw" fontSize={'sm'}>
-					<Table size="sm">
-						<Thead>
-							<Tr>
-								<Th>No.</Th>
-								<Th>Category Name</Th>
-								<Th className='flex justify-end mr-10'>Action</Th>
-							</Tr>
-						</Thead>
-						<Tbody>{displayCategoryData()}</Tbody>
-					</Table>
-				</TableContainer>
-			</div>
-		</main>
+						<BreadcrumbItem>
+							<BreadcrumbLink>Category</BreadcrumbLink>
+						</BreadcrumbItem>
+					</Breadcrumb>
+				</div>
+				<div className="container mx-auto mt-[-35px] text-[rgb(49,53,65,0.75)] grid justify-items-end">
+					<Button borderRadius={'0'} bgColor="#025d67" color="#f0f5f6" variant="solid" size={'sm'} _hover={{ bg: '#1F6C75' }} onClick={onOpenAddCategory}>
+						+ add
+					</Button>
+				</div>
+				{modalAddCategory}
+				{modalEditCategory}
+				{modalDeleteConfirmation}
+				<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
+					<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
+						<h1 className="inline">Category</h1>
+					</Box>
+				</div>
+				<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)]">
+					<TableContainer w="100vw" fontSize={'sm'}>
+						<Table size="sm">
+							<Thead>
+								<Tr>
+									<Th>No.</Th>
+									<Th>Category Name</Th>
+									<Th className='flex justify-end mr-10'>Action</Th>
+								</Tr>
+							</Thead>
+							<Tbody>{displayCategoryData()}</Tbody>
+						</Table>
+					</TableContainer>
+				</div>
+			</main>
+		</>
 	);
 }
