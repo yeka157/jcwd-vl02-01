@@ -29,21 +29,30 @@ const PrescriptionPage = (props) => {
     const addressList = useSelector(getAddress);
     const toast = useToast();
 
+    console.log(user);
+
     const getMainAddress = async () => {
         try {
             let token = Cookies.get('sehatToken');
 
-            let resAddress = await axios.get(API_URL + '/user/get_main_address', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
+            if (token) {
+                let resAddress = await axios.get(API_URL + '/user/get_main_address', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-            if (resAddress.data.success) {
-                setAddress(resAddress.data.address);
-                getDeliveryService(resAddress.data.address.city_id);
-                setLoading(false);
+                if (resAddress.data.success) {
+                    setAddress(resAddress.data.address);
+                    getDeliveryService(resAddress.data.address.city_id);
+                    setLoading(false);
+                    return;
+                };
+
             }
+
+            setLoading(false);
+
         } catch (error) {
             console.log(error);
         }
@@ -317,7 +326,7 @@ const PrescriptionPage = (props) => {
                         </div>
 
                         {
-                            user.user_id || user.role == 'UNVERIFIED' ?
+                            user.status == 'VERIFIED' && user.user_id ?
                                 addressList.length > 0 ?
                                     <button onClick={() => { setTimeout(btnOrder, 2000); setBtnThrottle(true) }} className={`mx-auto bg-hijauBtn ${btnThrottle ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold`}>
                                         {btnThrottle ? <Spinner size='xs' /> : 'Order'}
@@ -331,8 +340,6 @@ const PrescriptionPage = (props) => {
                                     <span className='text-red-500 lg:pb-[8px]'>  To order by prescription please register and verify your account first </span>
                                 </div>
                         }
-
-
 
                     </div>
                 </div>
