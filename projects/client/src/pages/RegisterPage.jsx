@@ -75,7 +75,7 @@ const RegisterPage = () => {
 
     useEffect(() => {
         let findPhoneNumber = usersData.findIndex(val => val.phone_number == phoneNumber);
-        console.log(findPhoneNumber);
+        // console.log(findPhoneNumber);
 
         if (phoneNumber) {
             if (phoneNumber.length > 9) {
@@ -227,7 +227,7 @@ const RegisterPage = () => {
                     />
                     <div className="mx-auto p-[32px] w-screen h-screen lg:h-[660px] lg:w-[460px]">
                         <div className="mx-auto lg:px-[42px] lg:pt-[18px]">
-                            <h1 className="font-poppins font-bold font-poppins text-[32px]">Register</h1>
+                            <h1 className="font-poppins font-bold text-[32px]">Register</h1>
 
                             <div className="pt-2">
                                 <p className="pb=[4px] text-[16px] font-semibold">Username</p>
