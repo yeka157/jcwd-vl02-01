@@ -37,7 +37,7 @@ export default function AdminReportPage() {
 
       <div className="container mx-auto mt-[5vh] justify-evenly items-center content-center flex flex-col lg:flex-row space-y-5 lg:space-y-0">
         <Box
-          w="xs"
+          w="sm"
           borderWidth="1px"
           overflow="hidden"
           fontWeight="semibold"
@@ -49,7 +49,7 @@ export default function AdminReportPage() {
             <ImHistory className="w-8 h-auto"/>
         </Box>
         <Box
-          w="xs"
+          w="sm"
           borderWidth="1px"
           overflow="hidden"
           fontWeight="semibold"
