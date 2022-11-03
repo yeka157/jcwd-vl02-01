@@ -427,8 +427,6 @@ module.exports = {
 	sendEmailNotification: async (req, res) => {
 		try {
 			let { invoice, transaction_status } = req.body;
-			 console.log(req.body)
-			 console.log(req.params.id)
 
 			const handlebarOptions = {
 				viewEngine: {
@@ -445,8 +443,7 @@ module.exports = {
 			let getUser = await dbQuery(`SELECT user_id, username, email, phone_number from users WHERE user_id =${req.params.id}`);
 			transport.sendMail({
 				from: 'Sehat Bos <sehatbos@shop.com>',
-				to: "lukydwisaputra@gmail.com",
-				// to: getUser[0].email,
+				to: getUser[0].email,
 				subject: 'Email Notification',
 				template: 'emailNotification',
 				context: {

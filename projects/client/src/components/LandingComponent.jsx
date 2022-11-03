@@ -1,9 +1,12 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { getUser } from "../slices/userSlice";
 import ButtonComponent from "./ButtonComponent";
 
 export default function LandingComponent() {
   const navigate = useNavigate();
+  const user = useSelector(getUser);
   return (
     <div className="min-h-screen py-40">
       <div className="flex flex-col justify-center h-full px-24 space-y-7">
@@ -23,6 +26,7 @@ export default function LandingComponent() {
               brightness="90"
               onclick={() => navigate('/product', {state : { category : ''}})}
             />
+            {user.role === 'CUSTOMER' && user.status === 'VERIFIED' ? 
             <ButtonComponent
               text="UPLOAD PRESCRIPTION"
               class="border-borderHijau border bg-hijauBtn text-white font-semibold"
@@ -31,6 +35,7 @@ export default function LandingComponent() {
               brightness='90'
               onclick={()=> navigate('/prescription')}
             />
+            : <></>}
           </div>
         </div>
           <h1 className="font-semibold hidden sm:inline hover:underline cursor-pointer">
