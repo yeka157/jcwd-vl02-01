@@ -204,7 +204,7 @@ export default function AdminReportProduct() {
   
   return (
     <>
-      <HeadComponent title={'SEHATBOS | Report Product'} description={'Report Product'} type={'website'}/>
+      <HeadComponent title={'SEHATBOS | Admin Report Product'} description={'Admin Report Product'} type={'website'}/>
       <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
         <div className="container mx-auto mt-[2.5vh]">
           <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {

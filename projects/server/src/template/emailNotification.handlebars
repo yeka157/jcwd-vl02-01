@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Email Verification</title>
+
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+
+			button:hover {
+				background-color: #4bdcc9;
+			}
+
+			#footer {
+				position: relative;
+				top: 10px;
+			}
+		</style>
+	</head>
+
+	<body style="background-color: rgb(238, 238, 238)">
+		<div id="main" style="width: 500px; height: 600px; margin: auto; margin-top: 5%; background-color: white">
+			<div style="text-align: center; background-color: #015d67; height: 120px">
+				<h1 style="padding: 40px; color: white">Order Notification</h1>
+			</div>
+
+			<div style="padding: 45px">
+				<p style="font-size: 20px">Your order status with Invoice ID <span style="font-weight: bold">{{invoice}}</span></p>
+				<p style="font-size: 20px">is now <span style="font-weight: bold">{{transaction_status}}!</span></p>
+				<br />
+				<br />
+				<br />
+				<p style="font-size: 12px"><span>Invoice ID:</span> {{invoice}}</p>
+				<p style="font-size: 12px">Transaction Status: {{transaction_status}}</p>
+				<br />
+				<br />
+				<br />
+				<p>Best regards,</p>
+				<p>Sehatbos.com team</p>
+			</div>
+			<div id="footer" style="text-align: center; background-color: #015d67; height: 120px"></div>
+		</div>
+	</body>
+</html>
