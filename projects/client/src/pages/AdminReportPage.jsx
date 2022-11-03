@@ -8,33 +8,35 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { ImHistory } from 'react-icons/im';
 import { VscGraphLine } from 'react-icons/vsc';
+import HeadComponent from "../components/HeadComponent";
 
 export default function AdminReportPage() {
     const navigate = useNavigate();
 
   return (
-    <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
-      <div className="container mx-auto mt-[2.5vh]">
-        <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
-						navigate('/admin');
-					}}>
-          SEHATBOS.COM <span className="font-normal">| REPORT</span>
-        </h1>
-      </div>
+    <>
+      <HeadComponent title={'SEHATBOS | Admin Report'} description={'Admin Report'} type={'website'}/>
+      <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
+        <div className="container mx-auto mt-[2.5vh]">
+          <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
+              navigate('/admin');
+            }}>
+            SEHATBOS.COM <span className="font-normal">| REPORT</span>
+          </h1>
+        </div>
 
-      <div className="container mx-auto mt-[5vh] grid justify-items-start">
-        <h1 className="font-bold text-lg">Report</h1>
-        <Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
+        <div className="container mx-auto mt-[5vh] grid justify-items-start">
+          <h1 className="font-bold text-lg">Report</h1>
+          <Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
 
-          <BreadcrumbItem>
-            <BreadcrumbLink>Report</BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
-
+            <BreadcrumbItem>
+              <BreadcrumbLink>Report</BreadcrumbLink>
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </div>
       <div className="container mx-auto mt-[5vh] justify-evenly items-center content-center flex flex-col lg:flex-row space-y-5 lg:space-y-0">
         <Box
           w="sm"
@@ -61,6 +63,7 @@ export default function AdminReportPage() {
             <VscGraphLine className="w-8 h-auto"/>
         </Box>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

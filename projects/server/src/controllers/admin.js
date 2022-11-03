@@ -348,7 +348,7 @@ module.exports = {
             if (getData_table.length > 0) {
                 res.status(200).send({success : true, length : getData_table.length, dataMap : getData_table});
             } else {
-
+                res.status(200).send({success : false})
             }
         } catch (error) {
             console.log(error);

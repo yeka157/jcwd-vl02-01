@@ -17,6 +17,7 @@ import { RiErrorWarningLine } from "react-icons/ri";
 import { useDispatch } from 'react-redux';
 import { userCart } from '../slices/cartSlices';
 import Pagination from '../components/Pagination';
+import HeadComponent from '../components/HeadComponent';
 
 const CheckoutPage = (props) => {
 
@@ -214,120 +215,123 @@ const CheckoutPage = (props) => {
 
 
     return (
-        <div className='bg-white'>
-            <div className='min-h-screen py-5 px-5 bg-white'>
-                <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
-                    <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>
-                        <div className='border-b'>
-                            <div className='flex pb-2 items-center'>
-                                <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
-                                <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
-                            </div>
-                            {
-                                loading ?
-                                    <Stack>
-                                        <Skeleton height='20px' width='400px' />
-                                        <Skeleton height='20px' width='400px' />
-                                        <Skeleton height='20px' width='400px' />
-                                    </Stack>
-                                    :
-                                    addressList.length > 0 ?
-                                        address.address_id ?
-                                            <div className='py-3'>
-                                                <p className='font-bold text-hijauBtn'>{`${address.receiver} - (+62)${user.phone_number}`}</p>
-                                                <p>{address.address_detail}</p>
-                                                <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
-                                            </div>
-                                            :
-                                            <div className='flex'>
-                                                <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
-                                                <p className='text-red-500'>You have no main address yet, please choose address manually</p>
-                                            </div>
+        <>
+            <HeadComponent title={'SEHATBOS | Checkout'} description={'Checkout'} type={'website'}/>
+            <div className='bg-white'>
+                <div className='min-h-screen py-5 px-5 bg-white'>
+                    <div className='lg:flex justify-center container mx-auto mt-[2.5vh]'>
+                        <div className='lg:w-3/5 lg:mx-5 container p-3 flex-col'>
+                            <div className='border-b'>
+                                <div className='flex pb-2 items-center'>
+                                    <MdLocationOn className='text-[24px] mr-3 text-hijauBtn' />
+                                    <p className='font-bold text-[24px] text-hijauBtn'>My Address</p>
+                                </div>
+                                {
+                                    loading ?
+                                        <Stack>
+                                            <Skeleton height='20px' width='400px' />
+                                            <Skeleton height='20px' width='400px' />
+                                            <Skeleton height='20px' width='400px' />
+                                        </Stack>
                                         :
-                                        <div className='flex items-center pb-7'>
-                                            <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
-                                            <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
-                                        </div>
+                                        addressList.length > 0 ?
+                                            address.address_id ?
+                                                <div className='py-3'>
+                                                    <p className='font-bold text-hijauBtn'>{`${address.receiver} - (+62)${user.phone_number}`}</p>
+                                                    <p>{address.address_detail}</p>
+                                                    <p>{`${address.district}, ${address.city}, ${address.province}`}</p>
+                                                </div>
+                                                :
+                                                <div className='flex'>
+                                                    <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                                    <p className='text-red-500'>You have no main address yet, please choose address manually</p>
+                                                </div>
+                                            :
+                                            <div className='flex items-center pb-7'>
+                                                <RiErrorWarningLine className='mt-1 mr-1 text-red-500' />
+                                                <p className='text-red-500 text-center'>You dont have any address yet please add your address first</p>
+                                            </div>
+                                }
+
+                                <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />
+
+                            </div>
+
+                            <div>
+                                <p className='font-bold text-[24px] text-hijauBtn py-4'>Order summary</p>
+                            </div>
+
+                            {/* Summary */}
+                            {
+                                item.map((val, idx) => {
+                                    return (
+                                        <CheckoutComponent key={idx} data={val} />
+                                    )
+                                })
                             }
 
-                            <ChangeAddressComponent addressList={addressList} getDeliveryService={getDeliveryService} setAddress={setAddress} getMainAddress={getMainAddress} />
+                            {
+                                totalData > 0 &&
+                                <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+                            }
+
+
 
                         </div>
 
-                        <div>
-                            <p className='font-bold text-[24px] text-hijauBtn py-4'>Order summary</p>
+                        {/* APKG1-29 Checkout Component */}
+                        <div className='lg:border lg:rounded lg:w-[350px] lg:h-[450px] px-5'>
+                            <p className='hidden lg:block text-poppins text-hijauBtn font-bold pt-5 text-[24px] border-b pb-[16px]'>Payment details</p>
+
+                            <div className='pt-5'>
+                                <div className='py-1'>
+                                    <p className='text-hijauBtn'>Delivery option</p>
+                                    <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
+                                        <option value="default-0" selected>Select option</option>
+                                        {printDeliveryOption()}
+                                    </Select>
+                                </div>
+
+                                <div className='py-1 pt-3 flex justify-between'>
+                                    <p className='text-hijauBtn'>Delivery charge</p>
+                                    <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
+                                </div>
+
+                                <div className='py-1 flex justify-between'>
+                                    <p className='text-hijauBtn'>Sub total</p>
+                                    <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{printSubTotal().toLocaleString('id')},-</p>
+                                </div>
+
+                                <div className='py-1 border-t mt-3'>
+                                    <p className='text-hijauBtn'>Total purchase</p>
+                                    <p className='text-hijauBtn text-[32px] font-bold'>Rp{printTotalPurchase().toLocaleString('id')},-</p>
+                                </div>
+                            </div>
+
+                            {
+                                addressList.length > 0 ?
+                                    <button onClick={() => {
+                                        setBtnSpinner(true)
+                                        setDisableBtn(true)
+                                        setTimeout(btnOrder, 2000)
+                                    }} className={`mx-auto  bg-hijauBtn ${disableBtn ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
+                                        disabled={disableBtn}
+                                    >
+                                        {btnSpinner ? <Spinner size='sm' /> : 'Order'}
+                                    </button>
+                                    :
+                                    <button
+                                        className={`mx-auto  bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
+                                        disabled
+                                    >
+                                        Order
+                                    </button>
+                            }
                         </div>
-
-                        {/* Summary */}
-                        {
-                            item.map((val, idx) => {
-                                return (
-                                    <CheckoutComponent key={idx} data={val} />
-                                )
-                            })
-                        }
-
-                        {
-                            totalData > 0 &&
-                            <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-                        }
-
-
-
-                    </div>
-
-                    {/* APKG1-29 Checkout Component */}
-                    <div className='lg:border lg:rounded lg:w-[350px] lg:h-[450px] px-5'>
-                        <p className='hidden lg:block text-poppins text-hijauBtn font-bold pt-5 text-[24px] border-b pb-[16px]'>Payment details</p>
-
-                        <div className='pt-5'>
-                            <div className='py-1'>
-                                <p className='text-hijauBtn'>Delivery option</p>
-                                <Select onChange={(e) => setSelectedDelivery(e.target.value)} >
-                                    <option value="default-0" selected>Select option</option>
-                                    {printDeliveryOption()}
-                                </Select>
-                            </div>
-
-                            <div className='py-1 pt-3 flex justify-between'>
-                                <p className='text-hijauBtn'>Delivery charge</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{parseInt(selectedDelivery.split('-')[1]).toLocaleString('id')},-</p>
-                            </div>
-
-                            <div className='py-1 flex justify-between'>
-                                <p className='text-hijauBtn'>Sub total</p>
-                                <p className='text-hijauBtn font-bold lg:pb-[8px]'>Rp{printSubTotal().toLocaleString('id')},-</p>
-                            </div>
-
-                            <div className='py-1 border-t mt-3'>
-                                <p className='text-hijauBtn'>Total purchase</p>
-                                <p className='text-hijauBtn text-[32px] font-bold'>Rp{printTotalPurchase().toLocaleString('id')},-</p>
-                            </div>
-                        </div>
-
-                        {
-                            addressList.length > 0 ?
-                                <button onClick={() => {
-                                    setBtnSpinner(true)
-                                    setDisableBtn(true)
-                                    setTimeout(btnOrder, 2000)
-                                }} className={`mx-auto  bg-hijauBtn ${disableBtn ? 'hover:bg-brightness-90' : 'hover:bg-white hover:text-hijauBtn'} text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
-                                    disabled={disableBtn}
-                                >
-                                    {btnSpinner ? <Spinner size='sm' /> : 'Order'}
-                                </button>
-                                :
-                                <button
-                                    className={`mx-auto  bg-hijauBtn disabled:cursor-not-allowed text-white border w-[290px] lg:w-[312px] h-[42px] lg:h-[40px] font-bold lg:mt-[24px]`}
-                                    disabled
-                                >
-                                    Order
-                                </button>
-                        }
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

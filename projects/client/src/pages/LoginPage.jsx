@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { HiOutlineMail } from "react-icons/hi";
 import ImageCover from "../components/AuthImageCoverComponent";
 import Navbar from "../components/NavbarComponent";
+import HeadComponent from "../components/HeadComponent";
 
 const LoginPage = () => {
     const [credential, setCredential] = useState();
@@ -149,6 +150,7 @@ const LoginPage = () => {
 
     return (
         <div>
+            <HeadComponent title={'SEHATBOS | Login'} description={'Login'} type={'website'}/>
             <div className='h-screen w-screen lg:w-3/4 pt-[220px] pb-1 lg:pt-[175px] lg:pb-[80px] mx-auto flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:drop-shadow-xl'>
                     <ImageCover
@@ -198,8 +200,8 @@ const LoginPage = () => {
                                     </InputRightElement>
                                 </InputGroup>
 
-                                <p className="text-[10px] py-1 " onClick={onOpen}>
-                                    Forgot password? <a className="text-blue-500 font-bold pointer-cursor" >Click here</a>
+                                <p className="text-[10px] py-1 " >
+                                    Forgot password? <span className="text-blue-500 font-bold cursor-pointer" onClick={onOpen}>Click here</span>
                                 </p>
 
                             </div>

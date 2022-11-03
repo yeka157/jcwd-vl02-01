@@ -36,9 +36,11 @@ import AdminReportProduct from './pages/AdminReportProduct';
 
 function App() {
   const [userData, setUserData] = useState([]);
+  const pathName = window.location.pathname;
 
   const dispatch = useDispatch();
   const user = useSelector(getUser);
+  let token = Cookies.get('sehatToken');
 
   useEffect(() => {
     KeepLogin();
@@ -47,8 +49,6 @@ function App() {
 
   const KeepLogin = async () => {
     try {
-      let token = Cookies.get('sehatToken');
-
       if (token) {
         let resUser = await axios.get(API_URL + '/auth/keep_login', {
           headers: {
@@ -100,7 +100,6 @@ function App() {
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/reset_password/:token' element={<ResetPassword />} />
         <Route path='/change_password/:token' element={<ChangePassword />} />
-        <Route path='/prescription' element={<PrescriptionPage />} />
 
 
         {
@@ -110,40 +109,50 @@ function App() {
                 {/* Kevin - APKG1-13 - Profile Page */}
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/cart' element={<CartPage />} />
+                <Route path='/prescription' element={<PrescriptionPage />} />
                 <Route path='/checkout' element={<CheckoutPage />} />
                 <Route path='/transaction_list' element={<TransactionListPage />} />
                 <Route path='/transaction_detail' element={<TransactionDetailPage />} />
+                <Route path='/*' element={<NotFoundPage />} />
               </>
               :
               <>
                 <Route path='/*' element={<NotFoundPage />} />
+                <Route path='/admin' element={<AdminDashboardPage />} />
+                <Route path='/admin/category' element={<AdminCategoryPage />} />
+                <Route path="/admin/product" element={<AdminProductPage />} />
+                <Route path='/admin/report' element={<AdminReportPage />} />
+                <Route path='/admin/report/sales' element={<AdminSalesReportPage />} />
+                <Route path='/admin/report/sales/product' element={<AdminReportProduct />} />
+                <Route path='/admin/report/sales/transaction' element={<AdminReportTransaction />} />
+                <Route path='/admin/report/sales/user' element={<AdminReportUser />} />
+                <Route path='/admin/report/stock' element={<AdminStockHistoryPage />} />
+                <Route path="/admin/transaction" element={<AdminTransactionPage />} />
               </>
             :
             <>
+              <Route path='/*' element={<NotFoundPage />} />
               <Route path='/register' element={<RegisterPage />} />
               <Route path='/login' element={<LoginPage />} />
             </>
         }
 
-        {
-          user.role !== 'CUSTOMER' ?
+        {/* {
+          user.role === 'ADMIN' && user.role ? (
             <>
-              {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
-              {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
-              <Route path='/admin' element={<AdminDashboardPage />} />
-              <Route path='/admin/category' element={<AdminCategoryPage />} />
-              <Route path="/admin/product" element={<AdminProductPage />} />
-              <Route path='/admin/report' element={<AdminReportPage/>} />
-              <Route path='/admin/report/sales' element={<AdminSalesReportPage/>} />
-              <Route path='/admin/report/sales/product' element={<AdminReportProduct/>} />
-              <Route path='/admin/report/sales/transaction' element={<AdminReportTransaction/>} />
-              <Route path='/admin/report/sales/user' element={<AdminReportUser/>} />
-              <Route path='/admin/report/stock' element={<AdminStockHistoryPage/>} />
-              <Route path="/admin/transaction" element={<AdminTransactionPage />} />
             </>
+          )
             :
-            <Route path='/*' element={<NotFoundPage />} />
-        }
+            user.role ?
+              <Route path='/*' element={<NotFoundPage />} /> :
+              <></>
+        } */}
+
+        {/* {
+          !token || !user.role || pathName.includes('admin') && (
+            <Route path='/*' element={<NotFoundPage />} /> 
+          )
+        }  */}
       </Routes>
     </div>
   );

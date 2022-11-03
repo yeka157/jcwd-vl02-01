@@ -37,6 +37,7 @@ import AddProductComponent from '../components/AddProductComponent';
 import EditProductComponent from '../components/EditProductComponent';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import HeadComponent from '../components/HeadComponent';
 
 export default function AdminProductPage() {
 	// HOOKS
@@ -371,192 +372,195 @@ export default function AdminProductPage() {
 	}, [filters]);
 
 	return (
-		<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
-			{modalDeleteConfirmation}
-			{modalProductDetails}
+		<>
+			<HeadComponent title={'SEHATBOS | Admin Product'} description={'Admin Product'} type={'website'}/>
+			<main className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
+				{modalDeleteConfirmation}
+				{modalProductDetails}
 
-			{/* {initialRef, finalRef, isOpenAddProduct, onCloseAddProduct, onCloseAddProduct} */}
-			<AddProductComponent
-				totalData={totalData}
-				itemsPerPage={itemsPerPage}
-				setCurrentPage={setCurrentPage}
-				productData={productData}
-				getProductData={getProductData}
-				categoryData={categoryData}
-				initialRef={initialRef}
-				finalRef={finalRef}
-				isOpenAddProduct={isOpenAddProduct}
-				onCloseAddProduct={onCloseAddProduct}
-			/>
-			<EditProductComponent
-				productStock={productStock}
-				selectedProductIndex={selectedProductIndex}
-				selectedProduct={selectedProduct}
-				productData={productData}
-				getProductData={getProductData}
-				categoryData={categoryData}
-				initialRef={initialRef}
-				finalRef={finalRef}
-				isOpenEditProduct={isOpenEditProduct}
-				onCloseEditProduct={onCloseEditProduct}
-			/>
+				{/* {initialRef, finalRef, isOpenAddProduct, onCloseAddProduct, onCloseAddProduct} */}
+				<AddProductComponent
+					totalData={totalData}
+					itemsPerPage={itemsPerPage}
+					setCurrentPage={setCurrentPage}
+					productData={productData}
+					getProductData={getProductData}
+					categoryData={categoryData}
+					initialRef={initialRef}
+					finalRef={finalRef}
+					isOpenAddProduct={isOpenAddProduct}
+					onCloseAddProduct={onCloseAddProduct}
+				/>
+				<EditProductComponent
+					productStock={productStock}
+					selectedProductIndex={selectedProductIndex}
+					selectedProduct={selectedProduct}
+					productData={productData}
+					getProductData={getProductData}
+					categoryData={categoryData}
+					initialRef={initialRef}
+					finalRef={finalRef}
+					isOpenEditProduct={isOpenEditProduct}
+					onCloseEditProduct={onCloseEditProduct}
+				/>
 
-			<div className="container mx-auto mt-[2.5vh]">
-				<h1
-					className="font-bold text-lg text-hijauBtn text-center cursor-pointer"
-					onClick={() => {
-						navigate('/admin');
-					}}
-				>
-					SEHATBOS.COM <span className="font-normal">| PRODUCT</span>
-				</h1>
-			</div>
-
-			<div className="container mx-auto mt-[5vh] grid justify-items-start">
-				<h1 className="font-bold text-lg">Product List</h1>
-				<Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
-					<BreadcrumbItem>
-						<BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
-					</BreadcrumbItem>
-
-					<BreadcrumbItem>
-						<BreadcrumbLink>Product</BreadcrumbLink>
-					</BreadcrumbItem>
-				</Breadcrumb>
-			</div>
-			<div className="container mx-auto mt-[-35px] text-[rgb(49,53,65,0.75)] grid justify-items-end">
-				<Button borderRadius={'0'} bgColor="#025d67" color="#f0f5f6" variant="solid" size={'sm'} _hover={{ bg: '#1F6C75' }} onClick={onOpenAddProduct}>
-					+ add
-				</Button>
-			</div>
-
-			<SearchBar filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage} getProductData={getProductData} />
-
-			<div className={`container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end`}>
-				<div>
-					<Menu>
-						<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
-							{filters.category_name === '' ? 'Category' : filters.category_name}
-						</MenuButton>
-						<MenuList>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setFilters((prev) => ({ ...prev, category_name: '' }));
-									setCurrentPage((prev) => (prev = 1));
-								}}
-							>
-								None
-							</MenuItem>
-							{categoryData.map((val, idx) => {
-								return (
-									<MenuItem
-										key={idx}
-										className="text-xs"
-										onClick={() => {
-											setFilters((prev) => ({ ...prev, category_name: val.category_name }));
-											setCurrentPage((prev) => (prev = 1));
-										}}
-									>
-										{val.category_name}
-									</MenuItem>
-								);
-							})}
-						</MenuList>
-					</Menu>
-					<Menu>
-						<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
-							{filters.sort === '' ? 'Sort' : `${filters.sort} (${filters.order})`}
-						</MenuButton>
-						<MenuList>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: '', order: '' }));
-								}}
-							>
-								None
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Price', order: 'asc' }));
-								}}
-							>
-								{'Price (Ascending)'}
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Price', order: 'desc' }));
-								}}
-							>
-								{'Price (Descending)'}
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Name', order: 'asc' }));
-								}}
-							>
-								{'Product Name (Ascending)'}
-							</MenuItem>
-							<MenuItem
-								className="text-xs"
-								onClick={() => {
-									setCurrentPage((prev) => (prev = 1));
-									setFilters((prev) => ({ ...prev, sort: 'Name', order: 'desc' }));
-								}}
-							>
-								{'Product Name (Descending)'}
-							</MenuItem>
-						</MenuList>
-					</Menu>
-
-					<Button
-						style={{ borderColor: 'gray' }}
-						disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
-						borderRadius={'0'}
-						color="gray"
-						variant="outline"
-						size={'sm'}
-						onClick={resetFilter}
+				<div className="container mx-auto mt-[2.5vh]">
+					<h1
+						className="font-bold text-lg text-hijauBtn text-center cursor-pointer"
+						onClick={() => {
+							navigate('/admin');
+						}}
 					>
-						Reset Filter
+						SEHATBOS.COM <span className="font-normal">| PRODUCT</span>
+					</h1>
+				</div>
+
+				<div className="container mx-auto mt-[5vh] grid justify-items-start">
+					<h1 className="font-bold text-lg">Product List</h1>
+					<Breadcrumb fontSize="xs" className="text-[rgb(49,53,65,0.75)]">
+						<BreadcrumbItem>
+							<BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+						</BreadcrumbItem>
+
+						<BreadcrumbItem>
+							<BreadcrumbLink>Product</BreadcrumbLink>
+						</BreadcrumbItem>
+					</Breadcrumb>
+				</div>
+				<div className="container mx-auto mt-[-35px] text-[rgb(49,53,65,0.75)] grid justify-items-end">
+					<Button borderRadius={'0'} bgColor="#025d67" color="#f0f5f6" variant="solid" size={'sm'} _hover={{ bg: '#1F6C75' }} onClick={onOpenAddProduct}>
+						+ add
 					</Button>
 				</div>
-			</div>
 
-			<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
-				<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
-					<h1 className="inline">Product</h1>
-				</Box>
-			</div>
-			<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-[2.5vh]">
-				<TableContainer w="100vw" fontSize={'xs'}>
-					<Table size="sm">
-						<Thead>
-							<Tr>
-								<Th>No.</Th>
-								<Th>Name</Th>
-								<Th>Price</Th>
-								<Th>Category</Th>
-								<Th>Preview</Th>
-								<Th>Action</Th>
-							</Tr>
-						</Thead>
-						<Tbody>
-							{/* DISPLAY DATA */}
-							{displayProductData()}
-						</Tbody>
-					</Table>
-				</TableContainer>
-			</div>
-			<Pagination getProductData={getProductData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
-		</main>
+				<SearchBar filters={filters} setFilters={setFilters} inputValue={filters.product_name} setCurrentPage={setCurrentPage} getProductData={getProductData} />
+
+				<div className={`container mx-auto lg:mt-[-45px] text-[rgb(49,53,65,0.75)] lg:grid justify-items-end`}>
+					<div>
+						<Menu>
+							<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
+								{filters.category_name === '' ? 'Category' : filters.category_name}
+							</MenuButton>
+							<MenuList>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setFilters((prev) => ({ ...prev, category_name: '' }));
+										setCurrentPage((prev) => (prev = 1));
+									}}
+								>
+									None
+								</MenuItem>
+								{categoryData.map((val, idx) => {
+									return (
+										<MenuItem
+											key={idx}
+											className="text-xs"
+											onClick={() => {
+												setFilters((prev) => ({ ...prev, category_name: val.category_name }));
+												setCurrentPage((prev) => (prev = 1));
+											}}
+										>
+											{val.category_name}
+										</MenuItem>
+									);
+								})}
+							</MenuList>
+						</Menu>
+						<Menu>
+							<MenuButton className="mr-3 text-gray" style={{ borderRadius: 0, border: '1px solid gray' }} as={Button} rightIcon={<HiOutlineChevronDown />} size={'sm'}>
+								{filters.sort === '' ? 'Sort' : `${filters.sort} (${filters.order})`}
+							</MenuButton>
+							<MenuList>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: '', order: '' }));
+									}}
+								>
+									None
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Price', order: 'asc' }));
+									}}
+								>
+									{'Price (Ascending)'}
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Price', order: 'desc' }));
+									}}
+								>
+									{'Price (Descending)'}
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Name', order: 'asc' }));
+									}}
+								>
+									{'Product Name (Ascending)'}
+								</MenuItem>
+								<MenuItem
+									className="text-xs"
+									onClick={() => {
+										setCurrentPage((prev) => (prev = 1));
+										setFilters((prev) => ({ ...prev, sort: 'Name', order: 'desc' }));
+									}}
+								>
+									{'Product Name (Descending)'}
+								</MenuItem>
+							</MenuList>
+						</Menu>
+
+						<Button
+							style={{ borderColor: 'gray' }}
+							disabled={!filters.category_name && !filters.product_name && !filters.sort && !filters.order}
+							borderRadius={'0'}
+							color="gray"
+							variant="outline"
+							size={'sm'}
+							onClick={resetFilter}
+						>
+							Reset Filter
+						</Button>
+					</div>
+				</div>
+
+				<div className="flex container mx-auto mt-[2.5vh] justify-center content-center">
+					<Box w="100vw" borderWidth="1px" overflow="hidden" fontWeight="semibold" lineHeight="tight" className="py-[5px] border-borderHijau text-center bg-hijauBtn text-bgWhite">
+						<h1 className="inline">Product</h1>
+					</Box>
+				</div>
+				<div className="flex container mx-auto bg-[rgb(2,93,103,0.1)] mb-[2.5vh]">
+					<TableContainer w="100vw" fontSize={'xs'}>
+						<Table size="sm">
+							<Thead>
+								<Tr>
+									<Th>No.</Th>
+									<Th>Name</Th>
+									<Th>Price</Th>
+									<Th>Category</Th>
+									<Th>Preview</Th>
+									<Th>Action</Th>
+								</Tr>
+							</Thead>
+							<Tbody>
+								{/* DISPLAY DATA */}
+								{displayProductData()}
+							</Tbody>
+						</Table>
+					</TableContainer>
+				</div>
+				<Pagination getProductData={getProductData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+			</main>
+		</>
 	);
 }
