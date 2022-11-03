@@ -161,8 +161,6 @@ module.exports = {
                 (${dbConf.escape(req.dataToken.user_id)}, ${dbConf.escape(req.body.province)}, ${dbConf.escape(req.body.city)}, ${dbConf.escape(req.body.city_id)}, ${dbConf.escape(req.body.address_detail)}, 
                 ${dbConf.escape(req.body.district)}, 0, ${dbConf.escape(req.body.receiver)})`);
 
-                console.log(addData.insertId);
-
                 if (addData.insertId > 0) {
                     let resAddress = await dbQuery(`SELECT * from address WHERE address_id = ${addData.insertId};`);
 
