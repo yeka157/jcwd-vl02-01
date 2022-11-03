@@ -69,8 +69,6 @@ export default function AdminTransactionPage() {
 	const toast = useToast();
 	const navigate = useNavigate();
 
-	console.log(selectedTransaction)
-
 	// VAR
 	const itemsPerPage = 10;
 	const transactionStatus = ['Cancelled', 'Awaiting Admin Confirmation', 'Awaiting Payment', 'Awaiting Payment Confirmation', 'Processed', 'Shipped', 'Order Confirmed'];
@@ -85,6 +83,8 @@ export default function AdminTransactionPage() {
 	};
 
 	const updateTransactionStatus = async (action) => {
+
+		let index = transactionStatus.findIndex((val) => val === selectedTransaction?.transaction_status);
 		let confirmationMessage = '';
 		switch (selectedTransaction?.transaction_status) {
 			case 'Awaiting Payment Confirmation':
@@ -98,7 +98,16 @@ export default function AdminTransactionPage() {
 		}
 
 		try {
-			let index = transactionStatus.findIndex((val) => val === selectedTransaction?.transaction_status);
+			const updateStatus = await axios.patch(
+				`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
+				{ newStatus: transactionStatus[index] },
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
+
 			if (action === 'reject') {
 				index -= 1;
 			}
@@ -109,16 +118,7 @@ export default function AdminTransactionPage() {
 				index = 0;
 			}
 
-			let updateStatus = await axios.patch(
-				`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
-				{ newStatus: transactionStatus[index] },
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
+			
 			if (!updateStatus.data.success && action !== 'cancel') {
 				toast({
 					size: 'xs',
@@ -131,6 +131,11 @@ export default function AdminTransactionPage() {
 			}
 
 			if (action !== 'cancel') {
+				await axios.post(
+					`${API_URL}/transaction/send_notification/${selectedTransaction?.user_id}`,
+					{ invoice: selectedTransaction?.invoice, transaction_status: transactionStatus[index] }
+				)
+
 				toast({
 					size: 'xs',
 					title: confirmationMessage,
@@ -186,6 +191,12 @@ export default function AdminTransactionPage() {
 					});
 					return;
 				}
+
+				await axios.post(
+					`${API_URL}/transaction/send_notification/${selectedTransaction?.user_id}`,
+					{ invoice: selectedTransaction?.invoice, transaction_status: transactionStatus[0] }
+				)
+
 				toast({
 					size: 'xs',
 					title: `Order cancelation success!`,
@@ -193,6 +204,7 @@ export default function AdminTransactionPage() {
 					status: 'success',
 					isClosable: true,
 				});
+
 			} catch (error) {
 				console.log(error);
 				toast({
@@ -740,6 +752,7 @@ export default function AdminTransactionPage() {
 											});
 										} catch (error) {
 											console.log(error);
+											setIsLoading((prev) => (prev = !prev));
 											toast({
 												size: 'xs',
 												title: `Something went wrong, please try again later!`,
@@ -892,7 +905,6 @@ export default function AdminTransactionPage() {
 			getTransactions();
 			getTotalData();
 		}
-		getTransactions();
 	}, [filters]);
 
 	return (

@@ -6,12 +6,16 @@ import { MdOutlineProductionQuantityLimits, MdCategory } from 'react-icons/md';
 import { Box } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import HeadComponent from '../components/HeadComponent';
+import { useDispatch } from "react-redux";
+import { userLogOut } from "../slices/userSlice";
+import Cookies from 'js-cookie';
 
 export default function AdminDashboardPage() {
-	// HOOKS
 
 	// VAR
 	const navigate = useNavigate();
+  const dispatch = useDispatch();
+	const pathName = window.location.pathname;
 
 	return (
 		<>
@@ -103,6 +107,26 @@ export default function AdminDashboardPage() {
 						onClick={() => navigate('/')}
 					>
 						<h1 className="inline">Visit Website</h1>
+						<CgWebsite className="inline ml-2" />
+					</Box>
+				</div>
+				<div className="flex container mx-auto my-[15px] justify-center content-center">
+					<Box
+						w="xs"
+						borderWidth="1px"
+						overflow="hidden"
+						fontWeight="semibold"
+						lineHeight="tight"
+						className="py-[20px] hover:bg-borderHijau border-borderHijau text-center mx-2 bg-hijauBtn text-bgWhite cursor-pointer"
+						onClick={() => {
+							dispatch(userLogOut());
+							Cookies.remove("sehatToken");
+							if (pathName !== "/") {
+								navigate("/", { replace: true });
+							}
+						}}
+					>
+						<h1 className="inline">Logout</h1>
 						<CgWebsite className="inline ml-2" />
 					</Box>
 				</div>

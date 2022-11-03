@@ -212,6 +212,15 @@ const RegisterPage = () => {
                 })
             }
         } catch (error) {
+            toast({
+                title: 'Register fail',
+                description: "Please check your form and the suggest in it",
+                status: 'error',
+                position: 'top',
+                duration: 4000,
+                isClosable: true,
+            })
+            setSpinner(false);
             console.log('error');
         }
     }
