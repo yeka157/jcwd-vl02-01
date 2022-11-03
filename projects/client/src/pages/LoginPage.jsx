@@ -92,7 +92,7 @@ const LoginPage = () => {
                 setDisableBtn(false);
                 setSpinner(false);
                 toast({
-                    title: 'Error found',
+                    title: 'Login failed',
                     description: "Please check your email or username and password ",
                     status: 'error',
                     position: 'top',
@@ -104,7 +104,7 @@ const LoginPage = () => {
             setDisableBtn(false);
             setSpinner(false);
             toast({
-                title: 'Error found',
+                title: 'Login failed',
                 description: "Please check your email or username and password ",
                 status: 'error',
                 position: 'top',
@@ -200,8 +200,8 @@ const LoginPage = () => {
                                     </InputRightElement>
                                 </InputGroup>
 
-                                <p className="text-[10px] py-1 " onClick={onOpen}>
-                                    Forgot password? <a className="text-blue-500 font-bold pointer-cursor" >Click here</a>
+                                <p className="text-[10px] py-1 ">
+                                    Forgot password? <span onClick={onOpen} className="text-blue-500 font-bold cursor-pointer">Click here</span>
                                 </p>
 
                             </div>
