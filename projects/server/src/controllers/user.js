@@ -34,7 +34,6 @@ module.exports = {
     },
     updatePicture: async (req, res) => {
         try {
-            console.log(req.files);
             let update = await dbQuery(`UPDATE users set profile_picture = ${dbConf.escape(`/imgProfile/${req.files[0].filename}`)};`);
             if (update.affectedRows) {
                 res.status(200).send({ success: true });

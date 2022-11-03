@@ -200,8 +200,8 @@ const LoginPage = () => {
                                     </InputRightElement>
                                 </InputGroup>
 
-                                <p className="text-[10px] py-1 " onClick={onOpen}>
-                                    Forgot password? <a className="text-blue-500 font-bold pointer-cursor" >Click here</a>
+                                <p className="text-[10px] py-1 " >
+                                    Forgot password? <span className="text-blue-500 font-bold cursor-pointer" onClick={onOpen}>Click here</span>
                                 </p>
 
                             </div>

@@ -100,6 +100,7 @@ function App() {
         <Route path='/verification/:token' element={<VerificationPage />} />
         <Route path='/reset_password/:token' element={<ResetPassword />} />
         <Route path='/change_password/:token' element={<ChangePassword />} />
+        <Route path='/prescription' element={<PrescriptionPage />} />
 
 
         {

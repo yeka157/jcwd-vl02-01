@@ -46,7 +46,9 @@ module.exports = {
             let getData = await dbQuery(`${getQuery};`);
             let dataCount = await dbQuery(`${getCount};`);
             if (getData.length > 0 && dataCount.length > 0) {
-                res.status(200).send({data : getData, count : dataCount.length});
+                res.status(200).send({data : getData, count : dataCount.length, success : true});
+            } else {
+                res.status(200).send({success : false});
             }
         } catch (error) {
             console.log(error);
@@ -345,6 +347,8 @@ module.exports = {
             ${req.query.limit ? 'LIMIT ' + req.query.limit + ' OFFSET ' + req.query.offset : ''};`);
             if (getData_table.length > 0) {
                 res.status(200).send({success : true, length : getData_table.length, dataMap : getData_table});
+            } else {
+                res.status(200).send({success : false})
             }
         } catch (error) {
             console.log(error);
@@ -390,6 +394,8 @@ module.exports = {
             ${req.query.limit ? 'LIMIT ' + req.query.limit + ' OFFSET ' + req.query.offset : ''};`);
             if (getData_table.length > 0) {
                 res.status(200).send({success : true, length : getData_table.length, dataMap : getData_table});
+            } else {
+                res.status(200).send({success : false })
             }
         } catch (error) {
             console.log(error);
@@ -432,6 +438,8 @@ module.exports = {
             ${req.query.limit ? 'LIMIT ' + req.query.limit + ' OFFSET ' + req.query.offset : ''};`);
             if (getData_table.length > 0) {
                 res.status(200).send({success : true, length : getData_table.length, dataMap : getData_table});
+            } else {
+                res.status(200).send({success : false })
             }
         } catch (error) {
             console.log(error);

@@ -188,6 +188,8 @@ module.exports = {
 			const resCount = await dbQuery(`SELECT COUNT(*) as count from transactions 
         ${filter.length == 0 ? '' : `WHERE ${filter.join(' AND ')}`};`);
 
+			console.log('ini resQount:', resCount);
+
 			res.status(200).send({
 				success: true,
 				transactions: addDetail,

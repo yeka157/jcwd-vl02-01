@@ -24,6 +24,7 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 import Axios from "axios";
@@ -52,6 +53,7 @@ export default function AdminStockHistoryPage() {
   const { onOpen, onClose, isOpen } = useDisclosure();
   const itemsPerPage = 10;
   const navigate = useNavigate();
+  const toast = useToast();
   const getData = async () => {
     try {
       if (
@@ -73,10 +75,23 @@ export default function AdminStockHistoryPage() {
               itemsPerPage * (currentPage - 1)
             }&${temp.join("&")}`
         );
-        if (result.data.data.length) {
+        if (result.data.success) {
           setHistory((prev) => (prev = result.data.data));
           setTotalData((prev) => (prev = result.data.count))
           return;
+        } else {
+          toast({
+            title: "Data not found",
+            description: "Data do not exist",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position : 'top'
+          });
+          setFilters(
+            (prev) =>
+              (prev = { date_from: "", date_to: "", sort: "", order: "" })
+          );
         }
       }
       if (
@@ -92,17 +107,32 @@ export default function AdminStockHistoryPage() {
             temp.push(`${filter}=${filters[filter]}`);
           }
         }
-        console.log(temp);
         const result = await Axios.get(
           API_URL +
             `/admin/get_stock_history?limit=${itemsPerPage}&offset=${
               itemsPerPage * (currentPage - 1)
             }&${temp.join("&")}`
         );
-        if (result.data.data.length) {
+        console.log(result);
+        if (result.data.success) {
           setHistory((prev) => (prev = result.data.data));
           setTotalData((prev) => (prev = result.data.count));
           return;
+        } else {
+          toast({
+            title: "Data not found",
+            description: "Data do not exist",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position : 'top'
+          });
+          setFilters(
+            (prev) =>
+              (prev = { date_from: "", date_to: "", sort: "", order: "" })
+          );
+          setDateFrom("");
+          setDateTo("");
         }
       }
       let data = await Axios.get(
@@ -111,9 +141,18 @@ export default function AdminStockHistoryPage() {
             itemsPerPage * (currentPage - 1)
           }`
       );
-      if (data.data.data.length) {
+      if (data.data.success) {
         setHistory((prev) => (prev = data.data.data));
         setTotalData((prev) => (prev = data.data.count));
+      } else {
+        toast({
+          title: "Data not found",
+          description: "Data do not exist",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position : 'top'
+        });
       }
     } catch (error) {
       console.log(error);
@@ -122,22 +161,38 @@ export default function AdminStockHistoryPage() {
 
   const btnClosePopover = async () => {
     try {
-      console.log(dateFrom);
-      console.log(dateTo);
       if (dateFrom && dateTo) {
         if (dateFrom >= dateTo) {
+          setDateFrom('');
+          setDateTo('');
           setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
-          console.log("yes");
-          // keluarin toast
+          toast({
+            title : 'Please enter a valid date range',
+            description : 'Date range is not valid',
+            status : 'warning',
+            duration : 3000,
+            isClosable : true,
+            position : 'top'
+          });
         } else {
           setCurrentPage((prev) => (prev = 1));
           setFilters((prev) => ({...prev, date_from : dateFrom, date_to : dateTo}));
-          console.log("none");
         }
         onClose();
       } else {
-        setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
-        // keluarin toast
+        if (dateFrom || dateTo) {
+          setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+          toast({
+            title : 'Please enter a valid date range',
+            description : 'Date range is not valid',
+            status : 'warning',
+            duration : 3000,
+            isClosable : true,
+            position : 'top'
+          });
+          setDateFrom('');
+          setDateTo('');
+        }
         onClose();
       }
     } catch (error) {
@@ -190,7 +245,7 @@ export default function AdminStockHistoryPage() {
     } else {
       getData();
     }
-  }, [filters])
+  }, [filters]);
 
   return (
     <>
