@@ -19,15 +19,11 @@ module.exports = {
                 data = { ...data, 'gender': req.body.gender };
             }
             let prop = Object.keys(data);
-            console.log(prop);
             let value = Object.values(data);
-            console.log(value);
             let dataQuery = prop.map((val, idx) => {
                 return `${prop[idx]} = ${dbConf.escape(value[idx])}`
             }).join(', ');
-            console.log(dataQuery);
             let update = await dbQuery(`UPDATE users set ${dataQuery} WHERE user_id = ${dbConf.escape(req.dataToken.user_id)};`);
-            console.log(update);
             if (update.affectedRows) {
                 res.status(200).send({ success: true });
             }
