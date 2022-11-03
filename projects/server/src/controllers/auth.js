@@ -113,8 +113,6 @@ module.exports = {
             let resGet = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`);
 
             if (resGet.length > 0) {
-
-
                 let token = createToken({ ...resGet[0] });
                 let link = `http://localhost:3000/verification/${token}`;
                 let name = resGet[0].name;
