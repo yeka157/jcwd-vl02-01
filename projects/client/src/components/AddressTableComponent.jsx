@@ -50,7 +50,7 @@ export default function AddressTableComponent(props) {
           <Tbody>
             {props.data.map((val, idx) => {
               return (
-                <AddressListComponent city={val.city} province={val.province} district={val.district} address={val.address_detail} no={idx+1} id={val.address_id} city_id={val.city_id} main={val.main_address} receiver={val.receiver}/>
+                <AddressListComponent city={val.city} province={val.province} district={val.district} address={val.address_detail} no={idx+1} id={val.address_id} city_id={val.city_id} main={val.main_address} receiver={val.receiver} key={idx+1}/>
               )
             })}
           </Tbody>

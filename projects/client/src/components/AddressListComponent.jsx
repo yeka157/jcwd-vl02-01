@@ -143,9 +143,7 @@ export default function AddressListComponent(props) {
       console.log(error);
     }
   }
-  React.useEffect(() => {
-    console.log(props.receiver);
-  }, []);
+
 
   return (
     <Tr>
