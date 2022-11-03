@@ -729,6 +729,12 @@ export default function AdminTransactionPage() {
 												}
 											);
 											if (update.data.success) {
+
+												await axios.post(
+													`${API_URL}/transaction/send_notification/${selectedTransaction?.user_id}`,
+													{ invoice: selectedTransaction?.invoice, transaction_status: 'Awaiting Payment' }
+												)
+
 												setTimeout(() => {
 													setIsLoading((prev) => (prev = !prev));
 													onCloseModalAction();

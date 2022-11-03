@@ -442,7 +442,7 @@ module.exports = {
 			let getUser = await dbQuery(`SELECT user_id, username, email, phone_number from users WHERE user_id =${req.params.id}`);
 			transport.sendMail({
 				from: 'Sehat Bos <sehatbos@shop.com>',
-				to: getUser[0].email,
+				to: "lukydwisaputra@gmail.com",
 				subject: 'Email Notification',
 				template: 'emailNotification',
 				context: {
