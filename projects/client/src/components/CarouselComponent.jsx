@@ -7,12 +7,12 @@ export default function CarouselComponent(props) {
   const navigate = useNavigate();
 
   return (
-    <div className="border-2 border-gray-300 rounded-md p-4 lg:w-[275px] 2xl:[300px] sm:w-[300px] md:w-[250px] w-full bg-white">
+    <div className="border-2 border-gray-300 rounded-md p-4 lg:w-[275px] 2xl:[300px] sm:w-[300px] md:w-[250px] w-full bg-white relative">
       <div className="border-b-2 border-gray-800 pb-7">
         <img src={props.foto.includes('imgProduct') ? `http://localhost:8000/${props.foto}` : props.foto} alt="obat-img" className="h-[250px]" />
       </div>
       <div className="pt-2 space-y-1">
-        <h1 className="font-normal text-base">{props.name}</h1>
+        <h1 className="font-normal text-base">{props.name.length > 30 ? props.name.slice(0,28) + '...' : props.name}</h1>
         <h6 className="text-sm text-muted font-light">{props.category}</h6>
       </div>
       <div className="pt-2 w-full flex items-center">

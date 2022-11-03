@@ -6,6 +6,7 @@ import ImageCover from '../components/AuthImageCoverComponent';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import Navbar from '../components/NavbarComponent';
+import HeadComponent from "../components/HeadComponent";
 
 const RegisterPage = () => {
     const [username, setUsername] = useState('');
@@ -211,6 +212,15 @@ const RegisterPage = () => {
                 })
             }
         } catch (error) {
+            toast({
+                title: 'Register fail',
+                description: "Please check your form and the suggest in it",
+                status: 'error',
+                position: 'top',
+                duration: 4000,
+                isClosable: true,
+            })
+            setSpinner(false);
             console.log('error');
         }
     }
@@ -218,6 +228,7 @@ const RegisterPage = () => {
 
     return (
         <div>
+            <HeadComponent title={'SEHATBOS | Register'} description={'Register'} type={'website'}/>
             <div className='h-screen w-screen lg:w-3/4 pt-[220px] pb-1 lg:pt-[175px] lg:pb-[80px] mx-auto flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:drop-shadow-xl'>
                     <ImageCover

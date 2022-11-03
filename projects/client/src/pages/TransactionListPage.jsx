@@ -27,6 +27,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { MdDateRange } from "react-icons/md";
 import Pagination from '../components/Pagination';
+import HeadComponent from "../components/HeadComponent";
 
 export default function TransactionListPage() {
 
@@ -172,6 +173,7 @@ export default function TransactionListPage() {
 
     return (
         <div>
+            <HeadComponent title={'SEHATBOS | Transaction List'} description={'Transaction List'} type={'website'}/>
             {
                 !loading ?
 

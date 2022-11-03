@@ -330,8 +330,8 @@ module.exports = {
 				return;
 			}
 
-			let product_stock = productStock.product_stock;
-			let stockAmount = productStock.product_stock * productStock.product_netto + productStock.product_conversion_stock;
+			// let product_stock = productStock.product_stock;
+			// let stockAmount = productStock.product_stock * productStock.product_netto + productStock.product_conversion_stock;
 			let productStockSubstractAmount = productStock.product_conversion_stock - quantity >= 0 ? 0 : Math.ceil((quantity - productStock.product_conversion_stock) / productStock.product_netto);
 			newProductStock = productStock.product_stock - productStockSubstractAmount;
 			let conversionStockAdditionAmount = productStockSubstractAmount * productStock.product_netto;
@@ -427,8 +427,11 @@ module.exports = {
 	sendEmailNotification: async (req, res) => {
 		try {
 			let { invoice, transaction_status } = req.body;
+<<<<<<< HEAD
 			 console.log(req.body)
 			 console.log(req.params.id)
+=======
+>>>>>>> db6e9aea7bc45209dbcdfc04285c24e2012bd079
 
 			const handlebarOptions = {
 				viewEngine: {

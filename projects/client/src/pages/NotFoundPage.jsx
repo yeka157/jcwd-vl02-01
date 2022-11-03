@@ -1,10 +1,12 @@
 import React from 'react';
 import { TbError404 } from "react-icons/tb";
+import HeadComponent from '../components/HeadComponent';
 
 const NotFoundPage = () => {
 
     return (
         <div>
+            <HeadComponent title={'Page Not Found!'} description={'Page Not Found!'} type={'website'}/>
             <div className='min-h-screen flex items-center'>
                 <div className='mx-auto'>
                     <TbError404 className='text-[250px] text-hijauBtn mx-auto' />
@@ -16,4 +18,4 @@ const NotFoundPage = () => {
     );
 }
 
-export default NotFoundPage
+export default NotFoundPage;

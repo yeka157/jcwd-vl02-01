@@ -86,6 +86,15 @@ export default function AddressComponent() {
             position: 'top'
           })
           onClose();
+        } else {
+          toast({
+            title: 'Error add address, please try again later',
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+            position: 'top'
+          })
+
         }
       }
     } catch (error) {
