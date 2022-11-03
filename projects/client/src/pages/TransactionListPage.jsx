@@ -116,6 +116,7 @@ export default function TransactionListPage() {
             console.log('wrong format');
         } else {
             setFilters((prev) => (prev = { ...prev, from: dateRange.from, to: dateRange.to }));
+            setCurrentPage(1);
             onClose();
         }
     };
