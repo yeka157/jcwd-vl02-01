@@ -121,17 +121,19 @@ export default function AdminReportTransaction() {
           }));
         }
       } else {
-        setFilters((prev) => ({ ...prev, date_from: "", date_to: "" }));
-        toast({
-          title : 'Please enter a valid date range',
-          description : 'Date range is not valid',
-          status : 'warning',
-          duration : 3000,
-          isClosable : true,
-          position : 'top'
-        });
-        setDateFrom('');
-        setDateTo('');
+        if (dateFrom || dateTo) {
+          setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+          toast({
+            title : 'Please enter a valid date range',
+            description : 'Date range is not valid',
+            status : 'warning',
+            duration : 3000,
+            isClosable : true,
+            position : 'top'
+          });
+          setDateFrom('');
+          setDateTo('');
+        }
       }
       onClose();
     } catch (error) {
@@ -401,6 +403,7 @@ export default function AdminReportTransaction() {
                 style={{ borderRadius: 0, border: "1px solid gray" }}
                 as={Button}
                 rightIcon={<HiOutlineChevronDown />}
+                size={"sm"}
               >
                 {filters.sort === ""
                   ? "Sort"

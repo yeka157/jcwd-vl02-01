@@ -113,9 +113,11 @@ export default function AdminStockHistoryPage() {
               itemsPerPage * (currentPage - 1)
             }&${temp.join("&")}`
         );
-        if (result.data.sucess) {
+        console.log(result);
+        if (result.data.success) {
           setHistory((prev) => (prev = result.data.data));
           setTotalData((prev) => (prev = result.data.count));
+          return;
         } else {
           toast({
             title: "Data not found",
@@ -131,7 +133,6 @@ export default function AdminStockHistoryPage() {
           );
           setDateFrom("");
           setDateTo("");
-          return;
         }
       }
       let data = await Axios.get(
@@ -179,17 +180,19 @@ export default function AdminStockHistoryPage() {
         }
         onClose();
       } else {
-        setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
-        toast({
-          title : 'Please enter a valid date range',
-          description : 'Date range is not valid',
-          status : 'warning',
-          duration : 3000,
-          isClosable : true,
-          position : 'top'
-        });
-        setDateFrom('');
-        setDateTo('');
+        if (dateFrom || dateTo) {
+          setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+          toast({
+            title : 'Please enter a valid date range',
+            description : 'Date range is not valid',
+            status : 'warning',
+            duration : 3000,
+            isClosable : true,
+            position : 'top'
+          });
+          setDateFrom('');
+          setDateTo('');
+        }
         onClose();
       }
     } catch (error) {
@@ -242,7 +245,7 @@ export default function AdminStockHistoryPage() {
     } else {
       getData();
     }
-  }, [filters])
+  }, [filters]);
 
   return (
     <>

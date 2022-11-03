@@ -905,6 +905,7 @@ export default function AdminTransactionPage() {
 			getTransactions();
 			getTotalData();
 		}
+		getTransactions();
 	}, [filters]);
 
 	return (

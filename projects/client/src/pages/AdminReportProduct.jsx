@@ -112,9 +112,19 @@ export default function AdminReportProduct() {
           setFilters((prev) => ({...prev, date_from : dateFrom, date_to : dateTo}));
         }
       } else {
-        setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
-        setDateFrom('');
-        setDateTo('');
+        if (dateFrom || dateTo) {
+          setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+          toast({
+            title : 'Please enter a valid date range',
+            description : 'Date range is not valid',
+            status : 'warning',
+            duration : 3000,
+            isClosable : true,
+            position : 'top'
+          });
+          setDateFrom('');
+          setDateTo('');
+        }
       }
       onClose();
     } catch (error) {
@@ -203,7 +213,7 @@ export default function AdminReportProduct() {
       }
       let getRes = await Axios.get(API_URL + "/admin/get_product_report");
       let result = await Axios.get(API_URL + `/admin/get_product_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage -1)}`);
-      if (result.data.sucess) {
+      if (result.data.success) {
         setDataChart(result.data.dataMap);
         setLabelChart(getRes.data.data);
       } else {
