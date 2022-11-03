@@ -150,7 +150,7 @@ const LoginPage = () => {
 
     return (
         <div>
-            <HeadComponent title={'SEHATBOS | Login'} description={'Login'} type={'website'}/>
+            <HeadComponent title={'SEHATBOS | Login'} description={'Login'} type={'website'} />
             <div className='h-screen w-screen lg:w-3/4 pt-[220px] pb-1 lg:pt-[175px] lg:pb-[80px] mx-auto flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:drop-shadow-xl'>
                     <ImageCover
@@ -200,13 +200,8 @@ const LoginPage = () => {
                                     </InputRightElement>
                                 </InputGroup>
 
-<<<<<<< HEAD
                                 <p className="text-[10px] py-1 ">
                                     Forgot password? <span onClick={onOpen} className="text-blue-500 font-bold cursor-pointer">Click here</span>
-=======
-                                <p className="text-[10px] py-1 " >
-                                    Forgot password? <span className="text-blue-500 font-bold cursor-pointer" onClick={onOpen}>Click here</span>
->>>>>>> fd8e850aacb132c8d829b15ae01ea807a3826229
                                 </p>
 
                             </div>

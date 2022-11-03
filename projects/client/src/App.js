@@ -110,7 +110,6 @@ function App() {
                 <Route path='/prescription' element={<PrescriptionPage />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/cart' element={<CartPage />} />
-                <Route path='/prescription' element={<PrescriptionPage />} />
                 <Route path='/checkout' element={<CheckoutPage />} />
                 <Route path='/transaction_list' element={<TransactionListPage />} />
                 <Route path='/transaction_detail' element={<TransactionDetailPage />} />
@@ -137,26 +136,6 @@ function App() {
               <Route path='/login' element={<LoginPage />} />
             </>
         }
-
-<<<<<<< HEAD
-=======
-        {/* {
-          user.role === 'ADMIN' && user.role ? (
-            <>
-            </>
-          )
-            :
-            user.role ?
-              <Route path='/*' element={<NotFoundPage />} /> :
-              <></>
-        } */}
-
-        {/* {
-          !token || !user.role || pathName.includes('admin') && (
-            <Route path='/*' element={<NotFoundPage />} /> 
-          )
-        }  */}
->>>>>>> fd8e850aacb132c8d829b15ae01ea807a3826229
       </Routes>
     </div>
   );
