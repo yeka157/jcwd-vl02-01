@@ -34,7 +34,6 @@ module.exports = {
     },
     updatePicture: async (req, res) => {
         try {
-            console.log(req.files);
             let update = await dbQuery(`UPDATE users set profile_picture = ${dbConf.escape(`/imgProfile/${req.files[0].filename}`)};`);
             if (update.affectedRows) {
                 res.status(200).send({ success: true });
@@ -160,8 +159,6 @@ module.exports = {
             let addData = await dbQuery(`INSERT INTO address (user_id, province, city, city_id, address_detail, district, main_address, receiver) VALUES 
                 (${dbConf.escape(req.dataToken.user_id)}, ${dbConf.escape(req.body.province)}, ${dbConf.escape(req.body.city)}, ${dbConf.escape(req.body.city_id)}, ${dbConf.escape(req.body.address_detail)}, 
                 ${dbConf.escape(req.body.district)}, 0, ${dbConf.escape(req.body.receiver)})`);
-
-                console.log(addData.insertId);
 
                 if (addData.insertId > 0) {
                     let resAddress = await dbQuery(`SELECT * from address WHERE address_id = ${addData.insertId};`);
