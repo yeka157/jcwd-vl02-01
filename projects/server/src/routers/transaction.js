@@ -9,6 +9,7 @@ const uploadProof = uploader('/imgPayment', 'IMGPROOF').array('image', 1);
 
 route.post('/add_custom_transaction', readToken, uploadFile, transactionController.addCustomTransaction);
 route.post('/add_transaction', readToken, transactionController.addTransaction);
+route.post('/send_notification/:id', transactionController.sendEmailNotification);
 
 route.get('/get_transaction', readToken, transactionController.getTransactions);
 route.get('/count', readToken, transactionController.countTransactionLIst);

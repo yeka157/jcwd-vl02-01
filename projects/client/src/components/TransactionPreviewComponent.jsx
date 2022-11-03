@@ -36,7 +36,7 @@ export default function TransactionPreviewComponent({selectedTransaction, isOpen
 								return (
 									<ol key={idx}>
 										<li>
-											<p className="font-bold text-xs mt-2 mb-1">{idx + 1}. {val.product_name}</p>
+											<p className="font-bold text-xs mt-2">{idx + 1}. {val.product_name}</p>
 											<div className='flex justify-between'>
 												<div className='w-[20%]'>
 													<img
@@ -58,20 +58,36 @@ export default function TransactionPreviewComponent({selectedTransaction, isOpen
 													</div>
 												</div>
 											</div>
-											<hr className="my-2" />
+											<hr className="mt-2" />
 										</li>
 									</ol>
 								)
 							})
 						}
+						{
+							selectedTransaction?.transaction_status === 'Awaiting Admin Confirmation' ?
+							<div className='flex justify-center'>
+								<img
+									className="max-w-[400px] ml-5 flex mb-5"
+									src={
+										selectedTransaction?.doctor_prescription.includes('http')
+										? selectedTransaction?.doctor_prescription
+										: `http://localhost:8000/${selectedTransaction?.doctor_prescription}`
+									}
+									alt="product_image"
+								/> 
+							</div> :
+							<>
+								<h1 className="text-xs font-bold mb-[5px] text-end mt-2">{selectedTransaction.transaction_detail?.length} {selectedTransaction.transaction_detail?.length > 1 ? 'ITEMS' : 'ITEM'}<span className="text-xs font-normal mb-[5px] ml-2">Rp{selectedTransaction.total_purchase > 0 ? (selectedTransaction.total_purchase - selectedTransaction.delivery_charge)?.toLocaleString('id') : 0},-</span></h1>
+								<h1 className="text-xs font-bold mb-[5px] text-end">SHIPPING ({selectedTransaction.delivery_option})<span className="text-xs font-normal mb-[5px] ml-2">Rp{selectedTransaction.total_purchase > 0 ? selectedTransaction.delivery_charge?.toLocaleString('id') : 0},-</span></h1>
+								<h1 className="text-xs font-bold mt-4 mb-2 text-end">TOTAL PURCHASE<span className="text-xs font-normal ml-2">Rp{selectedTransaction.total_purchase > 0 ? selectedTransaction.total_purchase?.toLocaleString('id') : 0},-</span></h1>
+								
+								<hr className="my-2" />
+								<h1 className="text-sm font-bold text-center text-borderHijau">SHIPPING</h1>
+							</>
+						}
 
-						<h1 className="text-xs font-bold mb-[5px] text-end">{selectedTransaction.transaction_detail?.length} {selectedTransaction.transaction_detail?.length > 1 ? 'ITEMS' : 'ITEM'}<span className="text-xs font-normal mb-[5px] ml-2">Rp{selectedTransaction.total_purchase > 0 ? (selectedTransaction.total_purchase - selectedTransaction.delivery_charge)?.toLocaleString('id') : 0},-</span></h1>
-						<h1 className="text-xs font-bold mb-[5px] text-end">SHIPPING ({selectedTransaction.delivery_option})<span className="text-xs font-normal mb-[5px] ml-2">Rp{selectedTransaction.total_purchase > 0 ? selectedTransaction.delivery_charge?.toLocaleString('id') : 0},-</span></h1>
-						<h1 className="text-xs font-bold mt-4 mb-2 text-end">TOTAL PURCHASE<span className="text-xs font-normal ml-2">Rp{selectedTransaction.total_purchase > 0 ? selectedTransaction.total_purchase?.toLocaleString('id') : 0},-</span></h1>
-            
 						<hr className="my-2" />
-						<h1 className="text-sm font-bold text-center text-borderHijau">SHIPPING</h1>
-            <hr className="my-2" />
 						<h1 className="text-xs font-bold mt-2 mb-1">Shipping Option</h1>
 						<h1 className="text-xs font-bold mb-2"><span className="text-xs font-normal">{selectedTransaction.delivery_option}</span></h1>
 						<h1 className="text-xs font-bold mt-2 mb-1">Shipping Address</h1>

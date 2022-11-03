@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { HiOutlineMail } from "react-icons/hi";
 import ImageCover from "../components/AuthImageCoverComponent";
 import Navbar from "../components/NavbarComponent";
+import HeadComponent from "../components/HeadComponent";
 
 const LoginPage = () => {
     const [credential, setCredential] = useState();
@@ -149,6 +150,7 @@ const LoginPage = () => {
 
     return (
         <div>
+            <HeadComponent title={'SEHATBOS | Login'} description={'Login'} type={'website'}/>
             <div className='h-screen w-screen lg:w-3/4 pt-[220px] pb-1 lg:pt-[175px] lg:pb-[80px] mx-auto flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:drop-shadow-xl'>
                     <ImageCover

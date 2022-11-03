@@ -1,5 +1,8 @@
 const { dbConf, dbQuery } = require('../config/db');
 const fs = require('fs');
+const path = require('path');
+const { transport } = require('../config/nodemailer');
+const hbs = require('nodemailer-express-handlebars');
 
 module.exports = {
 	addCustomTransaction: async (req, res) => {
@@ -325,8 +328,8 @@ module.exports = {
 				return;
 			}
 
-			let product_stock = productStock.product_stock;
-			let stockAmount = productStock.product_stock * productStock.product_netto + productStock.product_conversion_stock;
+			// let product_stock = productStock.product_stock;
+			// let stockAmount = productStock.product_stock * productStock.product_netto + productStock.product_conversion_stock;
 			let productStockSubstractAmount = productStock.product_conversion_stock - quantity >= 0 ? 0 : Math.ceil((quantity - productStock.product_conversion_stock) / productStock.product_netto);
 			newProductStock = productStock.product_stock - productStockSubstractAmount;
 			let conversionStockAdditionAmount = productStockSubstractAmount * productStock.product_netto;
@@ -419,4 +422,41 @@ module.exports = {
 			res.status(500).send({ message: error });
 		}
 	},
+	sendEmailNotification: async (req, res) => {
+		try {
+			let { invoice, transaction_status } = req.body;
+
+			const handlebarOptions = {
+				viewEngine: {
+					extName: '.handlebars',
+					partialsDir: path.resolve('./src/template'),
+					defaultLayout: false,
+				},
+				viewPath: path.resolve('./src/template'),
+				extName: '.handlebars',
+			};
+
+			transport.use('compile', hbs(handlebarOptions));
+
+			let getUser = await dbQuery(`SELECT user_id, username, email, phone_number from users WHERE user_id =${req.params.id}`);
+			transport.sendMail({
+				from: 'Sehat Bos <sehatbos@shop.com>',
+				to: getUser[0].email,
+				subject: 'Email Notification',
+				template: 'emailNotification',
+				context: {
+					transaction_status,
+					invoice
+				},
+			});
+
+			res.status(200).send({
+				success: true,
+				message: 'Email has been sent!'
+			});
+		} catch (error) {
+			console.log(error);
+			res.status(500).send(error);
+		}
+	}
 };

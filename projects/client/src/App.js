@@ -36,9 +36,11 @@ import AdminReportProduct from './pages/AdminReportProduct';
 
 function App() {
   const [userData, setUserData] = useState([]);
+  const pathName = window.location.pathname;
 
   const dispatch = useDispatch();
   const user = useSelector(getUser);
+  let token = Cookies.get('sehatToken');
 
   useEffect(() => {
     KeepLogin();
@@ -47,8 +49,6 @@ function App() {
 
   const KeepLogin = async () => {
     try {
-      let token = Cookies.get('sehatToken');
-
       if (token) {
         let resUser = await axios.get(API_URL + '/auth/keep_login', {
           headers: {
@@ -126,7 +126,7 @@ function App() {
         }
 
         {
-          user.role !== 'CUSTOMER' ?
+          user.role === 'ADMIN' && (
             <>
               {/* Luky - EPIC PRODUCT & INVENTORY - APKG1-20 to APKG1-24 */}
               {/* ADMIN ONLY | REDIRECT USER TO NOT FOUND PAGE */}
@@ -140,10 +140,17 @@ function App() {
               <Route path='/admin/report/sales/user' element={<AdminReportUser/>} />
               <Route path='/admin/report/stock' element={<AdminStockHistoryPage/>} />
               <Route path="/admin/transaction" element={<AdminTransactionPage />} />
-            </>
-            :
-            <Route path='/*' element={<NotFoundPage />} />
+            </> 
+          ) 
+          // : pathName.includes('admin') ?
+          // <Route path='/*' element={<NotFoundPage />} /> : ''
         }
+        
+        {
+          !token || !user.role || pathName.includes('admin') && (
+            <Route path='/*' element={<NotFoundPage />} /> 
+          )
+        } 
       </Routes>
     </div>
   );

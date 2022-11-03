@@ -7,6 +7,7 @@ import { FaUserSlash } from "react-icons/fa";
 import { useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineKey } from "react-icons/ai";
 import { Spinner, useToast } from '@chakra-ui/react'
+import HeadComponent from '../components/HeadComponent';
 
 const ResetPassword = () => {
     const [password, setPassword] = useState();
@@ -117,6 +118,7 @@ const ResetPassword = () => {
 
     return (
         <div>
+            <HeadComponent title={'SEHATBOS | Reset Password'} description={'Reset Password'} type={'website'}/>
             {
                 params.token === resetCookie ?
                     <div className='h-screen w-screen flex items-center'>
