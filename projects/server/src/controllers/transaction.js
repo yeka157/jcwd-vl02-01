@@ -164,7 +164,7 @@ module.exports = {
 			};
 
 			if (from && to) {
-				filter.push(`order_date BETWEEN '${from}' AND '${to + ' 23:59:59'}'`)
+				filter.push(`order_date >= '${from}' AND order_date <= '${to + ' 23:59:59'}'`)
 			};
 
 			if (req.dataToken.role === 'CUSTOMER') {
