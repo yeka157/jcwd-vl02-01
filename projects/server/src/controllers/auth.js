@@ -107,21 +107,21 @@ module.exports = {
 
 			let resGet = await dbQuery(`SELECT user_id, name, username, email, phone_number, role, status from users WHERE user_id = ${dbConf.escape(req.dataToken.user_id)}`);
 
-			if (resGet.length > 0) {
-				let token = createToken({ ...resGet[0] });
-				let link = `http://localhost:3000/verification/${token}`;
-				let name = resGet[0].name;
-
-				transport.sendMail({
-					from: 'Sehat Bos <sehatbos@shop.com>',
-					to: resGet[0].email,
-					subject: 'Verification Email Account',
-					template: 'emailVerification',
-					context: {
-						name,
-						link,
-					},
-				});
+            if (resGet.length > 0) {
+                let token = createToken({ ...resGet[0] });
+                let link = `http://localhost:3000/verification/${token}`;
+                let name = resGet[0].name;
+                
+                transport.sendMail({
+                    from: 'Sehat Bos <sehatbos@shop.com>',
+                    to: resGet[0].email,
+                    subject: 'Verification Email Account',
+                    template: 'emailVerification',
+                    context: {
+                        name,
+                        link
+                    }
+                });
 
 				res.status(200).send({
 					success: true,

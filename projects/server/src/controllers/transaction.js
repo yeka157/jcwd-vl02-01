@@ -164,7 +164,7 @@ module.exports = {
 			};
 
 			if (from && to) {
-				filter.push(`order_date >= '${from}' AND order_date <= '${to + ' 23:59:59'}'`)
+				filter.push(`order_date >= '${from}' AND order_date <='${to + ' 23:59:59'}'`)
 			};
 
 			if (req.dataToken.role === 'CUSTOMER') {
@@ -188,8 +188,6 @@ module.exports = {
 
 			const resCount = await dbQuery(`SELECT COUNT(*) as count from transactions 
             ${filter.length == 0 ? '' : `WHERE ${filter.join(' AND ')}`};`);
-
-			console.log('ini resQount:', resCount);
 
 			res.status(200).send({
 				success: true,

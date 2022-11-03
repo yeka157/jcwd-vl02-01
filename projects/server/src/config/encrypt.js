@@ -11,7 +11,6 @@ module.exports = {
         });
     },
     readToken: (req, res, next) => {
-        console.log('token', req.token);
         jwt.verify(req.token, 'posting', (err, decode) => {
             if (err) {
                 console.log('ini errornya', err);
