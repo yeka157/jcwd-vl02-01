@@ -16,7 +16,8 @@ import {
     FormControl,
     FormLabel,
     Input,
-    Spinner
+    Spinner,
+    useToast
 } from "@chakra-ui/react";
 import { HiChevronDown } from "react-icons/hi";
 import { useState } from "react";
@@ -39,9 +40,9 @@ export default function TransactionListPage() {
     const [loading, setLoading] = useState(true);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const toast = useToast();
 
     const itemsPerPage = 7;
-
 
     const getTransactions = async () => {
         try {
@@ -173,7 +174,7 @@ export default function TransactionListPage() {
 
     return (
         <div>
-            <HeadComponent title={'SEHATBOS | Transaction List'} description={'Transaction List'} type={'website'}/>
+            <HeadComponent title={'SEHATBOS | Transaction List'} description={'Transaction List'} type={'website'} />
             {
                 !loading ?
 
@@ -378,13 +379,13 @@ export default function TransactionListPage() {
 
                             </div>
 
-                                {
-                                    transactionList.map((val, idx) => {
-                                        return (
-                                            <TransactionListComponent loading={loading} getData={val} key={idx} />
-                                        )
-                                    })
-                                }
+                            {   
+                                transactionList.map((val, idx) => {
+                                    return (
+                                        <TransactionListComponent loading={loading} getData={val} key={idx} />
+                                    )
+                                })
+                            }
 
 
                             <div className="w-3/4 mx-auto">

@@ -427,11 +427,6 @@ module.exports = {
 	sendEmailNotification: async (req, res) => {
 		try {
 			let { invoice, transaction_status } = req.body;
-<<<<<<< HEAD
-			 console.log(req.body)
-			 console.log(req.params.id)
-=======
->>>>>>> db6e9aea7bc45209dbcdfc04285c24e2012bd079
 
 			const handlebarOptions = {
 				viewEngine: {
