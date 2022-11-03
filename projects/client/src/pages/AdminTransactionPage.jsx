@@ -98,16 +98,6 @@ export default function AdminTransactionPage() {
 		}
 
 		try {
-			const updateStatus = await axios.patch(
-				`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
-				{ newStatus: transactionStatus[index] },
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
 			if (action === 'reject') {
 				index -= 1;
 			}
@@ -117,7 +107,16 @@ export default function AdminTransactionPage() {
 			if (action === 'cancel') {
 				index = 0;
 			}
-
+			
+			const updateStatus = await axios.patch(
+				`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
+				{ newStatus: transactionStatus[index] },
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
 			
 			if (!updateStatus.data.success && action !== 'cancel') {
 				toast({
