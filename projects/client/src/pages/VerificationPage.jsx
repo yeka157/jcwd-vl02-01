@@ -19,7 +19,7 @@ const VerificationPage = () => {
         if (params.token == verifCookie) {
             verification();
         }
-    })
+    }, []);
 
     const verification = async () => {
         try {
