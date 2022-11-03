@@ -24,6 +24,7 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 import { Line } from "react-chartjs-2";
@@ -42,7 +43,7 @@ import { HiOutlineChevronDown } from "react-icons/hi";
 import { API_URL } from "../helper";
 import Axios from "axios";
 import Pagination from "../components/Pagination";
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminReportTransaction() {
@@ -55,28 +56,30 @@ export default function AdminReportTransaction() {
     Tooltip,
     Legend
   );
-  const options = {responsive: true,
-  plugins : {
-    title: {
-      display: true,
-      text: "Transaction Report",
-    }
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
+  const options = {
+    responsive: true,
+    plugins: {
       title: {
         display: true,
-        text: "Total Sales (in Rp)",
+        text: "Transaction Report",
       },
     },
-    x: {
-      title: {
-        display: true,
-        text: "Date",
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Total Sales (in Rp)",
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Date",
+        },
       },
     },
-  }}
+  };
   const [filters, setFilters] = React.useState({
     date_from: "",
     date_to: "",
@@ -91,29 +94,58 @@ export default function AdminReportTransaction() {
   const [labelChart, setLabelChart] = React.useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
   const itemsPerPage = 10;
+  const toast = useToast();
   const navigate = useNavigate();
   const btnClosePopover = async () => {
     try {
       if (dateFrom && dateTo) {
         if (dateFrom >= dateTo) {
-          setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
-          //toast
+          setDateFrom('');
+          setDateTo('');
+          setFilters((prev) => ({ ...prev, date_from: "", date_to: "" }));
+          toast({
+            title : 'Please enter a valid date range',
+            description : 'Date range is not valid',
+            status : 'warning',
+            duration : 3000,
+            isClosable : true,
+            position : 'top'
+          });
         } else {
           setCurrentPage((prev) => (prev = 1));
-          setFilters((prev) => ({...prev, date_from : dateFrom, date_to : dateTo}));
+          setFilters((prev) => ({
+            ...prev,
+            date_from: dateFrom,
+            date_to: dateTo,
+          }));
         }
       } else {
-        setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+        setFilters((prev) => ({ ...prev, date_from: "", date_to: "" }));
+        toast({
+          title : 'Please enter a valid date range',
+          description : 'Date range is not valid',
+          status : 'warning',
+          duration : 3000,
+          isClosable : true,
+          position : 'top'
+        });
+        setDateFrom('');
+        setDateTo('');
       }
       onClose();
     } catch (error) {
       console.log(error);
     }
   };
+
   const resetFilter = async () => {
     try {
-      setFilters((prev) => (prev = {date_from : '', date_to : '', sort : '', order : ''}));
-      setCurrentPage((prev) => prev = 1);
+      setFilters(
+        (prev) => (prev = { date_from: "", date_to: "", sort: "", order: "" })
+      );
+      setDateFrom("");
+      setDateTo("");
+      setCurrentPage((prev) => (prev = 1));
       getData();
     } catch (error) {
       console.log(error);
@@ -122,48 +154,114 @@ export default function AdminReportTransaction() {
   const getTotalData = async () => {
     try {
       let total = await Axios.get(API_URL + `/admin/get_transaction_table`);
-      setTotalData((prev) => prev = total.data.length);
+      setTotalData((prev) => (prev = total.data.length));
     } catch (error) {
       console.log(error);
     }
   };
   const getData = async () => {
     try {
-      if (!filters.date_from && !filters.date_to && filters.sort && filters.order) {
+      if (
+        !filters.date_from &&
+        !filters.date_to &&
+        filters.sort &&
+        filters.order
+      ) {
         let temp = [];
         for (let filter in filters) {
-          if (filters[filter] !== '') {
+          if (filters[filter] !== "") {
             temp.push(`${filter}=${filters[filter]}`);
           }
         }
-        const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
-        const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}&${temp.join("&")}`);
-        if (result.data.note === 'data found') {
+        const result = await Axios.get(
+          API_URL + `/admin/get_transaction_report?${temp.join("&")}`
+        );
+        const dataTable = await Axios.get(
+          API_URL +
+            `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${
+              itemsPerPage * (currentPage - 1)
+            }&${temp.join("&")}`
+        );
+        if (dataTable.data.success) {
           setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
+        } else {
+          toast({
+            title: "Data not found",
+            description: "Data do not exist",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position : 'top'
+          });
+          setFilters(
+            (prev) =>
+              (prev = { date_from: "", date_to: "", sort: "", order: "" })
+          );
         }
       }
-      if (filters.date_from || filters.date_to || filters.sort || filters.order) {
+      if (
+        filters.date_from ||
+        filters.date_to ||
+        filters.sort ||
+        filters.order
+      ) {
         let temp = [];
         for (let filter in filters) {
-          if (filters[filter] !== '') {
+          if (filters[filter] !== "") {
             temp.push(`${filter}=${filters[filter]}`);
           }
         }
-        const result = await Axios.get(API_URL + `/admin/get_transaction_report?${temp.join("&")}`);
-        const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}&${temp.join("&")}`);
-        if (result.data.note === 'data found') {
+        const result = await Axios.get(
+          API_URL + `/admin/get_transaction_report?${temp.join("&")}`
+        );
+        const dataTable = await Axios.get(
+          API_URL +
+            `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${
+              itemsPerPage * (currentPage - 1)
+            }&${temp.join("&")}`
+        );
+        if (dataTable.data.success) {
           setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
+        } else {
+          toast({
+            title: "Data not found",
+            description: "Data do not exist",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position : 'top'
+          });
+          setFilters(
+            (prev) =>
+              (prev = { date_from: "", date_to: "", sort: "", order: "" })
+          );
+          setDateFrom("");
+          setDateTo("");
         }
       }
       let getRes = await Axios.get(API_URL + "/admin/get_transaction_report");
-      const dataTable = await Axios.get(API_URL + `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage-1)}`);
-      if (getRes.data.note === 'data found') {
+      const dataTable = await Axios.get(
+        API_URL +
+          `/admin/get_transaction_table?limit=${itemsPerPage}&offset=${
+            itemsPerPage * (currentPage - 1)
+          }`
+      );
+      if (dataTable.data.success) {
         setDataChart((prev) => (prev = dataTable.data.dataMap));
         setLabelChart((prev) => (prev = getRes.data.data));
+      } else {
+        toast({
+          title: "Data not found",
+          description: "Data do not exist",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position : 'top'
+        });
       }
     } catch (error) {
       console.log(error);
@@ -171,25 +269,38 @@ export default function AdminReportTransaction() {
   };
 
   const exportData = async () => {
-    const dataExport = await Axios.get(API_URL + '/admin/get_transaction_table?sort=date&order=asc');
+    const dataExport = await Axios.get(
+      API_URL + "/admin/get_transaction_table?sort=date&order=asc"
+    );
     const fields = Object.keys(dataExport.data.dataMap[0]);
     const workbook = XLSX.utils.book_new();
-    const worksheet = XLSX.utils.json_to_sheet(dataExport.data.dataMap, {headers : fields});
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transaction Sales Report');
-    XLSX.writeFile(workbook, 'TransactionReport.xlsx');
-  }
+    const worksheet = XLSX.utils.json_to_sheet(dataExport.data.dataMap, {
+      headers: fields,
+    });
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Transaction Sales Report"
+    );
+    XLSX.writeFile(workbook, "TransactionReport.xlsx");
+  };
   React.useEffect(() => {
     getData();
   }, [currentPage]);
 
   React.useEffect(() => {
     if (filters.date_from || filters.date_to) {
-      setTotalData((prev) => prev = dataChart.length);
+      setTotalData((prev) => (prev = dataChart.length));
     }
   }, [dataChart, filters.date_from, filters.date_to]);
 
   React.useEffect(() => {
-    if (filters.date_from === '' && filters.date_to === '' && filters.sort === '' && filters.order === '') {
+    if (
+      filters.date_from === "" &&
+      filters.date_to === "" &&
+      filters.sort === "" &&
+      filters.order === ""
+    ) {
       getTotalData();
       getData();
     } else {
@@ -200,9 +311,12 @@ export default function AdminReportTransaction() {
   return (
     <div className="bg-bgWhite min-h-screen py-5 px-5 lg:px-[10vw]">
       <div className="container mx-auto mt-[2.5vh]">
-        <h1 className="font-bold text-lg text-hijauBtn text-center cursor-pointer" onClick={() => {
-						navigate('/admin');
-					}}>
+        <h1
+          className="font-bold text-lg text-hijauBtn text-center cursor-pointer"
+          onClick={() => {
+            navigate("/admin");
+          }}
+        >
           SEHATBOS.COM <span className="font-normal">| SALES REPORT</span>
         </h1>
       </div>
@@ -231,13 +345,9 @@ export default function AdminReportTransaction() {
       </div>
       {/* Chart */}
       <div className="mt-3">
-        {Object.keys(labelChart).length > 0 &&
-        <Line
-          options={options}
-          data={labelChart}
-          height={"80%"}
-        />
-        }
+        {Object.keys(labelChart).length > 0 && (
+          <Line options={options} data={labelChart} height={"80%"} />
+        )}
       </div>
       <div className="container mx-auto lg:mt-3 text-[rgb(49,53,65,0.75)] lg:grid justify-items-end ">
         <div className="space-x-3">
@@ -405,7 +515,7 @@ export default function AdminReportTransaction() {
             <Tbody>
               {dataChart.map((val, idx) => {
                 return (
-                  <Tr key={idx+1}>
+                  <Tr key={idx + 1}>
                     <Td>{idx + 1}</Td>
                     <Td>
                       {new Date(val.date).toLocaleDateString("en-GB", {
@@ -426,20 +536,25 @@ export default function AdminReportTransaction() {
         </TableContainer>
       </div>
       <div className="my-2 flex justify-end">
-      <Button
-            style={{ borderColor: "gray" }}
-            borderRadius={"0"}
-            color="gray"
-            variant="outline"
-            size={"sm"}
-            onClick={exportData}
-            className='hover:!bg-hijauBtn hover:!text-white'
-          >
-            Download
-          </Button>
-      
+        <Button
+          style={{ borderColor: "gray" }}
+          borderRadius={"0"}
+          color="gray"
+          variant="outline"
+          size={"sm"}
+          onClick={exportData}
+          className="hover:!bg-hijauBtn hover:!text-white"
+        >
+          Download
+        </Button>
       </div>
-      <Pagination getProductData={getData} totalData={totalData} itemsPerPage={itemsPerPage} currentPage={currentPage} setCurrentPage={setCurrentPage}/>
+      <Pagination
+        getProductData={getData}
+        totalData={totalData}
+        itemsPerPage={itemsPerPage}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 }

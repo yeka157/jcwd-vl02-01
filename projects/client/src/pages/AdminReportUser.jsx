@@ -24,6 +24,7 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import React from "react";
 import { BsCalendarDate } from "react-icons/bs";
@@ -89,19 +90,29 @@ export default function AdminReportUser() {
       }
     }}
   const itemsPerPage = 10;
+  const toast = useToast();
   const navigate = useNavigate();
   const btnClosePopover = async () => {
     try {
       if (dateFrom && dateTo) {
         if (dateFrom >= dateTo) {
           setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
-          //toast warning
+          toast({
+            title : 'Please enter a valid date range',
+            description : 'Date range is not valid',
+            status : 'warning',
+            duration : 3000,
+            isClosable : true,
+            position : 'top'
+          })
         } else {
           setCurrentPage((prev) => (prev = 1));
           setFilters((prev) => ({...prev, date_from : dateFrom, date_to : dateTo}));
         }
       } else {
         setFilters((prev) => ({...prev, date_from : '', date_to : ''}));
+        setDateFrom('');
+        setDateTo('');
       }
       onClose();
     } catch (error) {
@@ -112,6 +123,8 @@ export default function AdminReportUser() {
   const resetFilter = async () => {
     try {
       setFilters((prev) => (prev = {date_from : '', date_to : '', sort : '', order : ''}));
+      setDateFrom('');
+      setDateTo('');
       setCurrentPage((prev) => prev = 1);
       getData();
     } catch (error) {
@@ -141,12 +154,23 @@ export default function AdminReportUser() {
         const result = await Axios.get(API_URL + `/admin/get_user_report?${temp.join('&')}`);
         const dataTable = await Axios.get(API_URL + `/admin/get_user_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage -1)}&${temp.join("&")}`);
         console.log(result.data);
-        if (result.data.found) {
+        if (dataTable.data.success) {
           setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         } else {
-          //toast data not found
+          toast({
+            title: "Data not found",
+            description: "Data do not exist",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position : 'top'
+          });
+          setFilters(
+            (prev) =>
+              (prev = { date_from: "", date_to: "", sort: "", order: "" })
+          );
         }
       }
       if (filters.date_from || filters.date_to || filters.sort || filters.order) {
@@ -158,21 +182,41 @@ export default function AdminReportUser() {
         }
         const result = await Axios.get(API_URL + `/admin/get_user_report?${temp.join('&')}`);
         const dataTable = await Axios.get(API_URL + `/admin/get_user_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage -1)}&${temp.join("&")}`);
-        if (result.data.found) {
+        if (dataTable.data.success) {
           setDataChart((prev) => (prev = dataTable.data.dataMap));
           setLabelChart((prev) => (prev = result.data.data));
           return;
         } else {
-          //toast data not found
+          toast({
+            title: "Data not found",
+            description: "Data do not exist",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position : 'top'
+          });
+          setFilters(
+            (prev) =>
+              (prev = { date_from: "", date_to: "", sort: "", order: "" })
+          );
+          setDateFrom("");
+          setDateTo("");
         }
       }
       let getRes = await Axios.get(API_URL + "/admin/get_user_report");
       const dataTable = await Axios.get(API_URL + `/admin/get_user_table?limit=${itemsPerPage}&offset=${itemsPerPage * (currentPage -1)}`);
-      if (getRes.data.found) {
+      if (dataTable.data.success) {
         setDataChart(dataTable.data.dataMap);
         setLabelChart(getRes.data.data);
       } else {
-        //toast data not found
+        toast({
+          title: "Data not found",
+          description: "Data do not exist",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+          position : 'top'
+        });
       }
     } catch (error) {
       console.log(error);

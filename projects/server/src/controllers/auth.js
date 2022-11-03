@@ -144,8 +144,6 @@ module.exports = {
                 massage: 'Verification failed'
             })
         }
-
-
     },
     login: async (req, res) => {
         try {
