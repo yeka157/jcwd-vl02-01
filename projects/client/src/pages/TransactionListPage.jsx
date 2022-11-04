@@ -40,9 +40,9 @@ export default function TransactionListPage() {
     const [loading, setLoading] = useState(true);
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const toast = useToast();
 
     const itemsPerPage = 7;
-
 
     const getTransactions = async () => {
         try {
@@ -124,6 +124,7 @@ export default function TransactionListPage() {
         } else {
             setCurrentPage(1);
             setFilters((prev) => (prev = { ...prev, from: dateRange.from, to: dateRange.to }));
+            setCurrentPage(1);
             onClose();
         }
     };
@@ -182,7 +183,7 @@ export default function TransactionListPage() {
 
     return (
         <div>
-            <HeadComponent title={'SEHATBOS | Transaction List'} description={'Transaction List'} type={'website'}/>
+            <HeadComponent title={'SEHATBOS | Transaction List'} description={'Transaction List'} type={'website'} />
             {
                 !loading ?
 
@@ -387,13 +388,13 @@ export default function TransactionListPage() {
 
                             </div>
 
-                                {
-                                    transactionList.map((val, idx) => {
-                                        return (
-                                            <TransactionListComponent loading={loading} getData={val} key={idx} />
-                                        )
-                                    })
-                                }
+                            {   
+                                transactionList.map((val, idx) => {
+                                    return (
+                                        <TransactionListComponent loading={loading} getData={val} key={idx} />
+                                    )
+                                })
+                            }
 
 
                             <div className="w-3/4 mx-auto">

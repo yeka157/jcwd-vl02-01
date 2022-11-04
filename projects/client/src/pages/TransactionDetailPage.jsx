@@ -144,6 +144,13 @@ const TransactionDetailPage = () => {
             let res = await axios.patch(`${API_URL}/transaction/update_status/${transaction_id}`, { newStatus });
 
             if (res.data.success) {
+                
+                await axios.post(
+					`${API_URL}/transaction/send_notification/${user?.user_id}`,
+					{ invoice , transaction_status: newStatus }
+				)
+
+
                 if (action === 'Cancel') {
                     stockRecovery();
                     onCancelModal()

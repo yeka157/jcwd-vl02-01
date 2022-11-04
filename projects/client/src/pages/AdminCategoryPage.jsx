@@ -187,8 +187,8 @@ export default function AdminCategoryPage() {
 
 	useEffect(() => {
 		getCategoryData();
-		displayCategoryData()
-	}, [categoryData]);
+		// displayCategoryData()
+	}, [inputCategory]);
 
 	const modalAddCategory = (
 		<div>

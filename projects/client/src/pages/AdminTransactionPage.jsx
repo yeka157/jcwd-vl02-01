@@ -98,16 +98,6 @@ export default function AdminTransactionPage() {
 		}
 
 		try {
-			const updateStatus = await axios.patch(
-				`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
-				{ newStatus: transactionStatus[index] },
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			);
-
 			if (action === 'reject') {
 				index -= 1;
 			}
@@ -117,7 +107,16 @@ export default function AdminTransactionPage() {
 			if (action === 'cancel') {
 				index = 0;
 			}
-
+			
+			const updateStatus = await axios.patch(
+				`${API_URL}/transaction/update_status/${selectedTransaction?.transaction_id}`,
+				{ newStatus: transactionStatus[index] },
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				}
+			);
 			
 			if (!updateStatus.data.success && action !== 'cancel') {
 				toast({
@@ -484,7 +483,7 @@ export default function AdminTransactionPage() {
 					>
 						Insufficient stock: {maxStockAvailable(ingredients?.product_unit) + ' ' + ingredients?.product_unit + ' left'}
 					</h1>
-					{ingredients?.quantity < maxStockAvailable(ingredients?.product_unit) && !isProductInserted() ? (
+					{ingredients?.quantity < maxStockAvailable(ingredients?.product_unit) && !isProductInserted() && ingredients?.product_unit ? (
 						<h1 className={`text-gray-500 text-xs text-center my-2`}>Available stock : {maxStockAvailable(ingredients?.product_unit, true) + ' ' + ingredients?.product_unit}</h1>
 					) : isProductInserted() && ingredientsList?.length > 0 ? (
 						<h1 className={`text-red-500 text-xs text-center my-2`}>Product is already on the list!</h1>
@@ -712,6 +711,9 @@ export default function AdminTransactionPage() {
 										await handleDoctorPrescription();
 									};
 
+
+									resolvePromise();
+
 									const updateTotalPurchase = async () => {
 										try {
 											let update = await axios.patch(
@@ -726,6 +728,12 @@ export default function AdminTransactionPage() {
 												}
 											);
 											if (update.data.success) {
+
+												await axios.post(
+													`${API_URL}/transaction/send_notification/${selectedTransaction?.user_id}`,
+													{ invoice: selectedTransaction?.invoice, transaction_status: 'Awaiting Payment' }
+												)
+
 												setTimeout(() => {
 													setIsLoading((prev) => (prev = !prev));
 													onCloseModalAction();
@@ -762,8 +770,6 @@ export default function AdminTransactionPage() {
 											});
 										}
 									};
-
-									resolvePromise();
 									updateTotalPurchase();
 								}}
 							>
@@ -899,6 +905,14 @@ export default function AdminTransactionPage() {
 	useEffect(() => {
 		getTransactions();
 	}, [currentPage]);
+	
+	useEffect(() => {
+		if (isLoading) {
+			setTimeout(() => {
+				getTransactions();
+			}, 1000);
+		}
+	});
 
 	useEffect(() => {
 		if (filters.invoice == '' && filters.transaction_status == '' && filters.from == '' && filters.to == '' && filters.sort == '' && filters.order == '') {
@@ -1108,9 +1122,10 @@ export default function AdminTransactionPage() {
 														className="mr-2"
 														style={{ borderRadius: '0' }}
 														onClick={() => {
-															onOpenModalPreview();
+															getTransactions();
 															setSelectedTransaction((prev) => (prev = val));
 															setSelectedTransactionIndex((prev) => (prev = idx));
+															onOpenModalPreview();
 														}}
 													>
 														Preview
@@ -1125,9 +1140,10 @@ export default function AdminTransactionPage() {
 															className={`mr-2`}
 															style={{ borderRadius: '0' }}
 															onClick={() => {
-																onOpenModalAction();
+																getTransactions();
 																setSelectedTransaction((prev) => (prev = val));
 																setSelectedTransactionIndex((prev) => (prev = idx));
+																onOpenModalAction();
 															}}
 														>
 															Handle
@@ -1140,9 +1156,10 @@ export default function AdminTransactionPage() {
 															variant={'outline'}
 															style={{ borderRadius: '0' }}
 															onClick={() => {
-																onOpenCancelConfirmation();
+																getTransactions();
 																setSelectedTransaction((prev) => (prev = val));
 																setSelectedTransactionIndex((prev) => (prev = idx));
+																onOpenCancelConfirmation();
 															}}
 														>
 															Cancel

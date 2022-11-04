@@ -29,7 +29,6 @@ const PrescriptionPage = (props) => {
     const addressList = useSelector(getAddress);
     const toast = useToast();
 
-    console.log(user);
 
     const getMainAddress = async () => {
         try {
