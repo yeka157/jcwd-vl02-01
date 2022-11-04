@@ -107,9 +107,9 @@ function App() {
             user.role === 'CUSTOMER' ?
               <>
                 {/* Kevin - APKG1-13 - Profile Page */}
+                <Route path='/prescription' element={<PrescriptionPage />} />
                 <Route path='/profile' element={<ProfilePage />} />
                 <Route path='/cart' element={<CartPage />} />
-                <Route path='/prescription' element={<PrescriptionPage />} />
                 <Route path='/checkout' element={<CheckoutPage />} />
                 <Route path='/transaction_list' element={<TransactionListPage />} />
                 <Route path='/transaction_detail' element={<TransactionDetailPage />} />
@@ -136,23 +136,6 @@ function App() {
               <Route path='/login' element={<LoginPage />} />
             </>
         }
-
-        {/* {
-          user.role === 'ADMIN' && user.role ? (
-            <>
-            </>
-          )
-            :
-            user.role ?
-              <Route path='/*' element={<NotFoundPage />} /> :
-              <></>
-        } */}
-
-        {/* {
-          !token || !user.role || pathName.includes('admin') && (
-            <Route path='/*' element={<NotFoundPage />} /> 
-          )
-        }  */}
       </Routes>
     </div>
   );
