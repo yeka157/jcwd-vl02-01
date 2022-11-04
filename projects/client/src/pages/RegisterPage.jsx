@@ -145,7 +145,6 @@ const RegisterPage = () => {
         } else {
             setPasswordStrength('indicator');
             setPasswordValid(false);
-
         }
 
 

@@ -92,7 +92,7 @@ const LoginPage = () => {
                 setDisableBtn(false);
                 setSpinner(false);
                 toast({
-                    title: 'Error found',
+                    title: 'Login failed',
                     description: "Please check your email or username and password ",
                     status: 'error',
                     position: 'top',
@@ -104,7 +104,7 @@ const LoginPage = () => {
             setDisableBtn(false);
             setSpinner(false);
             toast({
-                title: 'Error found',
+                title: 'Login failed',
                 description: "Please check your email or username and password ",
                 status: 'error',
                 position: 'top',
@@ -150,7 +150,7 @@ const LoginPage = () => {
 
     return (
         <div>
-            <HeadComponent title={'SEHATBOS | Login'} description={'Login'} type={'website'}/>
+            <HeadComponent title={'SEHATBOS | Login'} description={'Login'} type={'website'} />
             <div className='h-screen w-screen lg:w-3/4 pt-[220px] pb-1 lg:pt-[175px] lg:pb-[80px] mx-auto flex items-center'>
                 <div className='flex bg-white lg:border mx-auto lg:drop-shadow-xl'>
                     <ImageCover
@@ -200,8 +200,8 @@ const LoginPage = () => {
                                     </InputRightElement>
                                 </InputGroup>
 
-                                <p className="text-[10px] py-1 " >
-                                    Forgot password? <span className="text-blue-500 font-bold cursor-pointer" onClick={onOpen}>Click here</span>
+                                <p className="text-[10px] py-1 ">
+                                    Forgot password? <span onClick={onOpen} className="text-blue-500 font-bold cursor-pointer">Click here</span>
                                 </p>
 
                             </div>
