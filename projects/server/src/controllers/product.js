@@ -228,10 +228,7 @@ module.exports = {
 						(
 							${dbConf.escape(0)},
 							${dbConf.escape(product_id)},
-							${dbConf.escape(productStock.product_stock > req.body.product_stock 
-								? productStock.product_stock - req.body.product_stock 
-								: req.body.product_stock - productStock.product_stock )
-							},
+							${dbConf.escape(productStock.product_stock > req.body.product_stock ? productStock.product_stock - req.body.product_stock : req.body.product_stock - productStock.product_stock)},
 							${dbConf.escape('Stock Update')},
 							${dbConf.escape('Addition')},
 							${dbConf.escape(productDetails.product_name)},
@@ -259,10 +256,7 @@ module.exports = {
 				(
 					${dbConf.escape(0)},
 					${dbConf.escape(product_id)},
-					${dbConf.escape(productStock.product_stock > req.body.product_stock 
-						? productStock.product_stock - req.body.product_stock 
-						: req.body.product_stock - productStock.product_stock )
-					},
+					${dbConf.escape(productStock.product_stock > req.body.product_stock ? productStock.product_stock - req.body.product_stock : req.body.product_stock - productStock.product_stock)},
 					${dbConf.escape('Stock Update')},
 					${dbConf.escape(productStock.product_stock > req.body.product_stock ? 'Substraction' : 'Addition')},
 					${dbConf.escape(productDetails.product_name)},
@@ -334,7 +328,7 @@ module.exports = {
 			res.status(500).send(error);
 		}
 	},
-	selectBestSeller : async (req,res) => {
+	selectBestSeller: async (req, res) => {
 		try {
 			let getData = await dbQuery(`Select p.* from transactions t  
 			JOIN transaction_detail d ON d.transaction_id = t.transaction_id
@@ -343,10 +337,12 @@ module.exports = {
 			GROUP BY p.product_name ORDER BY count(*) desc limit 4`);
 			if (getData.length === 4) {
 				res.status(200).send(getData);
+			} else {
+				res.status(404).send({ message: 'Data not found!' });
 			}
 		} catch (error) {
 			console.log(error);
 			res.status(500).send(error);
 		}
-	}
+	},
 };

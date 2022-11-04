@@ -118,7 +118,6 @@ module.exports = {
 	},
 	stockRecovery: async (req, res) => {
 		try {
-
 			const { quantity, product_id, transaction_id, product_name, product_image, product_unit } = req.body.data
 
 			if (product_unit == 'Kapsul' || product_unit == 'Mililiter' || product_unit == 'Tablet') {
@@ -164,7 +163,7 @@ module.exports = {
 			};
 
 			if (from && to) {
-				filter.push(`order_date >= '${from}' AND order_date <='${to + ' 23:59:59'}'`)
+				filter.push(`order_date >= '${from}' AND order_date <= '${to + ' 23:59:59'}'`)
 			};
 
 			if (req.dataToken.role === 'CUSTOMER') {
@@ -181,13 +180,15 @@ module.exports = {
 			let addDetail = [];
 			for (let i = 0; i < resTransaction.length; i++) {
 				let resDetail = await dbQuery(`SELECT * from transaction_detail 
-                WHERE transaction_id = ${dbConf.escape(resTransaction[i].transaction_id)}`);
+          WHERE transaction_id = ${dbConf.escape(resTransaction[i].transaction_id)}`);
 
 				addDetail.push({ ...resTransaction[i], transaction_detail: resDetail });
 			}
 
 			const resCount = await dbQuery(`SELECT COUNT(*) as count from transactions 
-            ${filter.length == 0 ? '' : `WHERE ${filter.join(' AND ')}`};`);
+        ${filter.length == 0 ? '' : `WHERE ${filter.join(' AND ')}`};`);
+
+			console.log('ini resQount:', resCount);
 
 			res.status(200).send({
 				success: true,
