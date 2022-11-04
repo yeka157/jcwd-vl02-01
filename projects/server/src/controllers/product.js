@@ -339,7 +339,7 @@ module.exports = {
 			let getData = await dbQuery(`Select p.* from transactions t  
 			JOIN transaction_detail d ON d.transaction_id = t.transaction_id
 			JOIN products p ON d.product_name = p.product_name
-			WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order confirmed')
+			WHERE (t.transaction_status = 'Shipped' OR t.transaction_status = 'Order Confirmed')
 			GROUP BY p.product_name ORDER BY count(*) desc limit 4`);
 			if (getData.length === 4) {
 				res.status(200).send(getData);

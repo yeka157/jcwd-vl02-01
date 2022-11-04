@@ -16,7 +16,8 @@ import {
     FormControl,
     FormLabel,
     Input,
-    Spinner
+    Spinner,
+    useToast
 } from "@chakra-ui/react";
 import { HiChevronDown } from "react-icons/hi";
 import { useState } from "react";
@@ -37,7 +38,7 @@ export default function TransactionListPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalData, setTotalData] = useState(0);
     const [loading, setLoading] = useState(true);
-
+    const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const itemsPerPage = 7;
@@ -112,8 +113,16 @@ export default function TransactionListPage() {
 
     const btnSubmitDateRange = () => {
         if (!dateRange.from || !dateRange.to) {
+            toast({
+                size: 'xs',
+                title: 'Please complete your form',
+                position: 'top',
+                status: 'error',
+                isClosable: true,
+            });
             console.log('wrong format');
         } else {
+            setCurrentPage(1);
             setFilters((prev) => (prev = { ...prev, from: dateRange.from, to: dateRange.to }));
             onClose();
         }
