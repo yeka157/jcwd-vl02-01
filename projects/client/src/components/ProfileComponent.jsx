@@ -102,7 +102,14 @@ export default function ProfileComponent(props) {
 						duration: 3000,
 						isClosable: true,
 					});
-				} else {
+				} else if (emailMsg === 'Enter a valid email') {
+					toast({
+						description: 'Enter a valid email',
+						status: 'error',
+						duration: 3000,
+						isClosable: true,
+					});
+        } else {
           let res = await Axios.patch(
 						API_URL + '/user/update_profile',
 						{
