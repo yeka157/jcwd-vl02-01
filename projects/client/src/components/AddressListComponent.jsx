@@ -212,7 +212,7 @@ export default function AddressListComponent(props) {
           </Td>
           <Td className='px-1'>
             <div className="flex space-x-3">
-              <MdCancel onClick={() => setSelectedEdit(0)} className='h-9 hoverIcons font-medium text-red-600'/>
+              <MdCancel onClick={() => {setSelectedEdit(0); setEditProvince(props.province); setEditCity(props.city); setEditDistrict(props.district)}} className='h-9 hoverIcons font-medium text-red-600'/>
               <MdSave className="h-9 hoverIcons font-medium text-blue-500" onClick={() => btnSave(selectedEdit)}/>
             </div>
           </Td>

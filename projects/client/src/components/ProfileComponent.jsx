@@ -94,15 +94,48 @@ export default function ProfileComponent(props) {
 							dispatch(userLogin(getData.data.dataUser));
 							onClose();
 						}
-					}
-				} else if (emailMsg === 'Email already used') {
+					} 
+				} else if (emailMsg === 'Email already exist') {
 					toast({
 						description: 'Email already used',
 						status: 'error',
 						duration: 3000,
 						isClosable: true,
 					});
-				}
+				} else {
+          let res = await Axios.patch(
+						API_URL + '/user/update_profile',
+						{
+							name: fullName,
+							email,
+							birthdate: birthDate,
+							gender,
+						},
+						{
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						}
+					);
+					if (res.data.success) {
+						toast({
+							description: 'Profile successfully updated',
+							status: 'success',
+							duration: 3000,
+							isClosable: true,
+						});
+						let getData = await Axios.get(API_URL + '/auth/keep_login', {
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						});
+						if (getData.data.success) {
+							delete getData.data.token;
+							dispatch(userLogin(getData.data.dataUser));
+							onClose();
+						}
+					} 
+        }
 			} else {
 				let res = await Axios.patch(
 					API_URL + '/user/update_profile',
@@ -138,6 +171,7 @@ export default function ProfileComponent(props) {
 					}
 				}
 			}
+      onClose();
 		} catch (error) {
 			console.log(error);
 		}

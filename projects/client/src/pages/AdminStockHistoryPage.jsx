@@ -51,7 +51,7 @@ export default function AdminStockHistoryPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [totalData, setTotalData] = React.useState(0);
   const { onOpen, onClose, isOpen } = useDisclosure();
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
   const navigate = useNavigate();
   const toast = useToast();
   const getData = async () => {

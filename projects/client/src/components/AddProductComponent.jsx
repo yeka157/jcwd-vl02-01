@@ -175,6 +175,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 										_placeholder={{ color: 'inherit' }}
 										color="gray"
 										onChange={(e) => setForm((prev) => ({ ...prev, product_name: e.target.value }))}
+										value={form.product_name ? form.product_name : ''}
 									/>
 
 									<Menu>
@@ -207,7 +208,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 										</MenuList>
 									</Menu>
 
-									<NumberInput size="sm" min={1} className="text-borderHijau my-2">
+									<NumberInput size="sm" min={1} className="text-borderHijau my-2" value={form.product_price ? form.product_price : ''}>
 										<NumberInputField
 											borderRadius="0"
 											placeholder="Product price"
@@ -228,6 +229,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 										_placeholder={{ color: 'inherit' }}
 										color="gray"
 										onChange={(e) => setForm((prev) => ({ ...prev, product_description: e.target.value }))}
+										value={form.product_description ? form.product_description : ''}
 									/>
 
 									<Textarea
@@ -240,6 +242,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 										_placeholder={{ color: 'inherit' }}
 										color="gray"
 										onChange={(e) => setForm((prev) => ({ ...prev, product_usage: e.target.value }))}
+										value={form.product_usage ? form.product_usage : ''}
 									/>
 
 									<Box borderWidth="1px" overflow="hidden" className="text-center p-3 my-2">
@@ -268,7 +271,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 
 							{selectedForm === 'stock' && (
 								<>
-									<NumberInput size="sm" min={1} className="text-borderHijau my-2">
+									<NumberInput size="sm" min={1} className="text-borderHijau my-2" value={form.product_stock ? form.product_stock : ''}>
 										<NumberInputField
 											borderRadius="0"
 											placeholder="Stock"
@@ -327,7 +330,7 @@ export default function AddProductComponent({ initialRef, finalRef, isOpenAddPro
 										</MenuList>
 									</Menu>
 
-									<NumberInput size="sm" min={0} className="text-borderHijau my-2">
+									<NumberInput size="sm" min={0} className="text-borderHijau my-2" value={form.product_netto ? form.product_netto : ''}>
 										<NumberInputField
 											borderRadius="0"
 											placeholder={'Product netto'}

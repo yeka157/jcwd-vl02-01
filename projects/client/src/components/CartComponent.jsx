@@ -106,7 +106,7 @@ const CartComponent = (props) => {
         }
     };
 
-
+console.log(props.data.product_image);
     return (
         <div className='lg:flex border-b py-4'>
             <div className='my-5 flex lg:w-2/3'>
@@ -115,7 +115,7 @@ const CartComponent = (props) => {
                 </div>
 
                 <div className='lg:w-[180px] w-[75px] mx-4'>
-                    <img src={props.data.product_image.includes('http') ? props.data.product_image : `http://localhost:8000$/{props.data.product_image}`} alt="" />
+                    <img src={props.data.product_image.includes('http') ? props.data.product_image : `http://localhost:8000/${props.data.product_image}`} alt="" />
                 </div>
 
                 <div className='flex items-center w-[300px] lg:w-[220px]'>

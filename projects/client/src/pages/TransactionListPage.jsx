@@ -40,7 +40,6 @@ export default function TransactionListPage() {
     const [loading, setLoading] = useState(true);
     const toast = useToast();
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const toast = useToast();
 
     const itemsPerPage = 7;
 
@@ -122,7 +121,6 @@ export default function TransactionListPage() {
             });
             console.log('wrong format');
         } else {
-            setCurrentPage(1);
             setFilters((prev) => (prev = { ...prev, from: dateRange.from, to: dateRange.to }));
             setCurrentPage(1);
             onClose();

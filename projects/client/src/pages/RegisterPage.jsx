@@ -102,7 +102,7 @@ const RegisterPage = () => {
         let findEmail = usersData.findIndex(val => val.email === email);
 
         if (email) {
-            if (email.includes('@' && '.co')) {
+            if (email.includes('@') && email.includes('.co')) {
                 if (findEmail < 0) {
                     setEmailIndicator('indicator')
                     setEmailValid(true)

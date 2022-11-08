@@ -183,7 +183,7 @@ export default function ProductDetailsPage() {
               Rp{data.product_price?.toLocaleString("id")},-
             </h1>
             <div className="space-y-5 flex flex-col items-center justify-center">
-              {user.role === "CUSTOMER" ? (
+              {user.role === "CUSTOMER" && user.status === 'VERIFIED' ? (
                 <>
                   <div className="flex items-center justify-center space-x-5 pt-5">
                     <ButtonComponent

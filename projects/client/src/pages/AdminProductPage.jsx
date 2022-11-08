@@ -153,6 +153,7 @@ export default function AdminProductPage() {
 									},
 								});
 								if (result.data.success) {
+									setCurrentPage((prev) => prev = 1);
 									getProductData();
 									displayProductData();
 									toast({
